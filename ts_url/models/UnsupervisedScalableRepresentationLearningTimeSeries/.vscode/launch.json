@@ -1,0 +1,19 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "uea",
+            "type": "python",
+            "request": "launch",
+            "program": "uea.py",
+            "args": ["--dataset", "AtrialFibrillation", "--path", "/home/liangchen/Desktop/3liang/ts2vec/datasets/UEA",
+        "--save_path", "/home/liangchen/Desktop/3liang/UnsupervisedScalableRepresentationLearningTimeSeries/models",
+    "--hyper", "default_hyperparameters.json", "--seed", "2077", "--rank", "10"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

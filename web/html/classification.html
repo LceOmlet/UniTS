@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>UniTS: A Universal Time Series Analysis Framework with Self-supervised Representation Learning</title>
+  <meta name="description" content="Admin, Dashboard, Bootstrap, Bootstrap 4, Angular, AngularJS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- for ios 7 style, multi-resolution icon of 152x152 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-barstyle" content="black-translucent">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <meta name="apple-mobile-web-app-title" content="UniTS">
+  <!-- for Chrome on Android, multi-resolution icon of 196x196 -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" sizes="196x196" href="../assets/images/logo.png">
+  
+  <!-- style -->
+  <link rel="stylesheet" href="../assets/animate.css/animate.min.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/glyphicons/glyphicons.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/font-awesome/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/material-design-icons/material-design-icons.css" type="text/css" />
+
+  <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
+  <!-- build:css ../assets/styles/app.min.css -->
+  <link rel="stylesheet" href="../assets/styles/app.css" type="text/css" />
+  <!-- endbuild -->
+  <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
+
+  <script src="../libs/react/react.development.js"></script>
+  <script src="../libs/react/react-dom.development.js"></script>
+  <!-- Don't use this in production: -->
+  <script src="../libs/react/babel.min.js"></script>
+  <script type="text/javascript" src="/eel.js"></script>
+  <script type="text/javascript">
+    eel.expose(say_hello_js); // Expose this function to Python
+    function say_hello_js(x) {
+      console.log("Hello from " + x);
+      // alert(x)
+    }
+    
+    eel.expose(get_new_state)
+    function get_new_state(state, task){
+      if (task == "classification"){
+        new_state = state
+        // console.log(new_state)
+        window.dispatchEvent(event)
+      }
+      // alert("event")
+    }
+
+    async function chooseDataDir(inputid, outputid){
+      let filename = await eel.select_file()();
+      console.log(filename)
+      document.getElementById(inputid).value = filename
+      let file_split = filename.split("/")
+      let dataset_name = file_split[file_split.length - 1]
+      document.getElementById(outputid).value = dataset_name
+    }
+
+
+    let event = new CustomEvent("newstate")
+    let refresh_pretrain = new CustomEvent("refresh_pretrain")
+    
+    let training_states = []
+
+    let new_state = 0
+    let fusion_methods = []
+    async function refresh_state(){
+      console.log("refresh")
+      new_state = await eel.send_classification_states_from_python()()
+      fusion_methods = await eel.get_fusion_methods()()
+      console.log(fusion_methods)
+      console.log(new_state)
+      window.dispatchEvent(event) 
+    }
+
+    async function choosefile(inputid){
+      let filename = await eel.select_file()();
+      console.log(filename)
+      document.getElementById(inputid).value = filename
+    }
+
+    async function chooseCkptDir(ckptInput, algorithmName){
+      let file_dir = await eel.get_ckpt_dir()();
+      console.log(file_dir)
+      document.getElementById(ckptInput).value = file_dir
+      let str_arr = file_dir.split("_")
+      let model_name = str_arr.slice(6, 100).join("_")
+      document.getElementById(algorithmName).value = model_name
+      console.log(model_name)
+    }
+
+    async function change_choice(){
+      let model_names = await eel.get_model_names()();
+      return model_names
+    }
+    
+    // eel.expose(change_state)
+    // function change_state(state){
+    //   // pretrain_states.push(state)
+    //   new_state = state
+    //   console.log(state)
+    //   alert("state Changed")
+    //   let result = window.dispatchEvent(event)
+    //   console.log(result)
+    // }
+  </script>
+  <script type="text/babel">
+    refresh_state()
+
+    // import React, { useState, useEffect } from 'react'
+    var mytimes = 123
+    class AlgChoose extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = {
+          model_names: fusion_methods
+        }
+      }
+      componentDidMount() {
+        window.addEventListener("newstate",
+          async function() {
+            let model_names = await eel.get_model_names()()
+            this.setState({model_names: fusion_methods})
+          }.bind(this)
+        )
+      }
+      render() {
+        const opts = this.state.model_names.map((item, index) => 
+          <option> {item}</option>
+        )
+        console.log(opts)
+        return (opts)
+      }
+    }
+
+    let algChoose = document.getElementById("algSelect")
+    let algChooseRoot = ReactDOM.createRoot(algChoose)
+    algChooseRoot.render(<AlgChoose/>)
+
+    class Prot extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = { seconds: 0 ,
+                        items: [1, 2, 3] };
+        }
+
+        tick = () => {
+            if(mytimes != this.state.seconds) 
+            this.setState(state => ({
+                seconds: mytimes
+            }));
+        }
+
+        componentDidMount() {
+            this.interval = setInterval(() => this.tick(), 1000);
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.interval);
+        }
+
+        render() {
+            return (
+              (
+              <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td><a href=""><i class="fa fa-times text-danger inline"></i></a></td>
+              </tr>
+            )
+            );
+        }
+    }
+    let datasetInfo = 0
+    let modelInfo = 0
+    let dataFile
+
+    class UploadForm extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {items: [] };
+        }
+
+        changeItems = (items) => {
+          datasetInfo = items
+          this.setState({items: items})
+        }
+
+        changeform = (row_num) => {
+          return () => {
+            let items = this.state.items
+            // console.log(items)
+            items.splice(row_num, 1)
+            this.changeItems(items)
+          }
+        }
+        componentDidMount(){
+          document.getElementById("uploadDataSubmit").addEventListener("click", 
+          () => {
+            let dataname = document.getElementById("datasetName").value
+            let datafile = document.getElementById("dataFile").value
+            document.getElementById("datasetName").value = ""
+            document.getElementById("dataFile").value = ""
+            let items = this.state.items
+            if(dataname||datafile){
+              // alert({items: this.state.items + [{name: dataname, sFile:datafile}]})
+              items.push({name: dataname, sFile:datafile})
+              this.changeItems(items)
+            }
+          })
+        }
+        render() {
+            const tdlist = this.state.items.map(
+              (item, index) => 
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td title={item.name}>{item.name}</td>
+                    <td title={item.sFile}>{item.sFile}</td>
+                    <td><i onClick={this.changeform(index)}
+                       class="fa fa-times text-danger inline"></i></td>
+                  </tr>
+            )
+            return (tdlist);
+        }
+    }
+
+    // function get_task_
+    let task_num = 0
+
+
+
+    const container = document.getElementById('uploadDataTable');
+    const root = ReactDOM.createRoot(container);
+    // root.render(<HelloMessage name="SSS" />);
+    root.render(<UploadForm />)
+
+    class UploadModel extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {items: [] };
+        }
+
+        changeItems = (items) => {
+          modelInfo = items
+          this.setState({items: items})
+        }
+
+        changeform = (row_num) => {
+          return () => {
+            let items = this.state.items
+            // console.log(items)
+            items.splice(row_num, 1)
+            this.changeItems(items)
+          }
+        }
+        componentDidMount(){
+          document.getElementById("selectModelSubmit").addEventListener("click", 
+          () => {
+            let ckpt = document.getElementById("ckptInput").value
+            let alg= document.getElementById("algorithmName").value
+            document.getElementById("ckptInput").value = ""
+            document.getElementById("algorithmName").value = ""
+            let items = this.state.items
+            if(alg){
+              // alert({items: this.state.items + [{name: dataname, sFile:datafile}]})
+              items.push({name:alg, ckpt:ckpt})
+              this.changeItems(items)
+            }
+          })
+        }
+        render() {
+            const tdlist = this.state.items.map(
+              (item, index) => 
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td title={item.ckpt}>{item.ckpt}</td>
+                    <td title={item.name}>{item.name}</td>
+                    <td><i onClick={this.changeform(index)}
+                       class="fa fa-times text-danger inline"></i></td>
+                  </tr>
+            )
+            return (tdlist);
+        }
+    }
+    const uploadModelContainer = document.getElementById('selectModelTable');
+    const uploadModelRoot = ReactDOM.createRoot(uploadModelContainer);
+    uploadModelRoot.render(<UploadModel />)
+
+
+    class Classification extends React.Component {
+      constructor(props){
+        super(props)
+        this.state = {items: []}
+      }
+      componentDidMount(){
+        document.getElementById("start_pretrain").addEventListener(
+          "click",
+          () => {
+            let items = []
+            let dataname = ""
+            let fusion_method = document.getElementById("algSelect").value
+            console.log(fusion_method)
+            if(datasetInfo && modelInfo)
+              {
+              for(let data of datasetInfo){
+                if(dataname){
+                  dataname = dataname + "/"
+                }
+                dataname += data.name 
+              }
+              let model_dirs = ""
+              let model_dirs_title = ""
+              for(let model of modelInfo){
+                if(model_dirs){
+                  model_dirs = model_dirs + "; "
+                  model_dirs_title = model_dirs_title + "\n"
+                }
+                model_dirs += model.ckpt
+                model_dirs_title += model.ckpt
+              }
+              let task_id = this.state.items.length 
+              items.push({task_id:task_id, report:"∞" , alg_title:model_dirs_title, fusion:fusion_method ,alg:model_dirs, data: dataname, progress:0, loss: "∞"})
+
+              eel.start_training({data: datasetInfo, model: modelInfo, task: "classification", fusion:fusion_method, task_id: task_id})
+              this.setState({items: this.state.items.concat(items)})
+              console.log(this.state.items.concat(items))
+            }
+            eel.send_classification_states_from_js(this.state.items.concat(items))
+          }
+        )
+        window.addEventListener("newstate", ()=>{
+          if(new_state){
+            console.log(new_state)
+            this.setState({items: new_state})
+          }
+        })
+      }
+      render(){
+        // console.log(this.state.items)
+        const pretrain_list = this.state.items.map(
+          (item, idx) =>
+            <tr>
+              <td title={item.task_id + 1}>{item.task_id + 1}</td>
+              <td title={item.alg_title}>{item.alg}</td>
+              <td title={item.data}>{item.data}</td>
+              <td title={item.fusion}>{item.fusion}</td>
+              <td>      
+                <div class="progress mb-2">
+                  <div class="progress-bar danger" style={{width: item.progress.toString() + "%"}} >
+                    {item.progress.toString() + "%"}</div>
+                </div>
+              </td>
+              <td title={item.report}>{item.loss}</td>
+              <td><button id={"skip_" + item.task_id.toString()} type="button" class="btn btn-sm danger">Skip</button>
+                <button id={"curve_" + item.task_id.toString()} onClick={() => updateVCinfo("classification", item.task_id)} data-toggle="modal" data-target="#viewCurve"  type="button" class="btn btn-sm success">View Curve</button>
+                <button id={"save_" + item.task_id.toString()} type="button" class="btn btn-sm info">Save</button></td>
+            </tr>  
+        )
+        return (pretrain_list)
+      }
+    }
+
+    const pretrainTableContainer = document.getElementById('pretrainTable');
+    const pretrainTableRoot = ReactDOM.createRoot(pretrainTableContainer);
+    pretrainTableRoot.render(<Classification />)
+
+    function visual_loss(){
+      let task_name = document.getElementById("vcTaskName").innerHTML
+      let task_id = document.getElementById("vcTaskId").innerHTML
+      if (task_id){
+        eel.visualize_loss(task_name, task_id)
+      }
+    }
+
+    function visual_prediction(){
+      let task_name = document.getElementById("vcTaskName").innerHTML
+      let task_id = document.getElementById("vcTaskId").innerHTML
+      let sample_id = document.getElementById("sampleIdx").value
+      if (task_id != "" && task_name  != "" && sample_id != ""){
+        eel.visualize_sample(task_name, task_id, sample_id)
+      }
+    }
+
+    async function updateVCinfo(task_name, task_id){
+      let sample_num = await eel.get_task_samples_num(task_name, task_id)()
+      document.getElementById("vcTaskName").innerHTML = task_name
+      document.getElementById("vcSampleIndex").innerHTML = sample_num
+      document.getElementById("vcTaskId").innerHTML = task_id
+      document.getElementById("sampleIdx").max = sample_num
+    }
+
+</script>
+
+<style>
+  td {white-space:nowrap;overflow:hidden;text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+  <div class="app" id="app">
+
+<!-- ############ LAYOUT START-->
+<!-- React Components -->
+
+  <!-- aside -->
+  <div id="aside" class="app-aside modal nav-dropdown">
+    <div class="left navside grey dk" layout="column">
+      <div ui-include="'../views/blocks/aside.app.html'"></div>
+    </div>
+  </div>
+  <!-- / -->
+  
+  <!-- content -->
+  <div id="content" class="app-content box-shadow-z0" role="main">
+    <div class="app-header white box-shadow">
+        <div class="navbar navbar-toggleable-sm flex-row align-items-center">
+            <!-- Open side - Naviation on mobile -->
+            <a data-toggle="modal" data-target="#aside" class="hidden-lg-up mr-3">
+              <i class="material-icons">&#xe5d2;</i>
+            </a>
+            <!-- / -->
+        
+            <!-- Page title - Bind to $state's title -->
+            <div class="mb-0 h5 no-wrap" ng-bind="$state.current.data.title" id="pageTitle"></div>
+        
+            <!-- navbar collapse -->
+            <div class="collapse navbar-collapse" id="collapse">
+              <!-- link and dropdown -->
+              <ul class="nav navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                  <!-- <a class="nav-link" href data-toggle="dropdown">
+                    <i class="fa fa-fw fa-plus text-muted"></i>
+                    <span>New</span>
+                  </a> -->
+                  <div ui-include="'../views/blocks/dropdown.new.html'"></div>
+                </li>
+              </ul>
+        
+              <!-- <div ui-include="'../views/blocks/navbar.form.html'"></div> -->
+              <!-- / -->
+            </div>
+            <!-- / navbar collapse -->
+        
+            <!-- navbar right -->
+            <!-- <ul class="nav navbar-nav ml-auto flex-row">
+              <li class="nav-item dropdown pos-stc-xs">
+                <a class="nav-link mr-2" href data-toggle="dropdown">
+                  <i class="material-icons">&#xe7f5;</i>
+                  <span class="label label-sm up warn">3</span>
+                </a>
+                <div ui-include="'../views/blocks/dropdown.notification.html'"></div>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link p-0 clear" href="#" data-toggle="dropdown">
+                  <span class="avatar w-32">
+                    <img src="../assets/images/a0.jpg" alt="...">
+                    <i class="on b-white bottom"></i>
+                  </span>
+                </a>
+                <div ui-include="'../views/blocks/dropdown.user.html'"></div>
+              </li>
+              <li class="nav-item hidden-md-up">
+                <a class="nav-link pl-2" data-toggle="collapse" data-target="#collapse">
+                  <i class="material-icons">&#xe5d4;</i>
+                </a>
+              </li>
+            </ul> -->
+            <!-- / navbar right -->
+        </div>
+    </div>
+    <div class="app-footer">
+      <div class="p-2 text-xs">
+        <div class="pull-right text-muted py-1">
+           <strong>UniTS</strong> <span class="hidden-xs-down">- </span>
+          <a ui-scroll-to="content"><i class="fa fa-long-arrow-up p-x-sm"></i></a>
+        </div>
+        <div class="nav">
+          <a class="nav-link" href="../"></a>
+          
+        </div>
+      </div>
+    </div>
+    <div ui-view class="app-body" id="view">
+
+<!-- ############ PAGE START-->
+<div class="modal fade" id="uploadData" tabindex="-1" role="dialog" aria-labelledby="uploadDataLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<span class="modal-title" id="uploadDataLabel">
+					Select a Data File
+        </span>
+			</div>
+			<div class="modal-body">
+				<form role="form">
+          <div class="form-group row">
+            <label for="inputEmail3" class="col-sm-2 form-control-label">Name</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="datasetName" placeholder="Dataset Name">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">File</label>
+            <div class="col-sm-10 flex-row" >
+              <button id="chooseFileBtn" onclick="chooseDataDir('dataFile', 'datasetName')" type="button" class="btn">
+                Choose
+              </button>
+              <input style="width:70%;" id="dataFile" class="form-control pull-right">
+            </div>
+          </div>
+        </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm" data-dismiss="modal">
+          Close
+				</button>
+				<button id="uploadDataSubmit" type="button" class="btn btn-sm info" data-dismiss="modal">
+					Submit
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="configTask" tabindex="-1" role="dialog" aria-labelledby="configTaskLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<span class="modal-title" id="configTaskLabel">
+					Feature Fusion & Configuration
+        </span>
+			</div>
+			<div class="modal-body">
+				<form role="form">
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">File</label>
+            <div class="col-sm-10 flex-row" >
+              <select class="form-control c-select" id="algSelect">
+              </select>
+            </div>
+          </div>
+        </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm" data-dismiss="modal">
+          Close
+				</button>
+				<button id="configTaskSubmit" type="button" class="btn btn-sm info" data-dismiss="modal">
+					Submit
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="viewCurve" tabindex="-1" role="dialog" aria-labelledby="uploadDataLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<span class="modal-title" id="viewCurveLabel">
+					Performance Curve
+        </span>
+			</div>
+			<div class="modal-body">
+        <div class="box">
+          <div class="box-body">
+            <div class="form-group row" style="display:flex;justify-content: space-between;" >
+              <div id="vcTaskName" style="flex: 1;text-align: center;"></div>
+              <div style="flex: 1;text-align: center;"> 
+                <div>samples num: </div><div id="vcSampleIndex"></div>
+              </div>
+              <div style="flex: 1;text-align: center;">
+                <div>task id: </div> <div id="vcTaskId"></div>
+              </div>
+              <button style="flex: 1;text-align: center;" id="visualLoss" onclick="visual_loss()" type="button" class="btn btn-sm">
+                Train/Valid Loss
+              </button>
+              <script>
+                function checkInput(input_name) {
+                  input = document.getElementById(input_name)
+                  let min = parseInt(input.min)
+                  let max = parseInt(input.max)
+                  let value = parseInt(input.value)
+                  input.value = value
+                  if (value < min) {
+                    input.value = min
+                  } else if (value > max) {
+                    input.value = max
+                  }
+                }
+              </script>
+            </div>
+            <div class="form-group row">
+              <label for="inputEmail3" class="col-sm-2 form-control-label">Sample</label>
+              <div class="col-sm-10" >
+                <button id="visualSample" onclick="visual_prediction()" type="button" class="btn pull-right">
+                  Visualize
+                </button>
+                <input type="number" style="width: 70%;" onkeyup="checkInput('sampleIdx')"  step="1" min="0" class="form-control" id="sampleIdx" placeholder="Sample Index">
+              </div>
+              
+            </div>
+          </div>
+        </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm" data-dismiss="modal">
+          Close
+				</button>
+				<button type="button" class="btn btn-sm info">
+					Submit
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="selectModel" tabindex="-1" role="dialog" aria-labelledby="selectModelLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<span class="modal-title" id="selectModelLabel">
+					Select a Model
+        </span>
+			</div>
+			<div class="modal-body">
+				<form role="form">
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">ckpt</label>
+            <div class="col-sm-10">
+              <button type="button" class="btn" id="chooseHp" onclick="chooseCkptDir('ckptInput', 'algorithmName')">
+                Choose
+              </button>
+              <input id="ckptInput" class="form-control pull-right" style="width: 70%;">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">Algorithm</label>
+            <div class="col-sm-10">
+              <input disabled="true" id="algorithmName" style="width:70%;" class="form-control pull-right">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control c-select" id="algCfgMode" onchange="algCfgMode_()">
+                <option>Default</option>
+                <option>Manual</option>
+                <option>Smart</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">H-Param</label>
+            <div class="col-sm-10">
+              <button type="button" class="btn" id="chooseHp" onclick="choosePFile('hpInput')">
+                Choose
+              </button>
+              <input id="hpInput" class="form-control pull-right" disabled style="width: 70%;">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 form-control-label">Params</label>
+            <div class="col-sm-10">
+              <button type="button" class="btn" id="chooseP"  onclick="choosePFile('pInput')">
+                Choose
+              </button>
+              <input id="pInput" class="form-control pull-right" disabled style="width: 70%;">
+            </div>
+          </div>
+        </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm" data-dismiss="modal">
+          Close
+				</button>
+				<button type="button" id="selectModelSubmit"class="btn btn-sm info"  data-dismiss="modal">
+					Submit
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<div class="p-a lt box-shadow">
+  <div class="box">    
+    <span style="font-size: 25px;">Classification</span>
+  </div>
+  <div >
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="box" style="height: 180px; overflow-y: auto;">
+
+          <div class="box-header">
+            <div class="pull-right">
+              <a href="" data-toggle="modal" data-target="#uploadData" class="btn btn-sm white btn-addon pull-right" ><i class="fa fa-plus fa-fw m-r-xs"></i> New</a>
+            </div>
+            <span>
+              Upload Data
+            </span>
+          </div>
+          <table style="table-layout: fixed;" class="table table-striped b-t">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th width="140px">Source File</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody id="uploadDataTable">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="box" style="height: 180px; overflow-y: auto;">
+          <div class="box-header">
+            <div class="pull-right">
+              <a id="selectModelActivation" href="" data-toggle="modal" data-target="#selectModel" class="btn btn-sm white btn-addon pull-right" ><i class="fa fa-plus fa-fw m-r-xs"></i> New</a>
+            </div>
+            <span>
+              Pre-trained Encoders
+            </span>
+          </div>
+          <table style="table-layout: fixed;" class="table table-striped b-t">
+            <thead>
+              <tr>
+                <th width="5px">#</th>
+                <th width="120px">ckpt dir</th>
+                <th  width="120px">Algorithm</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody id="selectModelTable">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="box">    
+      <span style="font-size: 25px;">Feature Fusion & Configuration</span>
+      <button class="btn info pull-right" data-toggle="modal" data-target="#configTask" > Configure</button>
+      </select>
+    </div>
+    <div class="box">    
+      <span style="font-size: 25px;">Classification Fine-tuning</span>
+      <button type="button" style="float:right;" id="start_pretrain" class="btn info pull-right">Fine-tuning</button>
+    </div>
+    <div class="box">
+      <div class="box" style="height: 200px; overflow-y: auto;">
+
+        <table style="table-layout: fixed;" class="table table-striped b-t">
+          <thead>
+            <tr>
+              <th width="5px">#</th>
+              <th width="80px">ckpts</th>
+              <th width="70px">Datasets</th>
+              <th width="70px">Fusion</th>
+              <th width="160px">Progress</th>
+              <th width="80px">Loss</th>
+              <th>Operations</th>
+            </tr>
+          </thead>
+          <tbody id="pretrainTable">
+            
+          </tbody>
+        </table>
+        
+      </div>
+    </div>
+
+</div>
+</div>
+
+<!-- ############ PAGE END-->
+
+    </div>
+  </div>
+
+<!-- ############ LAYOUT END-->
+
+  </div>
+<!-- build:js scripts/app.html.js -->
+<!-- jQuery -->
+  <script src="../libs/jquery/jquery/dist/jquery.js"></script>
+<!-- Bootstrap -->
+  <script src="../libs/jquery/tether/dist/js/tether.min.js"></script>
+  <script src="../libs/jquery/bootstrap/dist/js/bootstrap.js"></script>
+<!-- core -->
+  <script src="../libs/jquery/underscore/underscore-min.js"></script>
+  <script src="../libs/jquery/jQuery-Storage-API/jquery.storageapi.min.js"></script>
+  <script src="../libs/jquery/PACE/pace.min.js"></script>
+
+  <script src="scripts/config.lazyload.js"></script>
+
+  <script src="scripts/palette.js"></script>
+  <script src="scripts/ui-load.js"></script>
+  <script src="scripts/ui-jp.js"></script>
+  <script src="scripts/ui-include.js"></script>
+  <script src="scripts/ui-device.js"></script>
+  <script src="scripts/ui-form.js"></script>
+  <script src="scripts/ui-nav.js"></script>
+  <script src="scripts/ui-screenfull.js"></script>
+  <script src="scripts/ui-scroll-to.js"></script>
+  <script src="scripts/ui-toggle-class.js"></script>
+
+  <script src="scripts/app.js"></script>
+
+  <!-- ajax -->
+  <script src="../libs/jquery/jquery-pjax/jquery.pjax.js"></script>
+  <script src="scripts/ajax.js"></script>
+
+<!-- endbuild -->
+</body>
+</html>

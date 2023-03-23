@@ -1,0 +1,65 @@
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+Epoch:  1 Step:  0
+Test accuracy: {'NMI': 0.8145900787995922, 'RI': 0.9705908584169454, 'acc': 0.9633333333333334}
+DEBUG:weka.core.jvm:Adding bundled jars
+DEBUG:weka.core.jvm:Classpath=['/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/rhino-1.7R4.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/runnablequeue.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/javabridge/jars/cpython.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/python-weka-wrapper.jar', '/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar']
+DEBUG:weka.core.jvm:MaxHeapSize=default
+DEBUG:weka.core.jvm:Package support disabled
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by weka.core.WekaPackageClassLoaderManager (file:/home/liangchen/miniconda3/envs/tpad/lib/python3.8/site-packages/weka/lib/weka.jar) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of weka.core.WekaPackageClassLoaderManager
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release

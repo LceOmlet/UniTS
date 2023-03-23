@@ -1,0 +1,12 @@
+{
+    "batch_size": 64,
+    "optimizer": "Adam",
+    "@optimier/choice": [
+        "Adam",
+        "RAdam"
+    ],
+    "lr": 0.001,
+    "l2_reg": 0,
+    "print_interval": 10,
+    "epochs": 1
+}

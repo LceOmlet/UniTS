@@ -1,0 +1,16 @@
+{
+    "batch_size": 64,
+    "optimizer": "Adam",
+    "@optimier/choice": [
+        "Adam",
+        "RAdam"
+    ],
+    "lr": 0.001,
+    "l2_reg": 0,
+    "print_interval": 10,
+    "epochs": 10,
+    "mask_distribution": "geometric",
+    "@mask_distribution/choice": ["geometric", "bernoulli"],
+    "mean_mask_length": 3,
+    "exclude_feats": null
+}
