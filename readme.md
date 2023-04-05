@@ -8,5 +8,5 @@ UniTS is a powerful framework for time series analysis that incorporates self-su
 Just run `python app.py` in the created python environment "UniTS". You should see the GUI as shown in the image below.
 ![Pre-training Model](./figures/Pre_training.png)
 
-### notice
+### Notice
 Running on Ubuntu, some changes will be added recently to make the software run on Windows.
