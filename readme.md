@@ -3,7 +3,7 @@ UniTS is a powerful framework for time series analysis that incorporates self-su
 
 ### How to Install?
 1. Install [miniconda](https://docs.anaconda.com/anaconda/install/linux/).
-2. Simply rum `bash env.sh` and waiting for the environment to be installed.
+2. Simply run `bash env.sh` and waiting for the environment to be installed.
 
 Just run `python app.py` in the created python environment "UniTS". You will see the GUI as shown in the image below.
 ![Pre-training Model](./figures/Pre_training.png)
