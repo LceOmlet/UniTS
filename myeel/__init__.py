@@ -26,7 +26,7 @@ import mimetypes
 
 
 mimetypes.add_type('application/javascript', '.js')
-_eel_js_file: str = "./myeel/eel.js"
+_eel_js_file: str = pkg.resource_filename('myeel', 'eel.js')
 _eel_js: str = open(_eel_js_file, encoding='utf-8').read()
 _websockets: List[Tuple[Any, WebSocketT]] = []
 _call_return_values: Dict[Any, Any] = {}
@@ -110,7 +110,7 @@ EXPOSED_JS_FUNCTIONS: pp.ZeroOrMore = pp.ZeroOrMore(
 )
 
 
-def init(path: str, allowed_extensions: List[str] = ['.js', '.html', '.txt', '.htm',
+def init(path: str, allowed_extensions: List[str] = ['.html', '.txt', '.htm',
                                    '.xhtml', '.vue'], js_result_timeout: int = 10000) -> None:
     global root_path, _js_functions, _js_result_timeout
     root_path = _get_real_path(path)
@@ -402,7 +402,6 @@ def _expose(name: str, function: Callable[..., Any]) -> None:
 
 
 def _detect_shutdown() -> None:
-    sleep(15.0)
     if len(_websockets) == 0:
         sys.exit()
 
