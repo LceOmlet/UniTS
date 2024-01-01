@@ -30,6 +30,7 @@ When doing classification or anomaly detection tasks, identifiers, `@targetLabel
 
 #### methods
 
+* [csl](https://arxiv.org/abs/2305.18888), VLDB-23.
 * [ts2vec](https://arxiv.org/abs/1907.05321), AAAI-22.
 * [ts-tcc](https://www.ijcai.org/proceedings/2021/0324.pdf), IJCAI-21.
 * [mvts-transformer](https://arxiv.org/abs/2010.02803), KDD-21.
@@ -60,5 +61,12 @@ Here we provide an example of hyper-parameters selected for an imputation task, 
 The hyper-parameters can be changed at anytime before a task being invoked.
 
 
+### Todo List
 
-
+- [x] Support insightful visualization for all supported downstream tasks.
+- [x] Support customed datasets.
+- [x] Support fast and convenient installation.
+- [ ] Support convenient registrations for more URL models.
+- [ ] Support convenient registrations for more self-supervise signals.
+- [ ] Support [alignment](https://arxiv.org/abs/2312.05698) methods to distil knowledge from multiple encoders. 
+- [ ] Support more convenient APIs for advanced development.
