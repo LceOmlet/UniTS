@@ -8,5 +8,57 @@ UniTS is a powerful framework for time series analysis that incorporates self-su
 Just run `python app.py` in the created python environment "UniTS". You will see the GUI as shown in the image below.
 ![Pre-training Model](./figures/Pre_training.png)
 
-### Notice
-Running on Ubuntu, some changes will be added recently to make the software run on Windows.
+### Suported methods & datasets.
+
+#### datasets
+* [UEA Archive](http://www.timeseriesclassification.com/) can be downloaded and extracted in `data/UCR`, then the data can be selected easily only by setting the `Name` of the dataset (e.g. LSST).
+* [Server Machine
+Dataset, SMD](https://dl.acm.org/doi/10.1145/3292500.3330672)', the preprocessed datasets are uploaded in [this direction](data/InTerFusion).
+
+* [Application Server Dataset, ASD](https://dl.acm.org/doi/10.1145/3447548.3467075), the preprocessed datasets are uploaded in [this direction](data/InTerFusion).
+
+* Customed data
+The costomed datasets can be placed in any directions and be constructed as:
+```
+|-- path/to/dataset
+|   |-- $(dsid) (name of the dataset)
+|       |-- $(dsid)_TEST.ts
+|       |-- $(dsid)_TRAIN.ts
+```
+The `.ts` files should be constructed as described in [ts file format](https://www.sktime.net/en/stable/api_reference/file_specifications/ts.html).
+When doing classification or anomaly detection tasks, identifiers, `@targetLabel` or `@classLabel` should be contained in the file.
+
+#### methods
+
+* [ts2vec](https://arxiv.org/abs/1907.05321), AAAI-22.
+* [ts-tcc](https://www.ijcai.org/proceedings/2021/0324.pdf), IJCAI-21.
+* [mvts-transformer](https://arxiv.org/abs/2010.02803), KDD-21.
+* [tnc](https://arxiv.org/abs/2106.00750), ICLR-20.
+
+### How to change optimization parameters of the training tasks?
+
+Defaults hyper-parameters are defined at `ts_url/models/default_configs` for all the tasks (anomaly_detection, classification, clustering, imputation, regression) and all supported unsupervised methods.
+Here we provide an example of hyper-parameters selected for an imputation task, no matter which methods or models are used during the pretraining phase, and how the representations are fused, the parameters can be selected independently.
+```json
+{
+    "batch_size": 64,
+    "optimizer": "Adam",
+    "@optimier/choice": [
+        "Adam",
+        "RAdam"
+    ],
+    "lr": 0.001,
+    "l2_reg": 0,
+    "print_interval": 10,
+    "epochs": 10,
+    "mask_distribution": "geometric",
+    "@mask_distribution/choice": ["geometric", "bernoulli"],
+    "mean_mask_length": 3,
+    "exclude_feats": null
+}
+```
+The hyper-parameters can be changed at anytime before a task being invoked.
+
+
+
+
