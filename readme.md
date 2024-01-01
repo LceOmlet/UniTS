@@ -13,9 +13,9 @@ Just run `python app.py` in the created python environment "UniTS". You will see
 #### datasets
 * [UEA Archive](http://www.timeseriesclassification.com/) can be downloaded and extracted in `data/UCR`, then the data can be selected easily only by setting the `Name` of the dataset (e.g. LSST).
 * [Server Machine
-Dataset, SMD](https://dl.acm.org/doi/10.1145/3292500.3330672)', the preprocessed datasets are uploaded in [this direction](data/InTerFusion).
+Dataset, SMD](https://dl.acm.org/doi/10.1145/3292500.3330672)', the preprocessed datasets are uploaded in [this directory](data/InTerFusion).
 
-* [Application Server Dataset, ASD](https://dl.acm.org/doi/10.1145/3447548.3467075), the preprocessed datasets are uploaded in [this direction](data/InTerFusion).
+* [Application Server Dataset, ASD](https://dl.acm.org/doi/10.1145/3447548.3467075), the preprocessed datasets are uploaded in [this directory](data/InTerFusion).
 
 * Customed data
 The costomed datasets can be placed in any directions and be constructed as:
