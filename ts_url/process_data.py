@@ -1,18 +1,36 @@
-from tsai.all import *
+# from tsai.all import *
 import numpy as np
 import json
 from torch.utils.data import Dataset
+import os
+import pickle
+import torch
+import random
 # import tfsnippet as spt
 
 interfusion = ['omi-6', 'omi-9', 'omi-4', 'omi-7', 'machine-2-2', 'omi-10', 'omi-8', 'omi-11', 'machine-1-7', 
  'machine-2-8', 'omi-2', 'omi-3', 'machine-1-6', 'machine-3-3', 'machine-1-1', 'omi-12', 'machine-3-6', 
  'omi-1', 'machine-2-7', 'machine-2-1', 'omi-5', 'machine-3-4', 'machine-3-8', 'machine-3-11']
 
-MTSC_datasets = get_UCR_multivariate_list()
-UCR_multivariate_list = get_UCR_multivariate_list()
+# MTSC_datasets = get_UCR_multivariate_list()
+# UCR_multivariate_list = get_UCR_multivariate_list()
 
 interfusion = set([dsid.lower() for dsid in interfusion])
-UCR_dsid = set([dsid.lower() for dsid in MTSC_datasets + UCR_multivariate_list])
+# UCR_dsid = set([dsid.lower() for dsid in MTSC_datasets + UCR_multivariate_list])
+
+class Dls:
+	def __init__(self, X, splits, y=None) -> None:
+		train_splits = splits[0]
+		test_splits = splits[1]
+		# print(X.shape)
+		# exit()
+		if y is not None:
+			self.train_ds = [(X[idx], y[idx]) for idx in train_splits]
+			self.valid_ds = [(X[idx], y[idx]) for idx in test_splits]
+		else:
+			self.train_ds = [(X[idx], ) for idx in train_splits]
+			self.valid_ds = [(X[idx], ) for idx in test_splits]
+		
 
 def dataTransform(sample, jitter_scale_ratio, jitter_ratio, max_seg):
 	weak_aug = scaling(sample, jitter_scale_ratio)
@@ -283,7 +301,71 @@ def get_elements_by_ratio(lst, ratio):
 		result.append(lst[start + i * step])
 	return result
 
-def get_unsupervised_data(dsid, filepath, train_ratio, test_ratio, window=100, stride=1):
+def fill_out_with_Nan(data,max_length):
+    #via this it can works on more dimensional array
+    pad_length = max_length-data.shape[-1]
+    if pad_length == 0:
+        return data
+    else:
+        pad_shape = list(data.shape[:-1])
+        pad_shape.append(pad_length)
+        Nan_pad = np.empty(pad_shape)*np.nan
+        return np.concatenate((data, Nan_pad), axis=-1)
+	
+def get_data_and_label_from_ts_file(file_path,label_dict):
+    # print(file_path)
+    # exit()
+    with open(file_path) as file:
+        lines = file.readlines()
+        Start_reading_data = False
+        Label_list = []
+        Data_list = []
+        max_length = 0
+        for line in lines:
+            if Start_reading_data == False:
+                if '@data'in line:
+                    Start_reading_data = True
+            else:
+                temp = line.split(':')
+                Label_list.append(label_dict[temp[-1].replace('\n','')])
+                data_tuple= [np.expand_dims(np.fromstring(channel, sep=','), axis=0) for channel in temp[:-1]]
+                max_channel_length = 0
+                for channel_data in data_tuple:
+                    if channel_data.shape[-1]>max_channel_length:
+                        max_channel_length = channel_data.shape[-1]
+                data_tuple = [fill_out_with_Nan(data,max_channel_length) for data in data_tuple]
+                data = np.expand_dims(np.concatenate(data_tuple, axis=0), axis=0)
+                Data_list.append(data)
+                if max_channel_length>max_length:
+                    max_length = max_channel_length
+        
+        Data_list = [fill_out_with_Nan(data,max_length) for data in Data_list]
+        X =  np.concatenate(Data_list, axis=0)
+        Y =  np.asarray(Label_list)
+        
+        return np.float32(X), Y
+
+def get_label_dict(file_path):
+    label_dict ={}
+    with open(file_path) as file:
+        lines = file.readlines()
+        for line in lines:
+            if '@classLabel' in line:
+                label_list = line.replace('\n','').split(' ')[2:]
+                # print(line)
+                # exit()
+                for i in range(len(label_list)):
+                    label_dict[label_list[i]] = i 
+                
+                break
+    return label_dict   
+
+def set_nan_to_zero(a):
+    where_are_NaNs = np.isnan(a)
+    a[where_are_NaNs] = 0
+    return a 
+
+def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window=100, stride=1):
 	# 100% train data
 	if dsid.lower() in interfusion:
 		(x_train, _), (x_test, y_test) = get_interfusion_data(dsid)
@@ -295,19 +377,20 @@ def get_unsupervised_data(dsid, filepath, train_ratio, test_ratio, window=100, s
 		X = np.transpose(np.concatenate([train_np, test_np], axis=0), (0, 2, 1))
 		y = np.concatenate([train_y_np, test_y_np], axis=0)[:, -1]
 		train_split = get_elements_by_ratio(splits[0], train_ratio)
-	elif dsid.lower() in UCR_dsid:
-		X, y, splits = get_UCR_data(dsid, split_data=False, force_download=True)
-		# print(splits,y)
-		train_split, valid_split = get_splits(y[splits[0]], train_size=train_ratio, show_plot=False)
 	else:
-		print(set(MTSC_datasets + UCR_list))
-		print(set(interfusion))
-		raise NotImplementedError
-	test_split = get_splits(y[splits[1]], valid_size=(1 - test_ratio), show_plot=False)[0]
-	test_bias = len(splits[0])
-	test_split = [i + test_bias for i in test_split]
-	splits = (train_split, test_split)
-	# check_data(X, y, splits_v2)
+		if filepath == "":
+			filepath = "data/UCR"
+			Train_dataset_path = filepath + '/' + dsid + '/' + dsid + '_TRAIN.ts'
+			Test_dataset_path = filepath + '/' + dsid + '/' + dsid + '_TEST.ts'
+		label_dict = get_label_dict(Train_dataset_path)
+		X, y = get_data_and_label_from_ts_file(Train_dataset_path, label_dict)
+		X_test, y_test = get_data_and_label_from_ts_file(Test_dataset_path, label_dict)
+		train_size = X.shape[0]
+		test_size = X_test.shape[0]
+		splits = [list(range(train_size)), list(range(train_size, train_size + test_size))]
+		X = np.concatenate([X, X_test], axis=0)
+		X = set_nan_to_zero(X)
+		y = np.concatenate([y, y_test], axis=0)
 	return X, y, splits
 
 def get_datas(data_configs, task):
@@ -316,11 +399,12 @@ def get_datas(data_configs, task):
 	y_ = None
 	split_ = None
 	curr_len = 0
-	tfms = [None, TSClassification()]
-	batch_tfms = [TSStandardize(by_sample=True)]
+	# tfms = [None, TSClassification()]
+	# batch_tfms = [TSStandardize(by_sample=True)]
 	for data_config in data_configs:
+		# print(data_config)
 		X, y, splits_v2 = get_unsupervised_data(**data_config)
-		if isinstance(X_, NoneType):
+		if isinstance(X_, type(None)):
 			X_ = X
 			y_ = y
 			split_ = splits_v2
@@ -334,12 +418,12 @@ def get_datas(data_configs, task):
 			# print(len(split_[0]) + len(split_[1]))
 			# print(max(split_[0] + split_[1]), X_.shape[0])
 	X_ = normalize(X_, "per_sample_std")
-	if y_.dtype != np.dtype('<U3') and y_.dtype != np.dtype('<U2'):
-		tfms[1] = None
+	# if y_.dtype != np.dtype('<U3') and y_.dtype != np.dtype('<U2'):
+	# 	tfms[1] = None
 	if labels:
-		dls = get_ts_dls(X_, y_, splits=split_, tfms=tfms, batch_tfms=batch_tfms)
+		dls = Dls(X_, y=y_, splits=split_)
 	else:
-		dls = get_ts_dls(X_, splits=split_, tfms=tfms, batch_tfms=batch_tfms)
+		dls = Dls(X_, splits=split_)
 	y_ = y_.reshape(-1)
 	return dls, {
 		"input_feat_dim": X_.shape[1], 
@@ -354,11 +438,11 @@ def get_unsupervised_datas(data_configs):
 	y_ = None
 	split_ = None
 	curr_len = 0
-	tfms = [None, TSStandardScaler, TSClassification()]
-	batch_tfms = [TSStandardize(by_sample=True)]
+	# tfms = [None, TSStandardScaler, TSClassification()]
+	# batch_tfms = [TSStandardize(by_sample=True)]
 	for data_config in data_configs:
 		X, y, splits_v2 = get_unsupervised_data(**data_config)
-		if isinstance(X_, NoneType):
+		if isinstance(X_, type(None)):
 			X_ = X
 			y_ = y
 			split_ = splits_v2
@@ -372,7 +456,7 @@ def get_unsupervised_datas(data_configs):
 			# print(len(split_[0]) + len(split_[1]))
 			# print(max(split_[0] + split_[1]), X_.shape[0])
 	X_ = normalize(X_, "standardization")
-	udls = get_ts_dls(X_, splits=split_, tfms=tfms, batch_tfms=batch_tfms)
+	udls = Dls(X_, splits=split_)
 	return udls, {
 		"input_feat_dim": X_.shape[1], 
 		"seq_len": X_.shape[2], 
@@ -454,7 +538,7 @@ class ImputationDataset(Dataset):
 				 mode='separate', distribution='geometric', exclude_feats=None, mask_row=True):
 		super(ImputationDataset, self).__init__()
 
-		self.data = data  # this is a subclass of the BaseData class in data.py
+		self.data = torch.tensor(data)  # this is a subclass of the BaseData class in data.py
 		self.IDs = list(range(len(data)))  # list of data IDs, but also mapping between integer index and ID
 
 		self.masking_ratio = masking_ratio
@@ -476,7 +560,9 @@ class ImputationDataset(Dataset):
 		"""
 
 		X = self.data[self.IDs[ind]][0]  # (seq_length, feat_dim) array
-		X = torch.tensor(X, dtype=X.dtype).transpose(0, 1)
+		# print(self.data[0])
+		# exit()
+		X = torch.tensor(X).transpose(0, 1)
 		mask = noise_mask(X[:,0].unsqueeze(1).numpy() if self.mask_row else X.numpy(), self.masking_ratio, self.mean_mask_length, self.mode, self.distribution,
 						  self.exclude_feats)  # (seq_length, feat_dim) boolean array
 
@@ -496,9 +582,9 @@ class ClassiregressionDataset(Dataset):
 
 		self.data = data  # this is a subclass of the BaseData class in data.py
 		self.IDs = list(range(len(labels)))  # list of data IDs, but also mapping between integer index and ID
-		self.feature = data
+		self.feature = torch.tensor(data)
 
-		self.labels = labels
+		self.labels = torch.tensor(labels, dtype=torch.long)
 
 	def __getitem__(self, ind):
 		"""
@@ -524,7 +610,7 @@ class RegressionDataset(Dataset):
 		super(RegressionDataset, self).__init__()
 		self.data = data 
 		self.IDs = list(range(len(data)))
-		self.feature = data
+		self.feature = torch.tensor(data)
 
 	def __getitem__(self, ind):
 		X = self.feature[self.IDs[ind]].transpose(0, 1) 

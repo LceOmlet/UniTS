@@ -4,6 +4,7 @@ import torch
 from collections import OrderedDict
 import os
 import numpy as np
+from copy import deepcopy
 try:
     from .utils import utils
     from .utils.loss import *
@@ -571,8 +572,8 @@ class Trainer:
                 self.model.net.update_parameters(self.model._net)
             elif self.model_name == "ts_tcc":
                 x, aug1, aug2, mask, IDs = batch
-                data = x.float().to(device)
-                aug1, aug2 = aug1.float().to(device), aug2.float().to(device)
+                data = x.float().to(self.device)
+                aug1, aug2 = aug1.float().to(self.device), aug2.float().to(self.device)
 
                 # optimizer
                 self.optimizer.zero_grad()

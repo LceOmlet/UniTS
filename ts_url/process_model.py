@@ -148,6 +148,9 @@ class FussionModel(nn.Module):
             elif self.agg_method == "last":
                 encoddings = encoddings[..., -1]
             encoddings_cat.append(encoddings)
+            # print(encoddings)
+            # # exit()
+        # print(len(encoddings_cat))
         encoddings_cat = torch.cat(encoddings_cat, dim=-1)
         return encoddings_cat
     
