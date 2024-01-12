@@ -1,0 +1,5 @@
+**/__pycache__/
+.vscode
+classification_ckpt
+ckpts
+anomaly_detection_ckpt

@@ -6,6 +6,7 @@ import os
 import pickle
 import torch
 import random
+from .registry import COLLATE_FN
 # import tfsnippet as spt
 
 interfusion = ['omi-6', 'omi-9', 'omi-4', 'omi-7', 'machine-2-2', 'omi-10', 'omi-8', 'omi-11', 'machine-1-7', 
@@ -128,6 +129,8 @@ def compensate_masking(X, mask):
 	num_active = torch.max(num_active, torch.ones(num_active.shape, dtype=torch.int16))  # (batch_size, seq_length, 1)
 	return X.shape[-1] * X / num_active
 
+@COLLATE_FN.register("mvts_transformer")
+@COLLATE_FN.register("t_loss")
 def collate_unsuperv(data, max_len=None, mask_compensation=False):
 	"""Build mini-batch tensors from a list of (X, mask) tuples. Mask input. Create
 	Args:
@@ -172,6 +175,7 @@ def take_per_row(A, indx, num_elem):
 	all_indx = indx[:,None] + np.arange(num_elem)
 	return A[torch.arange(all_indx.shape[0])[:,None], all_indx]
 
+@COLLATE_FN.register("ts2vec")
 def collate_ts2vec(data, max_len=None, mask_compensation=None):
 	batch_size = len(data)
 	x, masks, IDs = zip(*data)
@@ -191,6 +195,7 @@ def collate_ts2vec(data, max_len=None, mask_compensation=None):
 	m2 = take_per_row(masks, crop_offset + crop_left, crop_eright - crop_left)
 	return gt1, gt2, crop_l, m1, m2, x, masks, IDs
 
+@COLLATE_FN.register("ts_tcc")
 def collate_ts_tcc(data, jitter_scale_ratio, jitter_ratio, max_seg):
 	batch_size = len(data)
 	x, masks, IDs = zip(*data)

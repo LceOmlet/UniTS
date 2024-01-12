@@ -257,7 +257,21 @@ class TSTransformerEncoder(nn.Module):
         output = self.act(output)  # the output transformer encoder/decoder embeddings don't include non-linearity
         output = output.permute(1, 2, 0)  # (batch_size, seq_length, d_model)
         return output
+    
+    def encode(self, data, padding_mask):
+        return self.get_encodding(data, padding_mask)
 
+def padding_mask(lengths, max_len=None):
+	"""
+	Used to mask padded positions: creates a (batch_size, max_len) boolean mask from a tensor of sequence lengths,
+	where 1 means keep element at this position (time step)
+	"""
+	batch_size = lengths.numel()
+	max_len = max_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
+	return (torch.arange(0, max_len, device=lengths.device)
+			.type_as(lengths)
+			.repeat(batch_size, 1)
+			.lt(lengths.unsqueeze(1)))
 
 class TSTransformerEncoderClassiregressor(nn.Module):
     """

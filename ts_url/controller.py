@@ -304,7 +304,7 @@ def process_training_tasks(task):
 		for epoch in range(optim_config['epochs']):
 			epoch_metrics = None
 
-			if task_name != "clustering" and not just_valid : epoch_metrics = trainer.train_epoch(epoch)
+			if task_name != "clustering" and not just_valid : epoch_metrics = trainer.train_epoch(epoch_num=epoch)
 			aggr_metrics, best_metrics, best_value = trainer.validate(epoch, key_metric, save_path, best_predictions_path)
 			if epoch_metrics is not None:
 				epoch_losses["train_loss"].append(epoch_metrics["loss"])

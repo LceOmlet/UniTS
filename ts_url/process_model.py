@@ -18,7 +18,9 @@ from torch import nn
 import torch
 import numpy as np
 import os
+from .registry import MODELS
 
+@MODELS.register("ts_tcc")
 class TS_TCC(nn.Module):
     def __init__(self, device, kernel_size, feat_dim, stride, dropout, output_dims,
                                 num_classes, timesteps, max_len) -> None:
@@ -35,7 +37,11 @@ class TS_TCC(nn.Module):
     
     def parameters_tc(self):
         return self.tenporal_contr_model.parameters()
+    
+    def encoder(self, data, **kwarg):
+        return self.model(data)
 
+@MODELS.register("t_loss")
 class T_LOSS(CausalCNNEncoder):
     def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, max_len):
         out_channels = output_dims
@@ -96,15 +102,14 @@ class T_LOSS(CausalCNNEncoder):
 
         self.encoder = self.encoder.train()
         return features
+    
+    def encode(self, data, **kwarg):
+        return self(data)
 
 logger = logging.getLogger("__main__")
 
-model_dicts = {
-    "mvts_transformer": TSTransformerEncoder, # feat_dim, max_len, d_model, n_heads, num_layers, dim_feedforward, dropout=0.1, pos_encoding='fixed', activation='gelu', norm='BatchNorm', freeze=False,
-    "ts2vec": TS2Vec,
-    "ts_tcc": TS_TCC,
-    "t_loss": T_LOSS
-}
+MODELS.register("ts2vec")(TS2Vec)
+MODELS.register("mvts_transformer")(TSTransformerEncoder)
 
 class FussionModel(nn.Module):
     def __init__(self, model_names, optim_configs, dls_setting, model_configs, ckpt_paths, device, agg_method="max", pred_len=None) -> None:
@@ -114,12 +119,13 @@ class FussionModel(nn.Module):
         self.pred_len = pred_len
         self.outputs_dims = []
         for idx, (model_name, ckpt_path, model_config) in enumerate(zip(model_names, ckpt_paths, model_configs)):
-            model_config["feat_dim"] = dls_setting["input_feat_dim"]
-            model_config["max_len"] = dls_setting["seq_len"]
-            model_config["device"] = device
+            model_config.update({
+                "feat_dim": dls_setting["input_feat_dim"],
+                "max_len": dls_setting["seq_len"],
+                "device": device
+            })
             self.outputs_dims.append(model_config["output_dims"])
-
-            model_class = model_dicts[model_name]
+            model_class = MODELS.get(model_name)
             setattr(self, "model_" + str(idx), model_class(**model_config))
             getattr(self, "model_" + str(idx)).load_state_dict(torch.load(ckpt_path)["state_dict"])
         self.agg_method = agg_method
@@ -131,15 +137,7 @@ class FussionModel(nn.Module):
         encoddings_cat = []
         for idx, (model_name, output_dims) in enumerate(zip(self.model_names, self.outputs_dims)):
             model = getattr(self, "model_" + str(idx))
-            if model_name == "mvts_transformer":
-                encoddings = model.get_encodding(data, padding_mask)
-            elif model_name == "ts_tcc":
-                _, encoddings = model.model(data)
-            elif model_name == "ts2vec":
-                encoddings = model.encode_masked(data, 
-                                torch.zeros_like(data).to(dtype=torch.bool)) 
-            elif model_name == "t_loss":
-                encoddings = model(data.permute(0, 2, 1))
+            encoddings = model.encode(data, padding_mask)
             encoddings = encoddings.reshape(batch_size, output_dims, -1)
             if self.agg_method == "max":
                 encoddings = torch.max(encoddings, dim=-1).values
@@ -184,7 +182,6 @@ def get_fusion_model(checkpoints, fusion_methods, dls, dls_setting, device='cpu'
                 ckpt_paths.append(dr)
     fusion_model = FussionModel(model_names, optim_configs, dls_setting, model_configs, ckpt_paths, device,"max",pred_len)
     print(model_configs)
-    new_configs = []
     for cfg in model_configs:
         if 'device' in cfg:
             if isinstance(cfg['device'], torch.device):
@@ -202,11 +199,13 @@ def get_model(model_name, hp_config_path, dls, dls_setting, p_path=None, task="s
     for key in model_config_:
         if key[0] != '@':
             model_config[key] = model_config_[key]
-    model_class = model_dicts[model_name]
+    model_class = MODELS.get(model_name)
     if task == "self-supervised":
-        model_config["feat_dim"] = dls_setting["input_feat_dim"]
-        model_config["max_len"] = dls_setting["seq_len"]
-        model_config["device"] = device
+        model_config.update({
+            "feat_dim": dls_setting["input_feat_dim"],
+            "max_len": dls_setting["seq_len"],
+            "device": device
+        })
         model = model_class(**model_config)
     logger.info(model_config)
     logger.info(model)

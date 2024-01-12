@@ -13,7 +13,7 @@ Just run `python app.py` in the created python environment "UniTS". After few se
 #### datasets
 * [UEA Archive](http://www.timeseriesclassification.com/) can be downloaded and extracted in `data/UCR`, then the data can be selected easily only by setting the `Name` of the dataset (e.g. LSST).
 * [Server Machine
-Dataset, SMD](https://dl.acm.org/doi/10.1145/3292500.3330672)', the preprocessed datasets are uploaded in [this directory](data/InTerFusion).
+Dataset, SMD](https://dl.acm.org/doi/10.1145/3292500.3330672), the preprocessed datasets are uploaded in [this directory](data/InTerFusion).
 
 * [Application Server Dataset, ASD](https://dl.acm.org/doi/10.1145/3447548.3467075), the preprocessed datasets are uploaded in [this directory](data/InTerFusion).
 
@@ -35,6 +35,7 @@ When doing classification or anomaly detection tasks, identifiers, `@targetLabel
 * [ts-tcc](https://www.ijcai.org/proceedings/2021/0324.pdf), IJCAI-21.
 * [mvts-transformer](https://arxiv.org/abs/2010.02803), KDD-21.
 * [tnc](https://arxiv.org/abs/2106.00750), ICLR-20.
+* [t-loss](https://papers.nips.cc/paper_files/paper/2019/file/53c6de78244e9f528eb3e1cda69699bb-Paper.pdf),NeurIPS-19
 
 ### How to change optimization parameters of the training tasks?
 
