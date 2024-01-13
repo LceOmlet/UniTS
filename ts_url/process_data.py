@@ -321,7 +321,7 @@ def fill_out_with_Nan(data,max_length):
 def get_data_and_label_from_ts_file(file_path,label_dict):
     # print(file_path)
     # exit()
-    with open(file_path) as file:
+    with open(file_path, encoding='utf-8') as file:
         lines = file.readlines()
         Start_reading_data = False
         Label_list = []
@@ -353,7 +353,7 @@ def get_data_and_label_from_ts_file(file_path,label_dict):
 
 def get_label_dict(file_path):
     label_dict ={}
-    with open(file_path) as file:
+    with open(file_path, encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
             if '@classLabel' in line:
