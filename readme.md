@@ -2,8 +2,11 @@
 UniTS is a powerful framework for time series analysis that incorporates self-supervised representation learning to address practical challenges such as partial labeling and domain shift. With UniTS, users can easily perform analysis tasks using user-friendly GUIs and benefit from its convenience. The components of UniTS are designed with sklearn-like APIs, allowing for flexible extensions. This project's GitHub repository provides access to the UniTS framework and related resources.
 
 ### What's new?
-An effective and comprehensive representation learning method :boom: :boom: [A Shapelet-based Framework for Unsupervised Multivariate Time Series Representation Learning](https://www.vldb.org/pvldb/vol17/p386-wang.pdf) :boom: :boom:.
-The theoritical foundation of url for ts is being build by considering shaplet as adaptive wavelet.
+An effective and comprehensive representation learning method:
+
+:boom: :boom: [A Shapelet-based Framework for Unsupervised Multivariate Time Series Representation Learning](https://www.vldb.org/pvldb/vol17/p386-wang.pdf) :boom: :boom:.
+
+The theoritical foundation of url for ts is being built by considering shaplet as adaptive wavelet.
 
 ### How to Install?
 #### Linux
