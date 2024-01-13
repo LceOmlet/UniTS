@@ -71,10 +71,12 @@ class Trainer:
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
         self.NEG_METRICS = {'loss'}  # metrics for which "better" is less
+        # print(data_configs)
+        # exit()
         self.udls, self.dls_config = get_datas(data_configs, task=task)
 
         if task != "classification" and model_name == "t_loss": 
-            self.t_loss_train = torch.cat([x[0].unsqueeze(0) for x in self.udls.train_ds], dim=0)
+            self.t_loss_train = torch.cat([torch.tensor(x[0]).to(device).unsqueeze(0) for x in self.udls.train_ds], dim=0)
         
         loader_kwargs = {
             "dls": self.udls,
@@ -239,7 +241,7 @@ class Trainer:
 
 
 if __name__ == '__main__':
-    data_configs = [{"filepath":"", "train_ratio":0.6, "test_ratio":0.6, "dsid": "lsst"}]
+    data_configs = [{"filepath":"", "train_ratio":1, "test_ratio":1, "dsid": "lsst"}]
     ckpt = ['/home/liangchen/Desktop/flatkit/ckpts/03_15_17_52_15_omi-6_mvts_transformer', '/home/liangchen/Desktop/flatkit/ckpts/03_15_21_16_44_omi-6_ts2vec']
     # ckpt = None
     save_name = "03_12_14_26_45_lsst_ts2vec"

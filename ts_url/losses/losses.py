@@ -10,7 +10,7 @@ def get_imputation_loss(**kwargs):
 @LOSSES.register("regression")
 @LOSSES.register("anomaly_detection")
 def get_anomaly_detection_loss(**kwargs):
-    nn.MSELoss(reduction='none')
+    return nn.MSELoss(reduction='none')
 
 @LOSSES.register("classification")
 def get_classification_loss(**kwargs):

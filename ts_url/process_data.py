@@ -398,8 +398,8 @@ def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window
 		y = np.concatenate([y, y_test], axis=0)
 	return X, y, splits
 
-def get_datas(data_configs, task):
-	labels = task != "pretraining"
+def get_datas(data_configs, **kwargs):
+	# labels = task != "pretraining" or task != "imputation"
 	X_ = None
 	y_ = None
 	split_ = None
@@ -425,7 +425,7 @@ def get_datas(data_configs, task):
 	X_ = normalize(X_, "per_sample_std")
 	# if y_.dtype != np.dtype('<U3') and y_.dtype != np.dtype('<U2'):
 	# 	tfms[1] = None
-	if labels:
+	if y_ is not None:
 		dls = Dls(X_, y=y_, splits=split_)
 	else:
 		dls = Dls(X_, splits=split_)

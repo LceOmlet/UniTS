@@ -8,3 +8,8 @@ from .registry import TRAIN_STEP
 from .registry import PRETRAIN_STEP
 from .registry import LOSSES
 from .registry import PRETRAIN_LOSSES
+from .registry import EVALUATE_STEP
+from .registry import PRETRAIN_EVALUATE_INFER
+from .registry import EVALUATE_AGG
+from .registry import TRAIN_AGG
+from .registry import PRETRAIN_INFER

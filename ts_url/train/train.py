@@ -1,4 +1,4 @@
-from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP
+from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG
 from collections import OrderedDict
 import torch
 from ..utils.loss import hierarchical_contrastive_loss
@@ -96,11 +96,31 @@ def train_epoch(model, dataloader, task, device, loss_module,
     epoch_loss = epoch_loss / total_active_elements  # average loss per element for whole epoch
     epoch_metrics['epoch'] = epoch_num
     epoch_metrics['loss'] = float(epoch_loss)
-    if model_name in ["ts2vec", "ts_tcc", "t_loss"]:
-        ridge = fit_imputation(reprs, targets, masks, 0.1, val_loss_module)
-        logger.info("Ridge Training.")
-        epoch_metrics["ridge"] = ridge
+    
+    train_agg_kwargs = {
+        "reprs": reprs,
+        "targets": targets,
+        "masks": masks,
+        "val_loss_module":val_loss_module,
+        "logger": logger,
+        "epoch_metrics": epoch_metrics
+    }
+    train_agg = TRAIN_AGG.get(model_name)
+    if train_agg is not None: train_agg(**train_agg_kwargs)
+
     return epoch_metrics
+
+@TRAIN_AGG.register("ts2vec")
+@TRAIN_AGG.register("ts_tcc")
+@TRAIN_AGG.register("t_loss")
+def train_agg_ts2vec_ts_tcc_t_loss(reprs, targets, masks, val_loss_module, logger, epoch_metrics, **kwargs):
+    ridge = fit_imputation(reprs, targets, masks, 0.1, val_loss_module)
+    logger.info("Ridge Training.")
+    epoch_metrics["ridge"] = ridge
+
+@TRAIN_AGG.register("mvts_transformer")
+def train_agg_mvts_transformer(**kwargs):
+    pass
 
 @TRAIN_STEP.register("classification")
 def step_classification(batch, model, device, loss_module, optimizer, **kwargs):
@@ -134,12 +154,10 @@ def step_anomaly_detection(batch, model, device, loss_module, optimizer, **kwarg
 
 @TRAIN_STEP.register("regression")
 def step_regression(batch, model, device, loss_module, optimizer, **kwargs):
-    X, target, target_masks, padding_masks, IDs = batch
-    target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
-    padding_masks = padding_masks.to(device)  # 0s: ignore
-    target = target.to(device)
+    X, preds, padding_masks, features, IDs = batch
     predictions = model(X.to(device), padding_masks)
-    loss = loss_module(target, predictions, target_masks)
+    # print(predictions.shape, preds.shape)
+    loss = loss_module(predictions, preds)
     batch_loss = torch.mean(loss)
     optimizer.zero_grad()
     batch_loss.backward()

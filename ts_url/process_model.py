@@ -103,8 +103,8 @@ class T_LOSS(CausalCNNEncoder):
         self.encoder = self.encoder.train()
         return features
     
-    def encode(self, data, **kwarg):
-        return self(data)
+    def encode(self, data, **kwargs):
+        return self(data.permute(0, 2, 1))
 
 logger = logging.getLogger("__main__")
 
@@ -137,7 +137,7 @@ class FussionModel(nn.Module):
         encoddings_cat = []
         for idx, (model_name, output_dims) in enumerate(zip(self.model_names, self.outputs_dims)):
             model = getattr(self, "model_" + str(idx))
-            encoddings = model.encode(data, padding_mask)
+            encoddings = model.encode(data, padding_mask=padding_mask)
             encoddings = encoddings.reshape(batch_size, output_dims, -1)
             if self.agg_method == "max":
                 encoddings = torch.max(encoddings, dim=-1).values
