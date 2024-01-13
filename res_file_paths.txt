@@ -38,3 +38,4 @@ ckpts/01_14_00_50_25_LSST_csl/best_predictions.npz
 ckpts/01_14_00_54_05_LSST_csl/best_predictions.npz
 classification_ckpt/01_14_00_59_56_LSST_01_14_00_54_05_LSST_csl/best_predictions.npz
 ckpts/01_14_01_27_49_LSST_csl/best_predictions.npz
+ckpts/01_14_02_05_30_LSST_csl/best_predictions.npz

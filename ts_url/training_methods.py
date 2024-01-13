@@ -39,6 +39,7 @@ from .evaluators import evaluators
 from .train import train
 from .dataloader import dataloaders
 from .losses import losses
+from .collate_fn import collate_fn
 
 def setup_logger(name, log_file, level=logging.INFO):
     """To setup as many loggers as you want"""

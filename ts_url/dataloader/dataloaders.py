@@ -14,8 +14,8 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
     valid_ds = ImputationDataset(valid_ds, mean_mask_length=optim_config['mean_mask_length'],
                 masking_ratio=optim_config['masking_ratio'], mode=optim_config['mask_mode'],
                 distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'])
-    valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=collate_unsuperv)
-    dataloader = DataLoader(train_ds, batch_size=optim_config["batch_size"], collate_fn=collate_unsuperv)
+    valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=COLLATE_FN.get("unsupervise"))
+    dataloader = DataLoader(train_ds, batch_size=optim_config["batch_size"], collate_fn=COLLATE_FN.get("unsupervise"))
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
     return dataloader, valid_dataloader
 
@@ -29,7 +29,7 @@ def get_pretrain_loaders(dls, optim_config, model_name, logger, **kwargs):
     valid_ds = ImputationDataset(valid_ds, mean_mask_length=optim_config['mean_mask_length'],
                 masking_ratio=optim_config['masking_ratio'], mode=optim_config['mask_mode'],
                 distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'])
-    valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=collate_unsuperv)
+    valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=COLLATE_FN.get("unsupervise"))
 
     loader_config = {
         "train_ds": train_ds,
