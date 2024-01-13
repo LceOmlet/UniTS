@@ -1,12 +1,25 @@
 ## Official Implementation of "UniTS: A Universal Time Series Analysis Framework with Self-supervised Representation Learning".
 UniTS is a powerful framework for time series analysis that incorporates self-supervised representation learning to address practical challenges such as partial labeling and domain shift. With UniTS, users can easily perform analysis tasks using user-friendly GUIs and benefit from its convenience. The components of UniTS are designed with sklearn-like APIs, allowing for flexible extensions. This project's GitHub repository provides access to the UniTS framework and related resources.
 
+### What's new?
+An effective and comprehensive representation learning method :boom: :boom: [A Shapelet-based Framework for Unsupervised Multivariate Time Series Representation Learning](https://www.vldb.org/pvldb/vol17/p386-wang.pdf) :boom: :boom:.
+The theoritical foundation of url for ts is being build by considering shaplet as adaptive wavelet.
+
 ### How to Install?
+#### Linux
 1. Install [miniconda](https://docs.anaconda.com/anaconda/install/linux/).
 2. Simply run `bash env.sh` and waiting for the environment to be installed.
 
 Just run `python app.py` in the created python environment "UniTS". After few seconds, you will see the GUI as shown in the image below.
 ![Pre-training Model](./figures/Pre_training.png)
+
+#### Windows
+Almost the same as installing in linux system.
+1. Install [miniconda](https://docs.anaconda.com/anaconda/install/linux/).
+2. run env.sh as .bat file.
+Just run `python app.py` in the created python environment "UniTS". 
+
+
 
 ### Suported methods & datasets.
 
