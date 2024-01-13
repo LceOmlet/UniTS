@@ -67,7 +67,7 @@ The hyper-parameters can be changed at anytime before a task being invoked.
 - [x] Support insightful visualization for all supported downstream tasks.
 - [x] Support customed datasets.
 - [x] Support fast and convenient installation.
-- [ ] Support convenient registrations for more URL models.
-- [ ] Support convenient registrations for more self-supervise signals.
+- [x] Support convenient registrations for more URL models.
+- [x] Support convenient registrations for more self-supervise signals.
 - [ ] Support [alignment](https://arxiv.org/abs/2312.05698) methods to distil knowledge from multiple encoders. 
 - [ ] Support more convenient APIs for advanced development.
