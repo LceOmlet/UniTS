@@ -1,13 +1,14 @@
-from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG
+from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG, TRAIN_LOOP_INIT
 from collections import OrderedDict
 import torch
 from ..utils.loss import hierarchical_contrastive_loss
 import numpy as np
 from sklearn.linear_model import Ridge
 import torch.nn.functional as F
+from torch import nn 
 
 def list2array(cvt_list):
-    if isinstance(cvt_list, list):
+    if isinstance(cvt_list, list) or isinstance(cvt_list, tuple):
         if len(cvt_list) == 0:
             return np.array([])
         if isinstance(cvt_list[0], torch.Tensor):
@@ -59,6 +60,14 @@ def train_epoch(model, dataloader, task, device, loss_module,
     epoch_loss = 0  # total loss of epoch
     total_active_elements = 0  # total unmasked elements in epoch
     targets, masks, reprs = [], [], []
+    init_loop = TRAIN_LOOP_INIT.get(model_name)
+    kwargs_init = {}
+    if init_loop is not None:
+        init_kwargs = {
+            "model": model,
+            "device": device
+        }
+        kwargs_init.update(init_loop(**init_kwargs))
     for i, batch in enumerate(dataloader):
         train_step_config = {
             "batch": batch, 
@@ -71,8 +80,10 @@ def train_epoch(model, dataloader, task, device, loss_module,
             "model_name": model_name,
             "t_loss_train": t_loss_train,
             "temporal_contr_optimizer": temporal_contr_optimizer,
-            "loss_module": loss_module
+            "loss_module": loss_module,
+            "optim_config": optim_config
         }
+        train_step_config.update(kwargs_init)
         loss = TRAIN_STEP.get(task)(**train_step_config)
 
         if len(loss.shape):
@@ -113,6 +124,7 @@ def train_epoch(model, dataloader, task, device, loss_module,
 @TRAIN_AGG.register("ts2vec")
 @TRAIN_AGG.register("ts_tcc")
 @TRAIN_AGG.register("t_loss")
+@TRAIN_AGG.register("csl")
 def train_agg_ts2vec_ts_tcc_t_loss(reprs, targets, masks, val_loss_module, logger, epoch_metrics, **kwargs):
     ridge = fit_imputation(reprs, targets, masks, 0.1, val_loss_module)
     logger.info("Ridge Training.")
@@ -226,6 +238,83 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, targets, masks, re
     model.net.update_parameters(model._net)
     return loss
 
+@PRETRAIN_STEP.register("csl")
+def step_csl(batch, model, device, loss_module, optimizer, optim_config, targets, reprs, masks,
+             C_accu_q, c_normalising_factor_q, C_accu_k, c_normalising_factor_k, **kwargs):
+    x, x_k, x_q, mask, IDs = batch
+    x, x_k, x_q = x.to(device), x_k.to(device), x_q.to(device)
+    targets.append(x)
+    reprs.append(model.encode(x))
+    masks.append(mask)
+    num_shapelet_lengths = len(model.shapelets_size_and_len)
+    num_shapelet_per_length = model.num_shapelets // num_shapelet_lengths
+    with torch.autograd.set_detect_anomaly(True):
+        q = model(x_q, optimize=None, masking=False)
+        k = model(x_k, optimize=None, masking=False)
+        q = nn.functional.normalize(q, dim=1)
+        k = nn.functional.normalize(k, dim=1)
+        logits = torch.einsum('nc,ck->nk', [q, k.t()])
+        logits /= optim_config['T']
+        labels = torch.arange(q.shape[0], dtype=torch.long).to(device)
+        loss = loss_module(logits, labels)
+        q_sum = None
+        q_square_sum = None
+        
+        
+        k_sum = None
+        k_square_sum = None
+        
+        loss_sdl = 0
+        c_normalising_factor_q = optim_config['alpha'] * c_normalising_factor_q + 1
+        
+        c_normalising_factor_k = optim_config['alpha'] * c_normalising_factor_k + 1
+        #print(q.shape)
+        for length_i in range(num_shapelet_lengths):
+            qi = q[:, length_i * num_shapelet_per_length: (length_i + 1) * num_shapelet_per_length]
+            ki = k[:, length_i * num_shapelet_per_length: (length_i + 1) * num_shapelet_per_length]
+            
+            logits = torch.einsum('nc,ck->nk', [nn.functional.normalize(qi, dim=1), nn.functional.normalize(ki, dim=1).t()])
+            logits /= optim_config['T']
+            #print(logits)
+            loss += loss_module(logits, labels)
+            
+            
+            if q_sum == None:
+                q_sum = qi
+                q_square_sum = qi * qi
+            else:
+                q_sum = q_sum + qi
+                q_square_sum = q_square_sum + qi * qi
+                
+            C_mini_q = torch.matmul(qi.t(), qi) / (qi.shape[0] - 1)
+            C_accu_t_q = optim_config['alpha'] * C_accu_q[length_i] + C_mini_q
+            C_appx_q = C_accu_t_q / c_normalising_factor_q
+            loss_sdl += torch.norm(C_appx_q.flatten()[:-1].view(C_appx_q.shape[0] - 1, C_appx_q.shape[0] + 1)[:, 1:], 1).sum()
+            #print(length_i)
+            C_accu_q[length_i] = C_accu_t_q.detach()
+            
+            if k_sum == None:
+                k_sum = ki
+                k_square_sum = ki * ki
+            else:
+                k_sum = k_sum + ki
+                k_square_sum = k_square_sum + ki * ki
+                
+            C_mini_k = torch.matmul(ki.t(), ki) / (ki.shape[0] - 1)
+            C_accu_t_k = optim_config['alpha'] * C_accu_k[length_i] + C_mini_k
+            C_appx_k = C_accu_t_k / c_normalising_factor_k
+            loss_sdl += torch.norm(C_appx_k.flatten()[:-1].view(C_appx_k.shape[0] - 1, C_appx_k.shape[0] + 1)[:, 1:], 1).sum()
+            #print(length_i)
+            C_accu_k[length_i] = C_accu_t_k.detach()
+        
+        loss_cca = 0.5 * torch.sum(q_square_sum - q_sum * q_sum / num_shapelet_lengths) + 0.5 * torch.sum(k_square_sum - k_sum * k_sum / num_shapelet_lengths)
+        loss += optim_config['l3'] * (loss_cca + optim_config['l4'] * loss_sdl)       
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    return loss
+
+
 @PRETRAIN_STEP.register("ts_tcc")
 def step_ts_tcc(batch, model, device, loss_module, optimizer, targets, temporal_contr_optimizer, reprs, masks, **kwargs):
     x, aug1, aug2, mask, IDs = batch
@@ -281,3 +370,15 @@ def step_t_loss(batch, model, device, loss_module, optimizer, targets, t_loss_tr
     masks.append(target_masks)
     return loss
 
+@TRAIN_LOOP_INIT.register("csl")
+def init_train_variables(model, device, **kwargs):
+    c_normalising_factor_q = torch.tensor([0], dtype=torch.float).to(device)
+    C_accu_q = [torch.tensor([0], dtype=torch.float).to(device) for _ in range(len(model.shapelets_size_and_len))]
+    c_normalising_factor_k = torch.tensor([0], dtype=torch.float).to(device)
+    C_accu_k = [torch.tensor([0], dtype=torch.float).to(device) for _ in range(len(model.shapelets_size_and_len))]
+    return {
+        "c_normalising_factor_k": c_normalising_factor_k,
+        "c_normalising_factor_q": c_normalising_factor_q,
+        "C_accu_k": C_accu_k,
+        "C_accu_q": C_accu_q
+    }

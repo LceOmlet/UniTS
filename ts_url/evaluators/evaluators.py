@@ -1,5 +1,5 @@
 try:
-    from ..registry import EVALUATORS, EVALUATE_STEP, PRETRAIN_EVALUATE_INFER, EVALUATE_AGG, PRETRAIN_INFER
+    from ..registry import EVALUATORS, EVALUATE_STEP, PRETRAIN_EVALUATE_INFER, EVALUATE_AGG
 except:
     from registry import EVALUATORS
 import torch
@@ -121,6 +121,7 @@ def pretrain_evaluate_mvts_transformer(X, model,  device, targets, padding_masks
 @PRETRAIN_EVALUATE_INFER.register("ts2vec")
 @PRETRAIN_EVALUATE_INFER.register("ts_tcc")
 @PRETRAIN_EVALUATE_INFER.register("t_loss")
+@PRETRAIN_EVALUATE_INFER.register("csl")
 def pretrain_evaluate_ts2vec(X, model, device, padding_masks, **kwargs):
     predictions = model.encode(X.to(device), padding_mask=padding_masks) 
     mean_loss = float('inf')
@@ -216,6 +217,7 @@ def eval_agg_pretraining(model_name, **kwargs):
 @EVALUATE_AGG.register("ts2vec")
 @EVALUATE_AGG.register("ts_tcc")
 @EVALUATE_AGG.register("t_loss")
+@EVALUATE_AGG.register("csl")
 def eval_agg_ts2vec_ts_tcc_t_loss(ridge, per_batch, val_loss_module, logger, epoch_metrics, **kwargs):
     if ridge is not None:
         epoch_loss = infer_imputation(per_batch["predictions"], per_batch["targets"], 

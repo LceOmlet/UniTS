@@ -34,7 +34,7 @@ from sklearn.metrics import normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.metrics import rand_score
 from sklearn.metrics import roc_auc_score as auc 
-from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES
+from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT
 from .evaluators import evaluators
 from .train import train
 from .dataloader import dataloaders

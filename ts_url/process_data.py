@@ -7,6 +7,7 @@ import pickle
 import torch
 import random
 from .registry import COLLATE_FN
+import tsaug
 # import tfsnippet as spt
 
 interfusion = ['omi-6', 'omi-9', 'omi-4', 'omi-7', 'machine-2-2', 'omi-10', 'omi-8', 'omi-11', 'machine-1-7', 
@@ -679,3 +680,43 @@ def get_interfusion_data(dataset, max_train_size=None, max_test_size=None, print
 	print("test set shape: ", test_data.shape)
 	print("test set label shape: ", test_label.shape)
 	return (train_data, None), (test_data, test_label)
+
+@COLLATE_FN.register("csl")
+def collate_csl(data):
+	augmentation_list = ['AddNoise(seed=np.random.randint(2 ** 32 - 1))',
+						'Crop(int(0.9 * ts_l), seed=np.random.randint(2 ** 32 - 1))',
+						'Pool(seed=np.random.randint(2 ** 32 - 1))',
+						'Quantize(seed=np.random.randint(2 ** 32 - 1))',
+						'TimeWarp(seed=np.random.randint(2 ** 32 - 1))'
+						]
+	x, masks, IDs = zip(*data)
+	aug1 = np.random.choice(augmentation_list, 1, replace=False)
+	batch_size = len(data)
+	x, masks, IDs = zip(*data)
+	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
+	masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
+	masks = ~masks
+	x = x .permute(0, 2 ,1)
+	ts_l = x.size(2)
+             
+	x_q = x.transpose(1,2).cpu().numpy()
+	for aug in aug1:
+		x_q = eval('tsaug.' + aug + '.augment(x_q)')
+	x_q = torch.from_numpy(x_q).float()
+	x_q = x_q.transpose(1,2)
+	
+	aug2 = np.random.choice(augmentation_list, 1, replace=False)
+	while (aug2 == aug1).all():
+		aug2 = np.random.choice(augmentation_list, 1, replace=False)
+	
+	x_k = x.transpose(1,2).cpu().numpy()
+	for aug in aug2:
+		x_k = eval('tsaug.' + aug + '.augment(x_k)')
+	x_k = torch.from_numpy(x_k).float()
+	x_k = x_k.transpose(1,2)
+
+	# masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
+	# masks = ~masks
+	# aug1, aug2 = dataTransform(x, jitter_scale_ratio, jitter_ratio, max_seg)
+	# aug1, aug2 = torch.tensor(aug1), torch.tensor(aug2)
+	return x.permute(0, 2, 1), x_k.permute(0, 2, 1), x_q.permute(0, 2, 1), masks, IDs

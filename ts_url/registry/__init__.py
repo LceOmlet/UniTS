@@ -12,4 +12,4 @@ from .registry import EVALUATE_STEP
 from .registry import PRETRAIN_EVALUATE_INFER
 from .registry import EVALUATE_AGG
 from .registry import TRAIN_AGG
-from .registry import PRETRAIN_INFER
+from .registry import TRAIN_LOOP_INIT

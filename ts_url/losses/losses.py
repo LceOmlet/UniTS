@@ -20,6 +20,10 @@ def get_classification_loss(**kwargs):
 def get_clustering_loss(**kwargs):
     return None
 
+@PRETRAIN_LOSSES.register("csl")
+def get_csl(**kwargs):
+    return nn.CrossEntropyLoss()
+
 
 @LOSSES.register("pretraining")
 def get_loss_module(model_name, train=True, **kwargs):

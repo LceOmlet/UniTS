@@ -12,6 +12,7 @@ except Exception:
     from models.ts_tcc.models.TC import TC
     from models.default_configs.configues import model_configures
     from models.UnsupervisedScalableRepresentationLearningTimeSeries.networks.causal_cnn import CausalCNNEncoder
+from .models.CSL.blocks import LearningShapeletsModelMixDistances
 import json
 import logging
 from torch import nn
@@ -45,7 +46,7 @@ class TS_TCC(nn.Module):
 class T_LOSS(CausalCNNEncoder):
     def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, max_len):
         out_channels = output_dims
-        super().__init__(feat_dim, channels, depth, reduced_size, out_channels, kernel_size)
+        super(CausalCNNEncoder, self).__init__(feat_dim, channels, depth, reduced_size, out_channels, kernel_size)
     
     def encode_sequence(self, X, batch_size=50):
         """
@@ -110,6 +111,18 @@ logger = logging.getLogger("__main__")
 
 MODELS.register("ts2vec")(TS2Vec)
 MODELS.register("mvts_transformer")(TSTransformerEncoder)
+
+@MODELS.register("csl")
+class CSL(LearningShapeletsModelMixDistances):
+    def __init__(self, max_len, feat_dim, **kwargs) -> None:
+        
+        len_ts = max_len
+        shapelets_size_and_len = {int(i): 40 for i in np.linspace(min(128, max(3, int(0.1 * len_ts))), int(0.8 * len_ts), 8, dtype=int)}
+        self.shapelets_size_and_len = shapelets_size_and_len
+        super(CSL, self).__init__(shapelets_size_and_len, in_channels=feat_dim)
+        # self.num_shapelets = self.csl.num_shapelets
+    def encode(self, data, **kwargs):
+        return self(data)
 
 class FussionModel(nn.Module):
     def __init__(self, model_names, optim_configs, dls_setting, model_configs, ckpt_paths, device, agg_method="max", pred_len=None) -> None:
@@ -187,8 +200,6 @@ def get_fusion_model(checkpoints, fusion_methods, dls, dls_setting, device='cpu'
             if isinstance(cfg['device'], torch.device):
                 cfg['device'] = cfg['device'].type
     return fusion_model, model_configs
-    
-
             
 
 def get_model(model_name, hp_config_path, dls, dls_setting, p_path=None, task="self-supervised", device="cpu"):

@@ -3,6 +3,7 @@ optim_configures = {
 	"ts2vec": "./ts_url/models/default_configs/ts2vec_optim.json",
     "ts_tcc": "./ts_url/models/default_configs/ts_tcc_optim.json",
     "t_loss": "./ts_url/models/default_configs/t_loss_optim.json",
+    "csl": "ts_url/models/default_configs/csl_optim.json",
     "tf_c": ""
 }
 
@@ -10,7 +11,8 @@ model_configures = {
     "mvts_transformer": "ts_url/models/default_configs/ts_transformer.json",
     "ts2vec": "ts_url/models/default_configs/ts2vec.json",
     "ts_tcc": "ts_url/models/default_configs/ts_tcc.json",
-    "t_loss": "ts_url/models/default_configs/t_loss.json"
+    "t_loss": "ts_url/models/default_configs/t_loss.json",
+    "csl": "ts_url/models/default_configs/csl.json"
 }
 
 task_configures = {

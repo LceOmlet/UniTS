@@ -43,6 +43,7 @@ def get_pretrain_loaders(dls, optim_config, model_name, logger, **kwargs):
 @PRETRAINING_TRAIN_LOADER.register("mvts_transformer")
 @PRETRAINING_TRAIN_LOADER.register("t_loss")
 @PRETRAINING_TRAIN_LOADER.register("ts2vec")
+@PRETRAINING_TRAIN_LOADER.register("csl")
 def get_mvts_t_loss_loader(train_ds, optim_config, collate_fn, **kwargs):
     batch_size = optim_config["batch_size"]
     dataloader = DataLoader(train_ds, batch_size=batch_size, collate_fn=collate_fn)
