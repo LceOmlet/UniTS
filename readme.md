@@ -6,7 +6,7 @@ An effective and comprehensive representation learning method:
 
 :boom: :boom: [A Shapelet-based Framework for Unsupervised Multivariate Time Series Representation Learning](https://www.vldb.org/pvldb/vol17/p386-wang.pdf) :boom: :boom:.
 
-The theoritical foundation of url for ts is being built by considering shaplet as adaptive wavelet.
+The theoretical foundation of url for ts is being built by considering shaplet as adaptive wavelet.
 
 ### How to Install?
 #### Linux
