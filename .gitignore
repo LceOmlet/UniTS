@@ -9,4 +9,9 @@ clustering_ckpt
 forcasting_ckpt
 imputation_ckpt
 **/__pycache__/
+ts_url/utils/__pycache__
+
 exp1
+ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/networks/__pycache__
+ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/losses/__pycache__
+myeel/__pycache__
