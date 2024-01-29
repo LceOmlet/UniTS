@@ -20,6 +20,8 @@ import torch
 import numpy as np
 import os
 from .registry import MODELS
+from .utils.utils import reduce
+
 
 @MODELS.register("ts_tcc")
 class TS_TCC(nn.Module):
@@ -39,14 +41,16 @@ class TS_TCC(nn.Module):
     def parameters_tc(self):
         return self.tenporal_contr_model.parameters()
     
-    def encoder(self, data, **kwarg):
-        return self.model(data)
+    def encode(self, data, reduce_method="mean", **kwarg):
+        repr = self.model(data)[1]
+        repr = reduce(repr, reduce_method)
+        return repr
 
 @MODELS.register("t_loss")
 class T_LOSS(CausalCNNEncoder):
-    def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, max_len):
+    def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, max_len, **kwargs):
         out_channels = output_dims
-        super(CausalCNNEncoder, self).__init__(feat_dim, channels, depth, reduced_size, out_channels, kernel_size)
+        super(T_LOSS, self).__init__(feat_dim, channels, depth, reduced_size, out_channels, kernel_size)
     
     def encode_sequence(self, X, batch_size=50):
         """
@@ -104,13 +108,35 @@ class T_LOSS(CausalCNNEncoder):
         self.encoder = self.encoder.train()
         return features
     
-    def encode(self, data, **kwargs):
-        return self(data.permute(0, 2, 1))
+    def encode(self, data, reduce_method="mean", **kwargs):
+        repr = self(data.permute(0, 2, 1))
+        repr = reduce(repr, reduce_method)
+        return repr
 
 logger = logging.getLogger("__main__")
 
-MODELS.register("ts2vec")(TS2Vec)
-MODELS.register("mvts_transformer")(TSTransformerEncoder)
+@MODELS.register("ts2vec")
+class ts2vec(TS2Vec):
+    def __init__(self, feat_dim, output_dims=320, hidden_dims=64, max_len=100, depth=10, device='cpu', max_train_length=None, temporal_unit=0, after_iter_callback=None, after_epoch_callback=None, **kwargs):
+        super().__init__(feat_dim, output_dims, hidden_dims, max_len, depth, device, max_train_length, temporal_unit, after_iter_callback, after_epoch_callback)
+    
+    def encode(self, data, reduce_method="mean", **kwargs):
+        embeddings = self.encode_masked(data, 
+                                torch.zeros_like(data).to(dtype=torch.bool)) 
+        embeddings = reduce(embeddings, reduce_method)
+        return embeddings
+    
+@MODELS.register("mvts_transformer")
+class mvts_transformer(TSTransformerEncoder):
+    def __init__(self, feat_dim, max_len, output_dims, n_heads, num_layers, dim_feedforward, dropout=0.1, pos_encoding='fixed', activation='gelu', norm='BatchNorm', device="cpu", freeze=False, ** kwargs):
+        super().__init__(feat_dim, max_len, output_dims, n_heads, num_layers, dim_feedforward, dropout, pos_encoding, activation, norm, device, freeze)
+
+    def encode(self, data, padding_mask=None, reduce_method="mean", **kwargs):
+        if padding_mask is None:
+            padding_mask = torch.ones(data.shape[: 2], dtype=torch.bool)
+        embedding = self.get_encodding(data, padding_mask)
+        embedding = reduce(embedding, reduce_method)
+        return embedding
 
 @MODELS.register("csl")
 class CSL(LearningShapeletsModelMixDistances):
@@ -121,8 +147,10 @@ class CSL(LearningShapeletsModelMixDistances):
         self.shapelets_size_and_len = shapelets_size_and_len
         super(CSL, self).__init__(shapelets_size_and_len, in_channels=feat_dim)
         # self.num_shapelets = self.csl.num_shapelets
-    def encode(self, data, **kwargs):
-        return self(data)
+    def encode(self, data, reduce_method="mean", **kwargs):
+        repr = self(data)
+        repr = reduce(repr, reduce_method)
+        return repr
 
 class FussionModel(nn.Module):
     def __init__(self, model_names, optim_configs, dls_setting, model_configs, ckpt_paths, device, agg_method="max", pred_len=None) -> None:
@@ -145,12 +173,12 @@ class FussionModel(nn.Module):
         print(dls_setting["input_feat_dim"], pred_len)
         self.output = nn.Linear(sum(self.outputs_dims), int(dls_setting["input_feat_dim"] * pred_len) if pred_len else dls_setting["label_num"])
     
-    def encode(self, data ,padding_mask):
+    def encode(self, data ,padding_masks=None, **kwargs):
         batch_size = data.shape[0]
         encoddings_cat = []
         for idx, (model_name, output_dims) in enumerate(zip(self.model_names, self.outputs_dims)):
             model = getattr(self, "model_" + str(idx))
-            encoddings = model.encode(data, padding_mask=padding_mask)
+            encoddings = model.encode(data, padding_masks=padding_masks)
             encoddings = encoddings.reshape(batch_size, output_dims, -1)
             if self.agg_method == "max":
                 encoddings = torch.max(encoddings, dim=-1).values
@@ -174,7 +202,7 @@ class FussionModel(nn.Module):
         return out
 
 
-def get_fusion_model(checkpoints, fusion_methods, dls, dls_setting, device='cpu', pred_len=None):
+def get_fusion_model(checkpoints,  dls_setting, device='cpu', pred_len=None, **kwargs):
     model_names = []
     optim_configs = []
     model_configs = []
@@ -202,22 +230,19 @@ def get_fusion_model(checkpoints, fusion_methods, dls, dls_setting, device='cpu'
     return fusion_model, model_configs
             
 
-def get_model(model_name, hp_config_path, dls, dls_setting, p_path=None, task="self-supervised", device="cpu"):
-    model_config = model_configures[model_name]
-    with open(model_config, "r") as f:
-        model_config_ = json.load(f)
-    model_config = dict()
+def get_model(model_name, dls_setting, model_config, task="self-supervised", device="cpu", **kwargs):
+    model_config_ = model_config
+    model_config = {}
     for key in model_config_:
         if key[0] != '@':
             model_config[key] = model_config_[key]
     model_class = MODELS.get(model_name)
-    if task == "self-supervised":
-        model_config.update({
-            "feat_dim": dls_setting["input_feat_dim"],
-            "max_len": dls_setting["seq_len"],
-            "device": device
-        })
-        model = model_class(**model_config)
+    model_config.update({
+        "feat_dim": dls_setting["input_feat_dim"],
+        "max_len": dls_setting["seq_len"],
+        "device": device
+    })
+    model = model_class(**model_config)
     logger.info(model_config)
     logger.info(model)
     return model, model_config

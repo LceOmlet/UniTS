@@ -21,12 +21,14 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
 
 @DATALOADERS.register("pretraining")
 def get_pretrain_loaders(dls, optim_config, model_name, logger, **kwargs):
-    train_ds = [(dls.train_ds[i][0], ) for i in range(len(dls.train_ds))]
-    valid_ds = [(dls.valid_ds[i][0], ) for i in range(len(dls.valid_ds))]
-    train_ds = ImputationDataset(train_ds, mean_mask_length=optim_config['mean_mask_length'],
+    data = [dls.train_ds[i][0] for i in range(len(dls.train_ds))]
+    label = [dls.train_ds[i][1] for i in range(len(dls.train_ds))]
+    train_ds = ImputationDataset(data, label=label, mean_mask_length=optim_config['mean_mask_length'],
                 masking_ratio=optim_config['masking_ratio'], mode=optim_config['mask_mode'],
                 distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'], mask_row=False)
-    valid_ds = ImputationDataset(valid_ds, mean_mask_length=optim_config['mean_mask_length'],
+    data = [dls.valid_ds[i][0] for i in range(len(dls.valid_ds))]
+    label = [dls.valid_ds[i][1] for i in range(len(dls.valid_ds))]
+    valid_ds = ImputationDataset(data, label=label, mean_mask_length=optim_config['mean_mask_length'],
                 masking_ratio=optim_config['masking_ratio'], mode=optim_config['mask_mode'],
                 distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'])
     valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=COLLATE_FN.get("unsupervise"))

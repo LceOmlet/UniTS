@@ -7,6 +7,8 @@ import pickle
 import torch
 import random
 import tsaug
+from itertools import permutations
+from random import shuffle
 # import tfsnippet as spt
 
 interfusion = ['omi-6', 'omi-9', 'omi-4', 'omi-7', 'machine-2-2', 'omi-10', 'omi-8', 'omi-11', 'machine-1-7', 
@@ -52,7 +54,8 @@ def permutation(x, max_segments=5, seg_mode="random"):
 				splits = np.split(orig_steps, split_points)
 			else:
 				splits = np.array_split(orig_steps, num_segs[i])
-			warp = np.concatenate(np.random.permutation(splits)).ravel()
+			shuffle(splits)
+			warp = np.concatenate(splits).ravel()
 			ret[i] = pat[0,warp]
 		else:
 			ret[i] = pat
@@ -468,9 +471,15 @@ def noise_mask(X, masking_ratio, lm=3, mode='separate', distribution='geometric'
 class ImputationDataset(Dataset):
 	"""Dynamically computes missingness (noise) mask for each sample"""
 
-	def __init__(self, data, mean_mask_length=3, masking_ratio=0.15,
-				 mode='separate', distribution='geometric', exclude_feats=None, mask_row=True):
+	def __init__(self, data, mean_mask_length=3, masking_ratio=0.15, 
+				 mode='separate', distribution='geometric', label=None, exclude_feats=None, mask_row=True):
 		super(ImputationDataset, self).__init__()
+
+		
+		if label is not None:
+			self.label = label
+		else:
+			self.label = None
 
 		self.data = torch.tensor(data)  # this is a subclass of the BaseData class in data.py
 		self.IDs = list(range(len(data)))  # list of data IDs, but also mapping between integer index and ID
@@ -493,14 +502,13 @@ class ImputationDataset(Dataset):
 			ID: ID of sample
 		"""
 
-		X = self.data[self.IDs[ind]][0]  # (seq_length, feat_dim) array
-		# print(self.data[0])
-		# exit()
+		X = self.data[self.IDs[ind]]  # (seq_length, feat_dim) array
+		label = self.label[self.IDs[ind]]
 		X = torch.tensor(X).transpose(0, 1)
 		mask = noise_mask(X[:,0].unsqueeze(1).numpy() if self.mask_row else X.numpy(), self.masking_ratio, self.mean_mask_length, self.mode, self.distribution,
 						  self.exclude_feats)  # (seq_length, feat_dim) boolean array
 
-		return X, torch.from_numpy(mask), self.IDs[ind]
+		return X, torch.from_numpy(mask), label, self.IDs[ind]
 
 	def update(self):
 		self.mean_mask_length = min(20, self.mean_mask_length + 1)

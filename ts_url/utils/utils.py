@@ -17,6 +17,38 @@ import logging
 logging.basicConfig(format='%(asctime)s | %(levelname)s : %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def list2array(cvt_list):
+    if cvt_list is None:
+        return None
+    if isinstance(cvt_list, list) or isinstance(cvt_list, tuple):
+        if isinstance(cvt_list[0], list) or isinstance(cvt_list[0], tuple):
+            cvt_list_ = []
+            for cvt in cvt_list:
+                cvt_list_.append(torch.tensor(cvt))
+            cvt_list = cvt_list_
+        if len(cvt_list) == 0:
+            return np.array([])
+        if isinstance(cvt_list[0], torch.Tensor):
+            cvt_list = torch.cat(cvt_list, dim=0)
+        elif isinstance(cvt_list[0], np.ndarray):
+            cvt_list = np.concatenate(cvt_list, axis=0)
+        else:
+            print(cvt_list[0])
+            raise NotImplementedError
+    if isinstance(cvt_list, torch.Tensor):
+        cvt_list = cvt_list.detach().cpu().numpy()
+    return cvt_list
+
+def reduce(reprs, method):
+    if len(reprs.shape) == 2:
+        return reprs
+    if method == "mean":
+        reprs = torch.mean(reprs, dim=-1)
+    elif method == "max":
+        reprs = torch.mean(reprs, dim=-1).data
+    elif method == "last":
+        reprs = reprs[..., -1]
+    return reprs
 
 def timer(func):
     """Print the runtime of the decorated function"""

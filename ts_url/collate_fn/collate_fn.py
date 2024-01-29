@@ -14,10 +14,9 @@ def collate_csl(data):
 						'Quantize(seed=np.random.randint(2 ** 32 - 1))',
 						'TimeWarp(seed=np.random.randint(2 ** 32 - 1))'
 						]
-	x, masks, IDs = zip(*data)
 	aug1 = np.random.choice(augmentation_list, 1, replace=False)
 	batch_size = len(data)
-	x, masks, IDs = zip(*data)
+	x, masks, label, IDs = zip(*data)
 	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
 	masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
 	masks = ~masks
@@ -39,17 +38,16 @@ def collate_csl(data):
 		x_k = eval('tsaug.' + aug + '.augment(x_k)')
 	x_k = torch.from_numpy(x_k).float()
 	x_k = x_k.transpose(1,2)
-
 	# masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
 	# masks = ~masks
 	# aug1, aug2 = dataTransform(x, jitter_scale_ratio, jitter_ratio, max_seg)
 	# aug1, aug2 = torch.tensor(aug1), torch.tensor(aug2)
-	return x.permute(0, 2, 1), x_k.permute(0, 2, 1), x_q.permute(0, 2, 1), masks, IDs
+	return x.permute(0, 2, 1), x_k.permute(0, 2, 1), x_q.permute(0, 2, 1), masks, label, IDs
 
 @COLLATE_FN.register("ts2vec")
 def collate_ts2vec(data, max_len=None, mask_compensation=None):
 	batch_size = len(data)
-	x, masks, IDs = zip(*data)
+	x, masks, label, IDs = zip(*data)
 	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
 	masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
 	masks = ~masks
@@ -64,18 +62,22 @@ def collate_ts2vec(data, max_len=None, mask_compensation=None):
 	gt2 = take_per_row(x, crop_offset + crop_left, crop_eright - crop_left)
 	m1 = take_per_row(masks, crop_offset + crop_eleft, crop_right - crop_eleft)
 	m2 = take_per_row(masks, crop_offset + crop_left, crop_eright - crop_left)
-	return gt1, gt2, crop_l, m1, m2, x, masks, IDs
+	return gt1, gt2, crop_l, m1, m2, x, masks, label, IDs
 
 @COLLATE_FN.register("ts_tcc")
 def collate_ts_tcc(data, jitter_scale_ratio, jitter_ratio, max_seg):
 	batch_size = len(data)
-	x, masks, IDs = zip(*data)
+	x, masks, label, IDs = zip(*data)
 	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
 	masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
 	masks = ~masks
+	x = x.permute(0, 2, 1)
 	aug1, aug2 = dataTransform(x, jitter_scale_ratio, jitter_ratio, max_seg)
 	aug1, aug2 = torch.tensor(aug1), torch.tensor(aug2)
-	return x, aug1, aug2, masks, IDs
+	aug1 = aug1.permute(0, 2, 1)
+	aug2 = aug2.permute(0, 2, 1)
+	x = x.permute(0, 2, 1)
+	return x, aug1, aug2, masks, label, IDs
 
 @COLLATE_FN.register("mvts_transformer")
 @COLLATE_FN.register("t_loss")
@@ -97,7 +99,7 @@ def collate_unsuperv(data, max_len=None, mask_compensation=False):
 	"""
 
 	batch_size = len(data)
-	features, masks, IDs = zip(*data)
+	features, masks, label, IDs = zip(*data)
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
 	lengths = [X.shape[0] for X in features]  # original sequence length for each time series
@@ -112,10 +114,8 @@ def collate_unsuperv(data, max_len=None, mask_compensation=False):
 		target_masks[i, :end, :] = masks[i][:end, :]
 
 	targets = X.clone()
-	X = X * target_masks  # mask input
 	if mask_compensation:
 		X = compensate_masking(X, target_masks)
-
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16), max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
 	target_masks = ~target_masks  # inverse logic: 0 now means ignore, 1 means predict
-	return X, targets, target_masks, padding_masks, IDs
+	return X, targets, target_masks, padding_masks, label, IDs

@@ -1,4 +1,4 @@
-from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG, TRAIN_LOOP_INIT
+from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG, TRAIN_LOOP_INIT, TRAINER_INIT, TEST_MODULE
 from collections import OrderedDict
 import torch
 from ..utils.loss import hierarchical_contrastive_loss
@@ -6,21 +6,7 @@ import numpy as np
 from sklearn.linear_model import Ridge
 import torch.nn.functional as F
 from torch import nn 
-
-def list2array(cvt_list):
-    if isinstance(cvt_list, list) or isinstance(cvt_list, tuple):
-        if len(cvt_list) == 0:
-            return np.array([])
-        if isinstance(cvt_list[0], torch.Tensor):
-            cvt_list = torch.cat(cvt_list, dim=0)
-        elif isinstance(cvt_list[0], np.ndarray):
-            cvt_list = np.concatenate(cvt_list, axis=0)
-        else:
-            print(cvt_list[0])
-            raise NotImplementedError
-    if isinstance(cvt_list, torch.Tensor):
-        cvt_list = cvt_list.detach().cpu().numpy()
-    return cvt_list
+from ..utils.utils import list2array
 
 def fit_imputation(reprs, targets, masks, valid_ratio, loss_module):
     reprs = list2array(reprs)
@@ -49,17 +35,20 @@ def fit_imputation(reprs, targets, masks, valid_ratio, loss_module):
     return lr
 
 @TRAINERS.register("all_train")
-def train_epoch(model, dataloader, task, device, loss_module, 
+@TRAINERS.register("classification")
+@TRAINERS.register("regression")
+@TRAINERS.register("anomaly_detection")
+@TRAINERS.register("pretraining")
+def train_epoch(model, dataloader, task, device, loss_module, train_agg,
                 optimizer, model_name, print_interval, print_callback, val_loss_module,
                 logger, optim_config, t_loss_train=None, temporal_contr_optimizer=None, 
-                epoch_num=None):
+                epoch_num=None, **kwargs):
     if task == "clustering":
         raise NotImplementedError()
     epoch_metrics = OrderedDict()
     model.train()
     epoch_loss = 0  # total loss of epoch
     total_active_elements = 0  # total unmasked elements in epoch
-    targets, masks, reprs = [], [], []
     init_loop = TRAIN_LOOP_INIT.get(model_name)
     kwargs_init = {}
     if init_loop is not None:
@@ -68,15 +57,14 @@ def train_epoch(model, dataloader, task, device, loss_module,
             "device": device
         }
         kwargs_init.update(init_loop(**init_kwargs))
+    
     for i, batch in enumerate(dataloader):
         train_step_config = {
             "batch": batch, 
             "model": model, 
             "device": device, 
             "optimizer": optimizer, 
-            "targets": targets, 
-            "masks": masks, 
-            "reprs": reprs,
+            "train_agg": train_agg,
             "model_name": model_name,
             "t_loss_train": t_loss_train,
             "temporal_contr_optimizer": temporal_contr_optimizer,
@@ -91,6 +79,7 @@ def train_epoch(model, dataloader, task, device, loss_module,
             loss = torch.mean(loss, dim=-1)
         if not loss.shape:
             loss = loss.unsqueeze(0)
+        
         batch_loss = torch.sum(loss)
         mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization
 
@@ -108,27 +97,80 @@ def train_epoch(model, dataloader, task, device, loss_module,
     epoch_metrics['epoch'] = epoch_num
     epoch_metrics['loss'] = float(epoch_loss)
     
-    train_agg_kwargs = {
-        "reprs": reprs,
-        "targets": targets,
-        "masks": masks,
-        "val_loss_module":val_loss_module,
-        "logger": logger,
-        "epoch_metrics": epoch_metrics
-    }
-    train_agg = TRAIN_AGG.get(model_name)
-    if train_agg is not None: train_agg(**train_agg_kwargs)
 
     return epoch_metrics
 
-@TRAIN_AGG.register("ts2vec")
-@TRAIN_AGG.register("ts_tcc")
-@TRAIN_AGG.register("t_loss")
-@TRAIN_AGG.register("csl")
-def train_agg_ts2vec_ts_tcc_t_loss(reprs, targets, masks, val_loss_module, logger, epoch_metrics, **kwargs):
-    ridge = fit_imputation(reprs, targets, masks, 0.1, val_loss_module)
-    logger.info("Ridge Training.")
-    epoch_metrics["ridge"] = ridge
+
+
+@TRAIN_AGG.register("pretraining")
+class PretrainAgg:
+    def __init__(self, test_module) -> None:
+        self.per_batch_train = dict()
+        self.per_batch_valid = dict()
+        self.test_module = TEST_MODULE.get(test_module)
+    
+    def train_module(self, val_loss_module, logger, valid_ratio=0.1, **kwargs):
+        # if self.per_batch_train.get("repr") is None:
+        #     logger.info("The batches are not collected during training.")
+        #     return None
+        
+        test_module_kwargs = dict()
+        for k in self.per_batch_train:
+            test_module_kwargs[k] = list2array(self.per_batch_train[k])
+        
+        test_module_kwargs.update({
+            "valid_ratio": valid_ratio,
+            "loss_module": val_loss_module
+        })
+
+        if self.test_module is not None:
+            self.model = self.test_module(**test_module_kwargs)
+        # raise RuntimeError()
+    
+    def append_train(self, model, **kwargs):
+        kwargs.update(self.test_module.collate(model, **kwargs))
+        for k in kwargs:
+            if kwargs[k][0] is None:
+                self.per_batch_train[k] = None
+                continue
+            if k in self.per_batch_train:
+                self.per_batch_train[k].append(kwargs[k])
+            else:
+                self.per_batch_train[k] = [kwargs[k]]
+
+    def append_valid(self, model, **kwargs):
+        if self.test_module is not None:
+            kwargs.update(self.test_module.collate(model, **kwargs))
+        for k in kwargs:
+            if kwargs[k][0] is None:
+                self.per_batch_train[k] = None
+                continue
+            if k in self.per_batch_valid:
+                self.per_batch_valid[k].append(kwargs[k])
+            else:
+                self.per_batch_valid[k] = [kwargs[k]]
+    
+    def infer(self, **kwargs):
+        kwargs_eval = dict()
+        for k in self.per_batch_valid:
+            # print(k)
+            # for it in self.per_batch_valid[k]:
+            #     print(it.shape)
+            kwargs_eval[k] = list2array(self.per_batch_valid[k])
+        kwargs_eval.update(kwargs)
+        results = self.model.evaluate(**kwargs_eval)
+        return results
+    
+    def clear(self):
+        self.per_batch_train = dict()
+        self.per_batch_valid = dict()
+
+    def get(self, record, train=False):
+        if train:
+            return list2array(self.per_batch_train[record])
+        else:
+            return list2array(self.per_batch_valid[record])
+
 
 @TRAIN_AGG.register("mvts_transformer")
 def train_agg_mvts_transformer(**kwargs):
@@ -197,10 +239,12 @@ def step_pretraining(model_name, **kwargs):
     return PRETRAIN_STEP.get(model_name)(**kwargs)
 
 @PRETRAIN_STEP.register("mvts_transformer")
-def step_mvts_transformer(batch, model, device, loss_module, optimizer,**kwargs):
-    X, target, target_masks, padding_masks, IDs = batch
+def step_mvts_transformer(batch, model, device, loss_module, optimizer, train_agg, **kwargs):
+    X, target, target_masks, padding_masks, label, IDs = batch
     # print(torch.mean(torch.abs(X)))
     target = target.to(device)
+    X = X.to(device)
+    X[target_masks] = 0
     target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
     padding_masks = padding_masks.to(device)  # 0s: ignore
     predictions = model(X.to(device), padding_masks)  # (batch_size, padded_length, feat_dim)
@@ -213,11 +257,12 @@ def step_mvts_transformer(batch, model, device, loss_module, optimizer,**kwargs)
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
+    train_agg.append_train(model, X=X, target=target, label=label, mask=target_masks)
     return loss
 
 @PRETRAIN_STEP.register("ts2vec")
-def step_ts2vec(batch, model, device, loss_module, optimizer, targets, masks, reprs, **kwargs):
-    gt1, gt2, crop_l, m1, m2, x, mask, IDs = batch
+def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwargs):
+    gt1, gt2, crop_l, m1, m2, X, mask, label, IDs = batch
     gt1 = gt1.to(device)
     gt2 = gt2.to(device)
 
@@ -227,9 +272,7 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, targets, masks, re
         out1,
         out2
     )
-    targets.append(x)
-    masks.append(mask)
-    reprs.append(model._net(x, mask).detach())
+    train_agg.append_train(model, X=X, label=label,mask=mask)
     optimizer.zero_grad()
     loss.backward()
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
@@ -239,13 +282,11 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, targets, masks, re
     return loss
 
 @PRETRAIN_STEP.register("csl")
-def step_csl(batch, model, device, loss_module, optimizer, optim_config, targets, reprs, masks,
+def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_agg,
              C_accu_q, c_normalising_factor_q, C_accu_k, c_normalising_factor_k, **kwargs):
-    x, x_k, x_q, mask, IDs = batch
-    x, x_k, x_q = x.to(device), x_k.to(device), x_q.to(device)
-    targets.append(x)
-    reprs.append(model.encode(x))
-    masks.append(mask)
+    X, x_k, x_q, mask, label, IDs = batch
+    X, x_k, x_q = X.to(device), x_k.to(device), x_q.to(device)
+    train_agg.append_train(model, X=X, label=label, mask=mask)
     num_shapelet_lengths = len(model.shapelets_size_and_len)
     num_shapelet_per_length = model.num_shapelets // num_shapelet_lengths
     with torch.autograd.set_detect_anomaly(True):
@@ -316,9 +357,10 @@ def step_csl(batch, model, device, loss_module, optimizer, optim_config, targets
 
 
 @PRETRAIN_STEP.register("ts_tcc")
-def step_ts_tcc(batch, model, device, loss_module, optimizer, targets, temporal_contr_optimizer, reprs, masks, **kwargs):
-    x, aug1, aug2, mask, IDs = batch
-    data = x.float().to(device)
+def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_optimizer, train_agg, **kwargs):
+    X, aug1, aug2, mask, label, IDs = batch
+    data = X.float().to(device)
+    X = data
     aug1, aug2 = aug1.float().to(device), aug2.float().to(device)
 
     # optimizer
@@ -351,23 +393,25 @@ def step_ts_tcc(batch, model, device, loss_module, optimizer, targets, temporal_
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
     temporal_contr_optimizer.step()
-    target = x.detach().clone(); targets.append(target)
-    x[mask] = 0; _, reprs_ = model.model(x); reprs.append(reprs_)
-    masks.append(mask)
+    target = X.detach().clone()
+    train_agg.append_train(model, X=X, label=label,mask=mask)
     return loss
 
 @PRETRAIN_STEP.register("t_loss")
-def step_t_loss(batch, model, device, loss_module, optimizer, targets, t_loss_train, reprs, masks, **kwargs):
-    X, target, target_masks, padding_masks, IDs = batch
+def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, train_agg, **kwargs):
+    X, target, target_masks, padding_masks, label, IDs = batch
     X = X.to(device)
+    target =target.to(device)
+    target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
+    padding_masks = padding_masks.to(device)  # 0s: ignore
+    X_ = X
+    X_[target_masks] = 0
     loss = loss_module(target.permute(0, 2, 1), model, 
                             t_loss_train, save_memory=False)
     loss.backward()
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
-    target = target.detach().clone(); targets.append(target)
-    X[target_masks | (~padding_masks.unsqueeze(-1))] = 0; reprs_ = model(X.permute(0, 2, 1)); reprs.append(reprs_)
-    masks.append(target_masks)
+    train_agg.append_train(model, X=X, label=label, mask=target_masks)
     return loss
 
 @TRAIN_LOOP_INIT.register("csl")
@@ -381,4 +425,27 @@ def init_train_variables(model, device, **kwargs):
         "c_normalising_factor_q": c_normalising_factor_q,
         "C_accu_k": C_accu_k,
         "C_accu_q": C_accu_q
+    }
+
+@TRAINER_INIT.register("pretraining")
+def train_init_pretraining(model_name, **kwargs):
+    initer = TRAINER_INIT.get(model_name)
+    if initer is not None:
+        return initer(**kwargs)
+    else:
+        return {}
+
+@TRAINER_INIT.register("t_loss")
+def train_init_t_loss(device, train_ds, **kwargs):
+    t_loss_train = torch.cat([torch.tensor(X[0]).to(device).unsqueeze(0) for X in train_ds], dim=0)
+    return {
+        "t_loss_train": t_loss_train
+    }
+
+@TRAINER_INIT.register("ts_tcc")
+def train_init_ts_tcc(model, optim_config, **kwargs):
+    temporal_contr_optimizer = torch.optim.Adam(model.parameters_tc(), lr=optim_config["lr"], 
+                        betas=(optim_config["beta1"], optim_config["beta2"]), weight_decay=3e-4)
+    return {
+        "temporal_contr_optimizer": temporal_contr_optimizer
     }

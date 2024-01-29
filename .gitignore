@@ -1,6 +1,5 @@
-**/__pycache__/
-ts_url/__pycache__
-ts_url/models/ts_tcc/models/__pycache__
+ts_url/__pycache__/
+ts_url/models/ts_tcc/models/__pycache__/
 .vscode
 classification_ckpt
 ckpts
@@ -8,10 +7,9 @@ anomaly_detection_ckpt
 clustering_ckpt
 forcasting_ckpt
 imputation_ckpt
-**/__pycache__/
-ts_url/utils/__pycache__
-
+ts_url/utils/__pycache__/
 exp1
-ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/networks/__pycache__
-ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/losses/__pycache__
-myeel/__pycache__
+ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/networks/__pycache__/
+ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/losses/__pycache__/
+myeel/__pycache__/
+**/__pycache__/

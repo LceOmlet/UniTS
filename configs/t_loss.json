@@ -1,0 +1,7 @@
+{
+    "channels": 40, 
+    "depth": 10, 
+    "reduced_size": 160, 
+    "output_dims": 320, 
+    "kernel_size": 3
+}

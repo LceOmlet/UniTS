@@ -22,6 +22,7 @@ class MinEuclideanDistBlock(nn.Module):
         if self.to_cuda:
             shapelets = shapelets.cuda()
         self.shapelets = nn.Parameter(shapelets).contiguous()
+        self.register_parameter("shapelets", self.shapelets)
         # otherwise gradients will not be backpropagated
         self.shapelets.retain_grad()
 
@@ -204,15 +205,14 @@ class ShapeletsDistBlocks(nn.Module):
 
     def forward(self, x, masking=False):
        
-        out = torch.tensor([], dtype=torch.float).cuda() if self.to_cuda else torch.tensor([], dtype=torch.float)
+        out = []
         for block in self.blocks:
             if self.checkpoint and self.dist_measure != 'cross-correlation':
-                out = torch.cat((out, checkpoint(block, x, masking)), dim=2)
-            
+                out.append(checkpoint(block, x, masking))
             else:
-                out = torch.cat((out, block(x, masking)), dim=2)
-            
-       
+                out.append(block(x, masking))
+                
+        out = torch.cat(out, dim=2)       
 
         return out
 
@@ -320,7 +320,7 @@ class LearningShapeletsModelMixDistances(nn.Module):
         n_samples = x.shape[0]
         num_lengths = len(self.shapelets_size_and_len)
         
-        out = torch.tensor([], dtype=torch.float).cuda() if self.to_cuda else torch.tensor([], dtype=torch.float)
+        out = []
         
         x_out = self.shapelets_euclidean(x, masking)
         x_out = torch.squeeze(x_out, 1)
@@ -328,7 +328,7 @@ class LearningShapeletsModelMixDistances(nn.Module):
         x_out = self.bn1(x_out)
         x_out = x_out.reshape(n_samples, num_lengths, -1)
         #print(x_out.shape)
-        out = torch.cat((out, x_out), dim=2)
+        out.append(x_out)
         
         x_out = self.shapelets_cosine(x, masking)
         x_out = torch.squeeze(x_out, 1)
@@ -336,7 +336,7 @@ class LearningShapeletsModelMixDistances(nn.Module):
         x_out = self.bn2(x_out)
         x_out = x_out.reshape(n_samples, num_lengths, -1)
         #print(x_out.shape)
-        out = torch.cat((out, x_out), dim=2)
+        out.append(x_out)
         
         x_out = self.shapelets_cross_correlation(x, masking)
         x_out = torch.squeeze(x_out, 1)
@@ -344,8 +344,9 @@ class LearningShapeletsModelMixDistances(nn.Module):
         x_out = self.bn3(x_out)
         x_out = x_out.reshape(n_samples, num_lengths, -1)
         #print(x_out.shape)
-        out = torch.cat((out, x_out), dim=2)
-        
+        out.append(x_out)
+
+        out = torch.cat(out, dim=2)
         
         out = out.reshape(n_samples, -1)
         

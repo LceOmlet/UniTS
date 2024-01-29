@@ -8,6 +8,15 @@ from .utils import take_per_row, split_with_nan, centerize_vary_length_series, t
 import math
 from torch import nn
 
+def reduce(reprs, method):
+    if method == "mean":
+        reprs = torch.mean(reprs, dim=-1)
+    elif method == "max":
+        reprs = torch.mean(reprs, dim=-1).data
+    elif method == "last":
+        reprs = reprs[..., -1]
+    return reprs
+
 class TS2Vec(nn.Module):
     '''The TS2Vec model'''
     
@@ -135,9 +144,10 @@ class TS2Vec(nn.Module):
         out = self._eval_with_pooling(x, mask)
         return out
     
-    def encode(self, data, **kwarg):
+    def encode(self, data, reduce_method="mean", **kwarg):
         embeddings = self.encode_masked(data, 
                                 torch.zeros_like(data).to(dtype=torch.bool)) 
+        
         return embeddings
 
     

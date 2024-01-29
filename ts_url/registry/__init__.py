@@ -13,3 +13,5 @@ from .registry import PRETRAIN_EVALUATE_INFER
 from .registry import EVALUATE_AGG
 from .registry import TRAIN_AGG
 from .registry import TRAIN_LOOP_INIT
+from .registry import TRAINER_INIT
+from .registry import TEST_MODULE

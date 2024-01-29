@@ -34,12 +34,14 @@ from sklearn.metrics import normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.metrics import rand_score
 from sklearn.metrics import roc_auc_score as auc 
-from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT
+from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT, TRAINER_INIT, TRAIN_AGG
 from .evaluators import evaluators
 from .train import train
 from .dataloader import dataloaders
 from .losses import losses
 from .collate_fn import collate_fn
+from .test_modules import test_modules
+from . import process_model
 
 def setup_logger(name, log_file, level=logging.INFO):
     """To setup as many loggers as you want"""
@@ -54,15 +56,32 @@ def setup_logger(name, log_file, level=logging.INFO):
     
 
 class Trainer:
-    def __init__(self, data_configs, model_name, hp_path, p_path, 
-                 device, optim_config, task, logger, fine_tune_config=None, ckpt_paths=None) -> None:
+    def __init__(self, data_configs, model_name, p_path, 
+                 device, optim_config, task, logger=None, save_path=".", fine_tune_config=None, ckpt_paths=None, **kwargs) -> None:
         self.val_times = {"total_time": 0, "count": 0}
         self.best_value = None
         self.best_metrics = None
         self.reprs = None
-        self.logger = logger
+        self.save_path = save_path 
+        self.test_module = None
+        
         self.task = task
+        
+        if logger is None:
+            logger = setup_logger("__main__", os.path.join(save_path, "run.log"))
+        self.logger = logger
 
+        if isinstance(optim_config, str):
+            with open(optim_config, "rb") as optim_config_f:
+                optim_config = json.load(optim_config_f)
+        self.optim_config = optim_config
+
+        if isinstance(p_path, str):
+            with open(p_path, "rb") as model_config_f:
+                self.model_config = json.load(model_config_f)
+        elif task == "pretraining":
+            raise NotImplementedError() 
+        
         loss_config = {
             "model_name": model_name,
             "optim_config": optim_config,
@@ -71,13 +90,11 @@ class Trainer:
 
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
+        self.train_agg = TRAIN_AGG.get("pretraining")(optim_config.get("test_module"))
         self.NEG_METRICS = {'loss'}  # metrics for which "better" is less
         # print(data_configs)
         # exit()
         self.udls, self.dls_config = get_datas(data_configs, task=task)
-
-        if task != "classification" and model_name == "t_loss": 
-            self.t_loss_train = torch.cat([torch.tensor(x[0]).to(device).unsqueeze(0) for x in self.udls.train_ds], dim=0)
         
         loader_kwargs = {
             "dls": self.udls,
@@ -90,7 +107,7 @@ class Trainer:
         self.dataloader, self.valid_dataloader = DATALOADERS.get(task)(**loader_kwargs)
 
         if task == "pretraining":
-            self.model, self.model_config = get_model(model_name, hp_path, self.udls, self.dls_config, p_path)
+            self.model, self.model_config = get_model(model_name, self.dls_config, self.model_config)
         else:
             fusion = fine_tune_config["fusion"]
             if task in ["classification", "clustering"]:
@@ -99,17 +116,26 @@ class Trainer:
                 pred_len = fine_tune_config["pred_len"]
             else:
                 pred_len = self.dls_config["seq_len"]
-            self.model, self.model_config = get_fusion_model(ckpt_paths,fusion, self.udls, self.dls_config, device, pred_len=pred_len)
+            self.model, self.model_config = get_fusion_model(ckpt_paths, self.dls_config, device, pred_len=pred_len)
         
+        initer = TRAINER_INIT.get(task)
+        self.init_trainer = {}
+        if initer is not None:
+            initer_kwargs = {
+                "model_name": model_name,
+                "model": self.model,
+                "optim_config":optim_config,
+                "train_ds": self.udls.train_ds,
+                "device": device
+            }
+            self.init_trainer = initer(**initer_kwargs)
+
         self.device = device
         
         optim_class = get_optimizer(optim_config['optimizer'])
         optimizer = optim_class(self.model.parameters(), lr=optim_config['lr'], weight_decay=optim_config["l2_reg"])
         self.optimizer = optimizer
 
-        if model_name == "ts_tcc":
-            self.temporal_contr_optimizer = torch.optim.Adam(self.model.parameters_tc(), lr=optim_config["lr"], 
-                                                             betas=(optim_config["beta1"], optim_config["beta2"]), weight_decay=3e-4)
         self.optim_config = optim_config
 
         self.l2_reg = optim_config["l2_reg"]
@@ -130,11 +156,11 @@ class Trainer:
         dyn_string = prefix + dyn_string
         self.printer.print(dyn_string)
     
-    def validate(self, epoch, key_metric, save_dir, batch_predictions_path="best_predictions.npz", file_lock=None):
+    def validate(self, epoch_num, key_metric, save_dir, batch_predictions_path="best_predictions.npz", file_lock=None):
         self.logger.info("Evaluating on validation set ...")
         eval_start_time = time.time()
         with torch.no_grad():
-            aggr_metrics, per_batch = self.evaluate(epoch_num=epoch, keep_all=True)
+            aggr_metrics, per_batch = self.evaluate(epoch_num=epoch_num, keep_all=True)
         eval_runtime = time.time() - eval_start_time
         self.logger.info("Validation runtime: {} hours, {} minutes, {} seconds\n".format(*utils.readable_time(eval_runtime)))
         self.val_times["total_time"] += eval_runtime
@@ -145,7 +171,7 @@ class Trainer:
         self.logger.info("Avg val. time: {} hours, {} minutes, {} seconds".format(*utils.readable_time(avg_val_time)))
         self.logger.info("Avg batch val. time: {} seconds".format(avg_val_batch_time))
         self.logger.info("Avg sample val. time: {} seconds".format(avg_val_sample_time))
-        print_str = 'Epoch {} Validation Summary: '.format(epoch)
+        print_str = 'Epoch {} Validation Summary: '.format(epoch_num)
         for k, v in aggr_metrics.items():
             if k == "report":
                 print(v)
@@ -164,7 +190,7 @@ class Trainer:
             condition = (aggr_metrics[key_metric] > self.best_value)
         if condition:
             self.best_value = aggr_metrics[key_metric]
-            utils.save_model(save_dir, 'model_best.pth', epoch, self.model, optim_config=self.optim_config,
+            utils.save_model(save_dir, 'model_best.pth', epoch_num, self.model, optim_config=self.optim_config,
                              model_config=self.model_config, model_name=self.model_name)
             self.best_metrics = aggr_metrics.copy()
 
@@ -209,18 +235,22 @@ class Trainer:
             "print_interval": self.print_interval,
             "print_callback": self.print_callback,
             "logger": self.logger,
+            "test_module": self.train_agg
         })
-        if hasattr(self, "ridge"):
-            kwargs["ridge"] = self.ridge
         
         return EVALUATORS.get("all_eval")(**kwargs)
 
-    def train_epoch(self, **kwargs):
+    def train_epoch(self, epoch_num, **kwargs):
+
+        self.train_agg.clear()
+
         kwargs.update({
             "model": self.model,
+            "epoch_num": epoch_num,
             "dataloader": self.dataloader,
             "task": self.task,
             "device": self.device,
+            "train_agg": self.train_agg,
             "loss_module": self.loss_module,
             "optimizer": self.optimizer,
             "model_name": self.model_name,
@@ -231,14 +261,27 @@ class Trainer:
             "optim_config": self.optim_config
         })
 
-        if hasattr(self, "temporal_contr_optimizer"):
-            kwargs["temporal_contr_optimizer"] = self.temporal_contr_optimizer
+        kwargs.update(self.init_trainer)
 
-        if hasattr(self, "t_loss_train"):
-            kwargs["t_loss_train"] = self.t_loss_train
-        results = TRAINERS.get("all_train")(**kwargs)
-        self.ridge =  results.get("ridge")
+        trainer_fn = TRAINERS.get(self.task)
+        if trainer_fn is not None:
+            results = trainer_fn(**kwargs)
+        else:
+            results = None
+        
+        train_agg_kwargs = {
+            "val_loss_module":self.val_loss_module,
+            "logger": self.logger
+        }
+
+        self.train_agg.train_module(**train_agg_kwargs)
+        # self.test_module =  results.get("test_module")
         return results
+    
+    def fit(self):
+        for ep in range(self.optim_config['epochs']):
+            self.train_epoch(epoch_num=ep)
+            self.validate(epoch_num=ep, key_metric="loss", save_dir=self.save_path)
 
 
 if __name__ == '__main__':

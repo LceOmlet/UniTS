@@ -2,7 +2,7 @@ from .training_methods import Trainer
 import json
 import threading
 import myeel as eel
-from .models.default_configs.configues import optim_configures, task_configures
+from .models.default_configs.configues import optim_configures, task_configures, model_configures
 from tkinter.filedialog import (askdirectory, askopenfile, askopenfilename)
 
 import torch
@@ -224,6 +224,8 @@ def process_training_tasks(task):
 		model_name = task['model_name']
 		hp_path = task['model_hp_path']
 		p_path = task['model_path']
+		if p_path is None or p_path == "":
+			p_path = model_configures[model_name]
 		fine_tune_config = None
 
 	data_configs = []
@@ -290,7 +292,7 @@ def process_training_tasks(task):
 			None
 		device = torch.device("cpu")
 		print("Using CPU")
-		trainer = Trainer(data_configs, model_name, hp_path, p_path, 
+		trainer = Trainer(data_configs, model_name, p_path, 
 					device=device, task=task_name, optim_config=optim_config, fine_tune_config=fine_tune_config, logger=logger, ckpt_paths=ckpt)
 		# save the loss value for each epoch
 		epoch_losses = {
@@ -304,7 +306,7 @@ def process_training_tasks(task):
 		for epoch in range(optim_config['epochs']):
 			epoch_metrics = None
 
-			if task_name != "clustering" and not just_valid : epoch_metrics = trainer.train_epoch(epoch_num=epoch)
+			if not just_valid : epoch_metrics = trainer.train_epoch(epoch_num=epoch)
 			aggr_metrics, best_metrics, best_value = trainer.validate(epoch, key_metric, save_path, best_predictions_path)
 			if epoch_metrics is not None:
 				epoch_losses["train_loss"].append(epoch_metrics["loss"])
