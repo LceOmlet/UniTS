@@ -8,3 +8,5 @@ anomaly_detection_ckpt
 clustering_ckpt
 forcasting_ckpt
 imputation_ckpt
+**/__pycache__/
+exp1
