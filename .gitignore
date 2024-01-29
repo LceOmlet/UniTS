@@ -13,3 +13,4 @@ ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/networks/__py
 ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/losses/__pycache__/
 myeel/__pycache__/
 **/__pycache__/
+res_file_paths.txt
