@@ -14,7 +14,7 @@ The theoretical foundation of url for ts is being built by considering shaplet a
 2. Simply run `bash env.sh` and waiting for the environment to be installed.
 
 Just run `python app.py` in the created python environment "UniTS". After few seconds, you will see the GUI as shown in the image below.
-![Pre-training Model](./figures/Pre_training.png)
+![Pre-training Model](./figures/covering.png)
 
 #### Windows
 Almost the same as installing in linux system.
