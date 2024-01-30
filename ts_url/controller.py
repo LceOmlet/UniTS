@@ -57,7 +57,7 @@ def get_task_samples_num(task_name, task_id):
 			with per_batch_path["file_lock"]:
 				with open(per_batch_path["per_batch_path"] + ".json", mode="r") as f:
 					per_batch_json = json.load(f)
-			return per_batch_json["predictions"]["length"]
+			return per_batch_json["X"]["length"]
 	return 0
 # parsed_expamle:
 {
@@ -85,6 +85,7 @@ def visualize_sample(task_name, task_id, sample_index):
 
 @eel.expose
 def visualize_loss(task_name, task_id):
+	print("loss called.")
 	task_id = int(task_id)
 	if task_id in per_batch_load_states[task_name]:
 		per_batch_path = per_batch_load_states[task_name][task_id]
@@ -183,6 +184,7 @@ def get_model_names():
 
 @eel.expose
 def get_ckpt_dir():
+	print("what?")
 	dir_name = askdirectory(initialdir='./ckpts')
 	return dir_name
 
