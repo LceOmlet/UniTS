@@ -10,7 +10,7 @@
     "mask_distribution": "geometric",
     "@mask_distribution/choice": ["geometric", "bernoulli"],
     "exclude_feats": null,
-    "batch_size": 64,
+    "batch_size": 8,
     "optimizer": "Adam",
     "@optimier/choice": ["Adam", "RAdam"],
     "lr": 1e-3,

@@ -8,11 +8,11 @@ import tsaug
 
 @COLLATE_FN.register("csl")
 def collate_csl(data):
-	augmentation_list = ['AddNoise(seed=np.random.randint(2 ** 32 - 1))',
-						'Crop(int(0.9 * ts_l), seed=np.random.randint(2 ** 32 - 1))',
-						'Pool(seed=np.random.randint(2 ** 32 - 1))',
-						'Quantize(seed=np.random.randint(2 ** 32 - 1))',
-						'TimeWarp(seed=np.random.randint(2 ** 32 - 1))'
+	augmentation_list = ['AddNoise(seed=np.random.randint(2 ** 16 - 1))',
+						'Crop(int(0.9 * ts_l), seed=np.random.randint(2 ** 16 - 1))',
+						'Pool(seed=np.random.randint(2 ** 16 - 1))',
+						'Quantize(seed=np.random.randint(2 ** 16 - 1))',
+						'TimeWarp(seed=np.random.randint(2 ** 16 - 1))'
 						]
 	aug1 = np.random.choice(augmentation_list, 1, replace=False)
 	batch_size = len(data)
