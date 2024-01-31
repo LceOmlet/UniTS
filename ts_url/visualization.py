@@ -378,7 +378,7 @@ def plot_pie_chart(logits, target):
         labels = labels[-1-len(big_prob_indices[0]):]
         label_modified = False
         for i in range(len(labels) - 1):
-            print(labels, target)
+            # print(labels, target)
             if labels[-i] == str(target):
                 labels[-i] = str(target) + " (Ground Truth)"
                 label_modified = True
@@ -453,38 +453,38 @@ def visualize_classification(input_seq, logits, target):
 def visualize_sample_(per_batch, task_name,sample_index):
     if task_name == "regression":
         targets = per_batch["X"][sample_index]
-        predictions = per_batch["predictions"][sample_index]
+        predictions = per_batch["prediction"][sample_index]
         if len(targets.shape) == 3:
             targets = targets.reshape(targets.shape[-2:])
             predictions = predictions.reshape(predictions.shape[-2:])
         visualize_prediction(targets, predictions)
     # raise NotImplementedError
     elif task_name == "imputation":
-        targets = per_batch["targets"][sample_index]
-        predictions = per_batch["predictions"][sample_index]
-        target_masks = per_batch["target_masks"][sample_index]
+        targets = per_batch["target"][sample_index]
+        predictions = per_batch["prediction"][sample_index]
+        target_masks = per_batch["mask"][sample_index]
         if len(targets.shape) == 3:
             target_masks = target_masks.reshape(target_masks.shape[-2:])
             targets = targets.reshape(targets.shape[-2:])
             predictions = predictions.reshape(predictions.shape[-2:])
         plot_imputation(targets, target_masks, predictions)
     elif task_name == "anomaly_detection":
-        targets = per_batch["targets"].reshape(-1)
+        targets = per_batch["target"].reshape(-1)
         scores = per_batch["score"].reshape(-1)
         input_seq = per_batch["X"][:, 0, -1, :]
         if len(input_seq.shape) == 3:
             input_seq = input_seq.reshape(input_seq.shape[-2:])
         visualize_scores(scores, targets, input_seq)
     elif task_name == "clustering":
-        reps = per_batch["predictions"]
+        reps = per_batch["prediction"]
         if len(reps.shape) == 3:
             reps = reps.reshape(reps.shape[0], reps.shape[2])
         rst = per_batch["clustering_rst"]
         visualize_kmeans_clusters(rst, reps)
     elif task_name == "classification":
         input_seq = per_batch["X"][sample_index]
-        predictions = per_batch["predictions"][sample_index]
-        target = per_batch["targets"][sample_index]
+        predictions = per_batch["prediction"][sample_index]
+        target = per_batch["label"][sample_index]
         if len(input_seq.shape) == 3:
             input_seq = input_seq.reshape(input_seq.shape[-2:])
         if len(predictions.shape) == 2:

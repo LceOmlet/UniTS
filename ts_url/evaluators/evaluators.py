@@ -120,7 +120,7 @@ def evaluate_classification(batch, model, device, val_loss_module, test_module, 
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = torch.mean(loss).cpu().item()
     active_elements = len(loss)
-    test_module.append_valid(model, mask=padding_mask, X=X, target=target, prediction=prediction, ID=ID)
+    test_module.append_valid(model, mask=padding_mask, X=X, label=target, prediction=prediction, ID=ID)
     return batch_loss, mean_loss, active_elements
 
 @EVALUATE_STEP.register("clustering")
@@ -189,7 +189,7 @@ def eval_agg_ts2vec_ts_tcc_t_loss(test_module, val_loss_module, logger, epoch_me
 @EVALUATE_AGG.register("classification")
 def eval_agg_classfication(test_module, epoch_metrics, **kwargs):
     report = classification_report(np.argmax(test_module.get("prediction"), axis=-1), 
-                                test_module.get("target"))
+                                test_module.get("label"))
     epoch_metrics["report"] = report
 
 @EVALUATE_AGG.register("clustering")

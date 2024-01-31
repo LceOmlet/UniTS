@@ -16,7 +16,7 @@ class KmeanModule:
     def __init__(self, **kwargs):
         pass
     
-    def evaluate(self, repr, label, **kwargs):
+    def evaluate(self, repr, label, per_batch, **kwargs):
         label_num = np.max(label) + 1
         pca = PCA(n_components=10)
         reps = pca.fit_transform(repr)
@@ -24,6 +24,7 @@ class KmeanModule:
         pred = kmeans.fit_predict(reps)
         NMI_score = normalized_mutual_info_score(label, pred)
         RI_score = rand_score(label, pred)
+        per_batch["clustering_rst"] = pred
         return {"NMI":NMI_score, "RI": RI_score}
     
     @staticmethod

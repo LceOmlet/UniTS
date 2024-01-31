@@ -158,7 +158,7 @@ class PretrainAgg:
             #     print(it.shape)
             kwargs_eval[k] = list2array(self.per_batch_valid[k])
         kwargs_eval.update(kwargs)
-        results = self.model.evaluate(**kwargs_eval)
+        results = self.model.evaluate(per_batch=self.per_batch_valid, **kwargs_eval)
         return results
     
     def clear(self):
