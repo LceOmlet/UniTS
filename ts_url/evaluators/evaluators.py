@@ -54,7 +54,7 @@ def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kw
         loss = torch.tensor([0])
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the batch  
-    test_module.append_valid(model, X=X, prediction=prediction, target=target, metrics=loss)
+    test_module.append_valid(model, X=X, prediction=prediction, target=target, mask=mask, metrics=loss)
     return batch_loss, mean_loss, len(loss)
 
 @EVALUATE_STEP.register("pretraining")
