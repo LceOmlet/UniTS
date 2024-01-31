@@ -46,7 +46,7 @@ When doing classification or anomaly detection tasks, identifiers, `@targetLabel
 
 #### methods
 
-* [csl](https://arxiv.org/abs/2305.18888), VLDB-23.
+* [csl](https://arxiv.org/abs/2305.18888), VLDB-24.
 * [ts2vec](https://arxiv.org/abs/1907.05321), AAAI-22.
 * [ts-tcc](https://www.ijcai.org/proceedings/2021/0324.pdf), IJCAI-21.
 * [mvts-transformer](https://arxiv.org/abs/2010.02803), KDD-21.
