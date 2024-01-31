@@ -4,7 +4,7 @@ import threading
 import myeel as eel
 from .models.default_configs.configues import optim_configures, task_configures, model_configures
 from tkinter.filedialog import (askdirectory, askopenfile, askopenfilename)
-
+import tkinter as tk
 import torch
 import numpy as np
 import random
@@ -13,6 +13,7 @@ import os
 import logging
 import traceback
 from .visualization import visualize_sample_, plot_loss
+
 
 def setup_logger(name, log_file, level=logging.INFO):
 	"""To setup as many loggers as you want"""
@@ -184,17 +185,19 @@ def get_model_names():
 
 @eel.expose
 def get_ckpt_dir():
-	print("what?")
+	# root.lift()
 	dir_name = askdirectory(initialdir='./ckpts')
 	return dir_name
 
 @eel.expose
 def select_file():
+	# root.lift()
 	filepath = askdirectory(initialdir="./datasets")
 	return filepath
 
 @eel.expose
 def select_p_file():
+	# root.lift()
 	filepath = askopenfilename(initialdir="./ts_url/models/default_configs")
 	return filepath
 

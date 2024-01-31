@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 if __name__ == '__main__': 
 	root = tk.Tk()
 	root.withdraw()
+	root.wm_attributes('-topmost', 1)
 
 	tasklist = mp.Manager().list()
 	eel.init("web")
