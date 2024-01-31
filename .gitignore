@@ -14,3 +14,6 @@ ts_url/models/UnsupervisedScalableRepresentationLearningTimeSeries/losses/__pyca
 myeel/__pycache__/
 **/__pycache__/
 res_file_paths.txt
+data\UCR\JapaneseVowels
+data\UCR\SelfRegulationSCP1
+data\UCR\SelfRegulationSCP2
