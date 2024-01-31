@@ -482,6 +482,7 @@ class ImputationDataset(Dataset):
 			self.label = None
 
 		self.data = torch.tensor(data)  # this is a subclass of the BaseData class in data.py
+		self.data = torch.squeeze(self.data)
 		self.IDs = list(range(len(data)))  # list of data IDs, but also mapping between integer index and ID
 
 		self.masking_ratio = masking_ratio
@@ -503,7 +504,10 @@ class ImputationDataset(Dataset):
 		"""
 
 		X = self.data[self.IDs[ind]]  # (seq_length, feat_dim) array
-		label = self.label[self.IDs[ind]]
+		if self.label is not None:
+			label= self.label[self.IDs[ind]]
+		else:
+			label = None
 		X = torch.tensor(X).transpose(0, 1)
 		mask = noise_mask(X[:,0].unsqueeze(1).numpy() if self.mask_row else X.numpy(), self.masking_ratio, self.mean_mask_length, self.mode, self.distribution,
 						  self.exclude_feats)  # (seq_length, feat_dim) boolean array

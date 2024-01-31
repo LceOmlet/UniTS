@@ -38,6 +38,7 @@ def fit_imputation(reprs, targets, masks, valid_ratio, loss_module):
 @TRAINERS.register("classification")
 @TRAINERS.register("regression")
 @TRAINERS.register("anomaly_detection")
+@TRAINERS.register("imputation")
 @TRAINERS.register("pretraining")
 def train_epoch(model, dataloader, task, device, loss_module, train_agg,
                 optimizer, model_name, print_interval, print_callback, val_loss_module,
@@ -221,7 +222,7 @@ def step_regression(batch, model, device, loss_module, optimizer, **kwargs):
 
 @TRAIN_STEP.register("imputation")
 def step_imputation(batch, model, device, loss_module, optimizer, **kwargs):
-    X, target, target_masks, padding_masks, IDs = batch
+    X, target, target_masks, padding_masks, label, IDs = batch
     target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
     padding_masks = padding_masks.to(device)  # 0s: ignore
     target = target.to(device)
