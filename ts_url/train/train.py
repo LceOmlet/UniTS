@@ -110,7 +110,7 @@ class PretrainAgg:
         self.per_batch_valid = dict()
         self.test_module = TEST_MODULE.get(test_module)
     
-    def train_module(self, val_loss_module, logger, valid_ratio=0.1, **kwargs):
+    def train_module(self, val_loss_module, logger, valid_ratio=0.125, **kwargs):
         # if self.per_batch_train.get("repr") is None:
         #     logger.info("The batches are not collected during training.")
         #     return None
