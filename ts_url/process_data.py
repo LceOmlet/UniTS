@@ -317,8 +317,8 @@ def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window
 	else:
 		if filepath == "":
 			filepath = "data/UCR"
-			Train_dataset_path = filepath + '/' + dsid + '/' + dsid + '_TRAIN.ts'
-			Test_dataset_path = filepath + '/' + dsid + '/' + dsid + '_TEST.ts'
+		Train_dataset_path = filepath + '/' + dsid + '_TRAIN.ts'
+		Test_dataset_path = filepath + '/' + dsid + '_TEST.ts'
 		label_dict = get_label_dict(Train_dataset_path)
 		X, y = get_data_and_label_from_ts_file(Train_dataset_path, label_dict)
 		X_test, y_test = get_data_and_label_from_ts_file(Test_dataset_path, label_dict)

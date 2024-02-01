@@ -192,7 +192,7 @@ def get_ckpt_dir():
 @eel.expose
 def select_file():
 	# root.lift()
-	filepath = askdirectory(initialdir="./datasets")
+	filepath = askdirectory(initialdir="./data/UCR")
 	return filepath
 
 @eel.expose
