@@ -1,6 +1,7 @@
 ## Official Implementation of "UniTS: A Universal Time Series Analysis Framework Powered by Self-supervised Representation Learning".
 UniTS is a powerful framework for time series analysis that incorporates self-supervised representation learning to address practical challenges such as partial labeling and domain shift. With UniTS, users can easily perform analysis tasks using user-friendly GUIs and benefit from its convenience. The components of UniTS are designed with sklearn-like APIs, allowing for flexible extensions. This project's GitHub repository provides access to the UniTS framework and related resources.
 
+Our demonstration video.
 [![Please view our demonstration video. ](https://img.youtube.com/vi/uyvl0E29aKY/0.jpg)](https://www.youtube.com/watch?v=uyvl0E29aKY)
 ### What's new?
 An effective and comprehensive representation learning method:
