@@ -408,6 +408,7 @@ def _detect_shutdown() -> None:
 
 def _websocket_close(page: str) -> None:
     global _shutdown
+    sleep(3)
 
     close_callback = _start_args.get('close_callback')
 
