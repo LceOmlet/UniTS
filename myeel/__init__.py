@@ -47,7 +47,7 @@ _js_result_timeout: int = 10000
 _start_args: OptionsDictT = {
     'mode':             'chrome',                   # What browser is used
     'host':             'localhost',                # Hostname use for Bottle server
-    'port':             8000,                       # Port used for Bottle server (use 0 for auto)
+    'port':             7999,                       # Port used for Bottle server (use 0 for auto)
     'block':            True,                       # Whether start() blocks calling thread
     'jinja_templates':  None,                       # Folder for jinja2 templates
     'cmdline_args':     ['--disable-http-cache'],   # Extra cmdline flags to pass to browser start

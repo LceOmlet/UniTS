@@ -208,7 +208,8 @@ def get_fusion_model(checkpoints,  dls_setting, device='cpu', pred_len=None, **k
     model_configs = []
     ckpt_paths = []
     for idx, ckpt in enumerate(checkpoints):
-        model_name = "_".join(ckpt.split("_")[6:])
+        ckpt_ = os.path.basename(ckpt)
+        model_name = "_".join(ckpt_.split("_")[6:])
         model_names.append(model_name)
         dirs = os.listdir(ckpt)
         for dr in dirs:
