@@ -17,3 +17,4 @@ res_file_paths.txt
 data\UCR\JapaneseVowels
 data\UCR\SelfRegulationSCP1
 data\UCR\SelfRegulationSCP2
+ts_url/models/default_configs/__pycache__
