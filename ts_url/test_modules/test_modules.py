@@ -48,7 +48,8 @@ class SVMModule:
             acc_i = cross_val_score(clf, repr, label, cv=5)
             if acc_i.mean() > acc_val:
                 C_best = C
-        self.svc = SVC(kernel=kernel, gamma=gamma, c=C_best)
+        self.svc = SVC(kernel=kernel, gamma=gamma, 
+                       C=C_best)
         
         self.svc.fit(repr, label)
     

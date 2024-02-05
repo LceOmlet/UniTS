@@ -209,7 +209,7 @@ def step_anomaly_detection(batch, model, device, loss_module, optimizer, **kwarg
 
 @TRAIN_STEP.register("regression")
 def step_regression(batch, model, device, loss_module, optimizer, **kwargs):
-    X, preds, padding_masks, features, IDs = batch
+    X, preds, padding_masks, IDs = tuple(batch.values())
     predictions = model(X.to(device), padding_masks)
     # print(predictions.shape, preds.shape)
     loss = loss_module(predictions, preds)
@@ -222,7 +222,7 @@ def step_regression(batch, model, device, loss_module, optimizer, **kwargs):
 
 @TRAIN_STEP.register("imputation")
 def step_imputation(batch, model, device, loss_module, optimizer, **kwargs):
-    X, target, target_masks, padding_masks, label, IDs = batch
+    X, target, target_masks, padding_masks, label, IDs = tuple(batch.values())
     target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
     padding_masks = padding_masks.to(device)  # 0s: ignore
     target = target.to(device)
@@ -258,12 +258,12 @@ def step_mvts_transformer(batch, model, device, loss_module, optimizer, train_ag
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
-    train_agg.append_train(model, X=X, target=target, label=label, mask=target_masks)
+    # train_agg.append_train(model, X=X, target=target, label=label, mask=target_masks)
     return loss
 
 @PRETRAIN_STEP.register("ts2vec")
 def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwargs):
-    gt1, gt2, crop_l, m1, m2, X, mask, label, IDs = batch
+    gt1, gt2, crop_l, m1, m2, X, mask, label, IDs = tuple(batch.values())
     gt1 = gt1.to(device)
     gt2 = gt2.to(device)
 
@@ -273,7 +273,7 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwarg
         out1,
         out2
     )
-    train_agg.append_train(model, X=X, label=label,mask=mask)
+    # train_agg.append_train(model, X=X, label=label,mask=mask)
     optimizer.zero_grad()
     loss.backward()
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
@@ -285,9 +285,9 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwarg
 @PRETRAIN_STEP.register("csl")
 def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_agg,
              C_accu_q, c_normalising_factor_q, C_accu_k, c_normalising_factor_k, **kwargs):
-    X, x_k, x_q, mask, label, IDs = batch
+    X, x_k, x_q, mask, label, IDs = tuple(batch.values())
     X, x_k, x_q = X.to(device), x_k.to(device), x_q.to(device)
-    train_agg.append_train(model, X=X, label=label, mask=mask)
+    # train_agg.append_train(model, X=X, label=label, mask=mask)
     num_shapelet_lengths = len(model.shapelets_size_and_len)
     num_shapelet_per_length = model.num_shapelets // num_shapelet_lengths
     with torch.autograd.set_detect_anomaly(True):
@@ -366,7 +366,7 @@ def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_a
 
 @PRETRAIN_STEP.register("ts_tcc")
 def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_optimizer, train_agg, **kwargs):
-    X, aug1, aug2, mask, label, IDs = batch
+    X, aug1, aug2, mask, label, IDs = tuple(batch.values)
     data = X.float().to(device)
     X = data
     aug1, aug2 = aug1.float().to(device), aug2.float().to(device)
@@ -402,7 +402,7 @@ def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_opt
     optimizer.step()
     temporal_contr_optimizer.step()
     target = X.detach().clone()
-    train_agg.append_train(model, X=X, label=label,mask=mask)
+    # train_agg.append_train(model, X=X, label=label,mask=mask)
     return loss
 
 @PRETRAIN_STEP.register("t_loss")
@@ -419,7 +419,7 @@ def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, trai
     loss.backward()
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
-    train_agg.append_train(model, X=X, label=label, mask=target_masks)
+    # train_agg.append_train(model, X=X, label=label, mask=target_masks)
     return loss
 
 @TRAIN_LOOP_INIT.register("csl")

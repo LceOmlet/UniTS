@@ -27,6 +27,7 @@ EVALUATE_STEP = Registry()
 PRETRAIN_EVALUATE_INFER = Registry()
 EVALUATE_AGG = Registry()
 TRAIN_LOOP_INIT = Registry()
+EVAL_LOOP_INIT = Registry()
 
 TRAINER_INIT = Registry()
 TEST_MODULE = Registry()

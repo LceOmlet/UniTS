@@ -174,8 +174,15 @@ def collate_superv(data, max_len=None):
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
 								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+	
+	batch = {
+		'X': X,
+		"target": targets,
+		"padding_mask": padding_masks,
+		"IDs": IDs
+	}
 
-	return X, targets, padding_masks, IDs
+	return batch
 
 def time_generator(timestamp):
 	mins = 60
@@ -196,7 +203,7 @@ def collate_superv_regression(data, max_len=None, pred_len=1):
 	features = torch.cat([feature.unsqueeze(0) for feature in features], dim=0)
 	lengths = [X.shape[0] for X in features]  # original sequence length for each time series
 	features = features[:,: features.shape[1] - pred_len,:]
-	preds = features[:,-pred_len:, :]
+	target = features[:,-pred_len:, :]
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
 	if max_len is None:
@@ -208,8 +215,15 @@ def collate_superv_regression(data, max_len=None, pred_len=1):
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
 								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+	
+	batch = {
+		"X": features,
+		"target": target,
+		"padding_mask": padding_masks,
+		"IDs": IDs
+	}
 
-	return X, preds, padding_masks, features, IDs
+	return batch
 
 
 def split_time_series(data, y, window, stride):

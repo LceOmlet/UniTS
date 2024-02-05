@@ -41,7 +41,16 @@ def collate_csl(data):
 		x_k = eval('tsaug.' + aug + '.augment(x_k)')
 	x_k = torch.from_numpy(x_k).float()
 	x_k = x_k.transpose(1,2)
-	return x.permute(0, 2, 1), x_k.permute(0, 2, 1), x_q.permute(0, 2, 1), masks, label, IDs
+
+	batch = {
+		"X": x.permute(0, 2, 1),
+		"x_k": x_k.permute(0, 2, 1),
+		"x_q": x_q.permute(0, 2, 1),
+		"mask": masks,
+		"label": label,
+		"IDs": IDs
+	}
+	return batch
 
 @COLLATE_FN.register("ts2vec")
 def collate_ts2vec(data, max_len=None, mask_compensation=None):
@@ -61,7 +70,19 @@ def collate_ts2vec(data, max_len=None, mask_compensation=None):
 	gt2 = take_per_row(x, crop_offset + crop_left, crop_eright - crop_left)
 	m1 = take_per_row(masks, crop_offset + crop_eleft, crop_right - crop_eleft)
 	m2 = take_per_row(masks, crop_offset + crop_left, crop_eright - crop_left)
-	return gt1, gt2, crop_l, m1, m2, x, masks, label, IDs
+
+	batch = {
+		"gt1": gt1,
+		"gt2": gt2,
+		"crop_l": crop_l,
+		"m1": m1,
+		"m2":m2,
+		"X": x,
+		"mask": masks,
+		"label": label,
+		"IDs": IDs
+	}
+	return batch
 
 @COLLATE_FN.register("ts_tcc")
 def collate_ts_tcc(data, jitter_scale_ratio, jitter_ratio, max_seg):
@@ -76,7 +97,15 @@ def collate_ts_tcc(data, jitter_scale_ratio, jitter_ratio, max_seg):
 	aug1 = aug1.permute(0, 2, 1)
 	aug2 = aug2.permute(0, 2, 1)
 	x = x.permute(0, 2, 1)
-	return x, aug1, aug2, masks, label, IDs
+	batch = {
+		"X": x,
+		"aug1": aug1,
+		"aug2": aug2,
+		"mask": masks,
+		"label": label,
+		"IDs": IDs
+	}
+	return batch
 
 @COLLATE_FN.register("mvts_transformer")
 @COLLATE_FN.register("t_loss")
@@ -117,4 +146,12 @@ def collate_unsuperv(data, max_len=None, mask_compensation=False):
 		X = compensate_masking(X, target_masks)
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16), max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
 	target_masks = ~target_masks  # inverse logic: 0 now means ignore, 1 means predict
-	return X, targets, target_masks, padding_masks, label, IDs
+	batch = {
+		"X": X,
+		"target": targets,
+		"mask": target_masks,
+		"padding_mask": padding_masks,
+		"label": label,
+		"IDs": IDs
+	}
+	return batch
