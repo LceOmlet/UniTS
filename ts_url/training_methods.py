@@ -133,6 +133,8 @@ class Trainer:
         self.device = device
         
         optim_class = get_optimizer(optim_config['optimizer'])
+        # print(optim_class)
+        # raise RuntimeError()
         optimizer = optim_class(self.model.parameters(), lr=optim_config['lr'], weight_decay=optim_config["l2_reg"])
         self.optimizer = optimizer
 

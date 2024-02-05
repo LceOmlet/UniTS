@@ -8,6 +8,7 @@ import tsaug
 
 @COLLATE_FN.register("csl")
 def collate_csl(data):
+	np.random.seed(0)
 	augmentation_list = ['AddNoise(seed=np.random.randint(2 ** 16 - 1))',
 						'Crop(int(0.9 * ts_l), seed=np.random.randint(2 ** 16 - 1))',
 						'Pool(seed=np.random.randint(2 ** 16 - 1))',
@@ -17,6 +18,8 @@ def collate_csl(data):
 	aug1 = np.random.choice(augmentation_list, 1, replace=False)
 	batch_size = len(data)
 	x, masks, label, IDs = zip(*data)
+	# print(x[0])
+	# raise RuntimeError()
 	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
 	masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
 	masks = ~masks
@@ -38,10 +41,6 @@ def collate_csl(data):
 		x_k = eval('tsaug.' + aug + '.augment(x_k)')
 	x_k = torch.from_numpy(x_k).float()
 	x_k = x_k.transpose(1,2)
-	# masks = torch.cat([x_.unsqueeze(0) for x_ in masks], dim=0)
-	# masks = ~masks
-	# aug1, aug2 = dataTransform(x, jitter_scale_ratio, jitter_ratio, max_seg)
-	# aug1, aug2 = torch.tensor(aug1), torch.tensor(aug2)
 	return x.permute(0, 2, 1), x_k.permute(0, 2, 1), x_q.permute(0, 2, 1), masks, label, IDs
 
 @COLLATE_FN.register("ts2vec")

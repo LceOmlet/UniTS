@@ -352,8 +352,15 @@ def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_a
         loss_cca = 0.5 * torch.sum(q_square_sum - q_sum * q_sum / num_shapelet_lengths) + 0.5 * torch.sum(k_square_sum - k_sum * k_sum / num_shapelet_lengths)
         loss += optim_config['l3'] * (loss_cca + optim_config['l4'] * loss_sdl)       
         optimizer.zero_grad()
+        # print(list(model.state_dict().items())[10])
         loss.backward()
         optimizer.step()
+        # print("epoch")
+        # print(C_accu_q[0], c_normalising_factor_q, C_accu_k[0], c_normalising_factor_k)
+        # raise RuntimeError()
+        # print(list(model.state_dict().items())[10])
+        # raise RuntimeError()
+
     return loss
 
 

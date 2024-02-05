@@ -9,6 +9,8 @@ def get_optimizer(name):
         return torch.optim.Adam
     elif name == "RAdam":
         return RAdam
+    elif name == "SGD":
+        return torch.optim.SGD
 
 
 # from https://github.com/LiyuanLucasLiu/RAdam/blob/master/radam/radam.py
