@@ -13,7 +13,7 @@
     "batch_size": 8,
     "optimizer": "SGD",
     "@optimier/choice": ["Adam", "RAdam"],
-    "lr": 0,
+    "lr": 1e-2,
     "l2_reg": 0,
     "@epochs": 10,
     "epochs": 50,

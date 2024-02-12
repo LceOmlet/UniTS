@@ -181,7 +181,7 @@ class Trainer:
             print_str += '{}: {:8f} | '.format(k, v)
         self.logger.info(print_str)
 
-        print(key_metric)
+        # print(key_metric)
         if key_metric in self.NEG_METRICS:
             if self.best_value is None:
                 self.best_value = 1e7

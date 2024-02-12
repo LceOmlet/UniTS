@@ -45,11 +45,10 @@ class SVMModule:
         C_best = None    
         for C in [10 ** i for i in range(-4, 5)]:
             clf = SVC(C=C, random_state=42)
-            acc_i = cross_val_score(clf, repr, label, cv=5)
+            acc_i = cross_val_score(clf, repr, label, cv=5,)
             if acc_i.mean() > acc_val:
                 C_best = C
-        self.svc = SVC(kernel=kernel, gamma=gamma, 
-                       C=C_best)
+        self.svc = SVC(kernel=kernel, gamma=gamma, C=C_best)
         
         self.svc.fit(repr, label)
     
@@ -66,9 +65,11 @@ class SVMModule:
     
     @staticmethod
     def collate(model, X, **kwargs):
-        return {
+        rst = {
             "repr": model.encode(X, **kwargs)
         }
+        return rst
+        
 
 
 @TEST_MODULE.register("logistic_regression")

@@ -129,7 +129,10 @@ class PretrainAgg:
         # raise RuntimeError()
     
     def append_train(self, model, **kwargs):
-        kwargs.update(self.test_module.collate(model, **kwargs))
+        with torch.no_grad():
+            model.eval()
+            kwargs.update(self.test_module.collate(model, **kwargs))
+            model.train()
         for k in kwargs:
             if kwargs[k][0] is None:
                 self.per_batch_train[k] = None
@@ -141,7 +144,10 @@ class PretrainAgg:
 
     def append_valid(self, model, **kwargs):
         if self.test_module is not None:
-            kwargs.update(self.test_module.collate(model, **kwargs))
+            with torch.no_grad():
+                model.eval()
+                kwargs.update(self.test_module.collate(model, **kwargs))
+                model.train()
         for k in kwargs:
             if kwargs[k][0] is None:
                 self.per_batch_train[k] = None
