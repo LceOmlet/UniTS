@@ -146,6 +146,6 @@ if __name__ == '__main__':
 
 	# eel.say_hello_js('Python World!') 
 	# Start the index.html file
-	eel.start("html/pretrain.models.html", size=(1024, 760), mode=None)
+	eel.start("html/pretrain.models.html", size=(1024, 760))
 	exit(0)
 	# training_process.close()
