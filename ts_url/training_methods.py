@@ -34,7 +34,7 @@ from sklearn.metrics import normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.metrics import rand_score
 from sklearn.metrics import roc_auc_score as auc 
-from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT, TRAINER_INIT, TRAIN_AGG
+from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT, TRAINER_INIT, TRAIN_AGG, EVAL_LOOP_INIT
 from .evaluators import evaluators
 from .train import train
 from .dataloader import dataloaders
@@ -133,6 +133,8 @@ class Trainer:
         self.device = device
         
         optim_class = get_optimizer(optim_config['optimizer'])
+        # print(optim_class)
+        # raise RuntimeError()
         optimizer = optim_class(self.model.parameters(), lr=optim_config['lr'], weight_decay=optim_config["l2_reg"])
         self.optimizer = optimizer
 
@@ -179,7 +181,7 @@ class Trainer:
             print_str += '{}: {:8f} | '.format(k, v)
         self.logger.info(print_str)
 
-        print(key_metric)
+        # print(key_metric)
         if key_metric in self.NEG_METRICS:
             if self.best_value is None:
                 self.best_value = 1e7
@@ -225,6 +227,26 @@ class Trainer:
         self.reprs = input[0].cpu().numpy()
 
     def evaluate(self, **kwargs):
+        
+        eval_loop_init = EVAL_LOOP_INIT.get(self.task)
+
+        if eval_loop_init is not None:
+            eval_loop_init_kwargs = {
+                "model": self.model,
+                "dataloader": self.dataloader,
+                "test_module": self.train_agg,
+                "device": self.device
+            }
+
+            eval_loop_init(**eval_loop_init_kwargs)
+
+            train_agg_kwargs = {
+                "val_loss_module":self.val_loss_module,
+                "logger": self.logger
+            }
+
+            self.train_agg.train_module(**train_agg_kwargs)
+
         kwargs.update({
             "model": self.model,
             "valid_dataloader": self.valid_dataloader,
@@ -269,12 +291,7 @@ class Trainer:
         else:
             results = None
         
-        train_agg_kwargs = {
-            "val_loss_module":self.val_loss_module,
-            "logger": self.logger
-        }
-
-        self.train_agg.train_module(**train_agg_kwargs)
+        
         # self.test_module =  results.get("test_module")
         return results
     
@@ -282,6 +299,9 @@ class Trainer:
         for ep in range(self.optim_config['epochs']):
             self.train_epoch(epoch_num=ep)
             self.validate(epoch_num=ep, key_metric="loss", save_dir=self.save_path)
+    
+    def _test(self):
+        self.validate(0, key_metric="loss", save_dir=self.save_path)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 try:
-    from ..registry import EVALUATORS, EVALUATE_STEP, PRETRAIN_EVALUATE_INFER, EVALUATE_AGG
+    from ..registry import EVALUATORS, EVALUATE_STEP, PRETRAIN_EVALUATE_INFER, EVALUATE_AGG, EVAL_LOOP_INIT
 except:
     from registry import EVALUATORS
 import torch
@@ -35,6 +35,13 @@ def infer_imputation(reprs, target, masks, ridge, loss_module):
     pred = pred.reshape(target.shape)
     return loss_module(torch.tensor(target), torch.tensor(pred), torch.tensor(masks)).detach().cpu().numpy().mean()
 
+@EVAL_LOOP_INIT.register("pretraining")
+def pretraining_eval_loop_init(model, dataloader, test_module, device, **kwargs):
+    for batch in dataloader:
+        for k in batch:
+            batch[k] = batch[k].to(device) if isinstance(batch[k], torch.Tensor) else batch[k]
+        test_module.append_train(model, **batch)
+
 @EVALUATE_STEP.register("imputation")
 def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kwargs):
     X, target, mask, padding_mask, label, ID = batch
@@ -42,7 +49,7 @@ def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kw
     mask = mask.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
     padding_mask = padding_mask.to(device)  # 0s: ignore
     prediction = model(X.to(device), padding_mask) 
-    loss = val_loss_module(prediction, target, mask)  # (num_active,) individual loss (square error per element) for each active value in batch
+    loss = val_loss_module(prediction, target, mask)  # (num_active,) individual loss (square error per element) for each active value in 
     # print(loss.shape)
     if len(loss.shape) > 1:
         loss = loss.reshape(loss.shape[0], -1)
@@ -53,13 +60,13 @@ def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kw
     if not loss.shape[0]:
         loss = torch.tensor([0])
     batch_loss = torch.sum(loss).cpu().item()
-    mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the batch  
+    mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the 
     test_module.append_valid(model, X=X, prediction=prediction, target=target, mask=mask, metrics=loss)
     return batch_loss, mean_loss, len(loss)
 
 @EVALUATE_STEP.register("pretraining")
 def evaluate_pretraining(batch, model, device, model_name, val_loss_module, test_module, **kwargs):
-    X, target, mask, padding_mask, label, ID = batch
+    X, target, mask, padding_mask, label, ID = tuple(batch.values())
     target = target.to(device)
     mask = mask.to(device)  
     padding_mask = padding_mask.to(device) 
@@ -81,7 +88,7 @@ def evaluate_pretraining(batch, model, device, model_name, val_loss_module, test
 @PRETRAIN_EVALUATE_INFER.register("mvts_transformer")
 def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, mask, val_loss_module, test_module, **kwargs):
     prediction = model(X.to(device), padding_masks=padding_mask) 
-    loss = val_loss_module(prediction, target, mask)  # (num_active,) individual loss (square error per element) for each active value in batch
+    loss = val_loss_module(prediction, target, mask)  # (num_active,) individual loss (square error per element) for each active value in 
     # print(loss.shape)
     if len(loss.shape) > 1:
         loss = loss.reshape(loss.shape[0], -1)
@@ -92,7 +99,7 @@ def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, 
     if not loss.shape[0]:
         loss = torch.tensor([0])
     batch_loss = torch.sum(loss).cpu().item()
-    mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the batch   
+    mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the 
     # test_module.append_valid(model, X=X, mask=padding_mask, metrics=loss.cpu().numpy())
     active_elements = len(loss)
     return batch_loss, mean_loss, active_elements
@@ -109,7 +116,7 @@ def pretrain_evaluate_ts2vec(X, model, device, padding_mask, **kwargs):
 
 @EVALUATE_STEP.register("classification")
 def evaluate_classification(batch, model, device, val_loss_module, test_module, **kwargs):
-    X, target, padding_mask, ID = batch
+    X, target, padding_mask, ID = tuple(batch.values())
     target = target.to(device)
     padding_mask = padding_mask.to(device)
     prediction = model(X.to(device), padding_mask)  

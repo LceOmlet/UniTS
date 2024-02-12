@@ -15,3 +15,4 @@ from .registry import TRAIN_AGG
 from .registry import TRAIN_LOOP_INIT
 from .registry import TRAINER_INIT
 from .registry import TEST_MODULE
+from .registry import EVAL_LOOP_INIT

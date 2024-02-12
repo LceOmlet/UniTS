@@ -86,6 +86,9 @@ def normalize(memmap, norm_type):
 		mean = memmap.mean()
 		std = memmap.std()
 		return (memmap - mean) / (std + np.finfo(float).eps)
+	
+	if norm_type == "z_normalization":
+		return (memmap - np.mean(memmap, axis=-1, keepdims=True)) / (np.finfo(float).eps + np.std(memmap, axis=-1, keepdims=True))
 
 	elif norm_type == "minmax":
 		max_val = np.max(memmap)
@@ -171,8 +174,15 @@ def collate_superv(data, max_len=None):
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
 								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+	
+	batch = {
+		'X': X,
+		"target": targets,
+		"padding_mask": padding_masks,
+		"IDs": IDs
+	}
 
-	return X, targets, padding_masks, IDs
+	return batch
 
 def time_generator(timestamp):
 	mins = 60
@@ -193,7 +203,7 @@ def collate_superv_regression(data, max_len=None, pred_len=1):
 	features = torch.cat([feature.unsqueeze(0) for feature in features], dim=0)
 	lengths = [X.shape[0] for X in features]  # original sequence length for each time series
 	features = features[:,: features.shape[1] - pred_len,:]
-	preds = features[:,-pred_len:, :]
+	target = features[:,-pred_len:, :]
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
 	if max_len is None:
@@ -205,8 +215,15 @@ def collate_superv_regression(data, max_len=None, pred_len=1):
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
 								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+	
+	batch = {
+		"X": features,
+		"target": target,
+		"padding_mask": padding_masks,
+		"IDs": IDs
+	}
 
-	return X, preds, padding_masks, features, IDs
+	return batch
 
 
 def split_time_series(data, y, window, stride):
@@ -316,7 +333,7 @@ def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window
 		train_split = get_elements_by_ratio(splits[0], train_ratio)
 	else:
 		if filepath == "":
-			filepath = "data/UCR"
+			filepath = "data/UCR/" + dsid
 		Train_dataset_path = filepath + '/' + dsid + '_TRAIN.ts'
 		Test_dataset_path = filepath + '/' + dsid + '_TEST.ts'
 		label_dict = get_label_dict(Train_dataset_path)
@@ -354,7 +371,9 @@ def get_datas(data_configs, **kwargs):
 			split_ = (split_[0] + splits_v2[0], split_[1] + splits_v2[1])
 			# print(len(split_[0]) + len(split_[1]))
 			# print(max(split_[0] + split_[1]), X_.shape[0])
-	X_ = normalize(X_, "per_sample_std")
+	X_ = normalize(X_, "z_normalization")
+	# print(X_[0])
+	# raise RuntimeError()
 	# if y_.dtype != np.dtype('<U3') and y_.dtype != np.dtype('<U2'):
 	# 	tfms[1] = None
 	if y_ is not None:

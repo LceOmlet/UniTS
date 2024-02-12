@@ -324,6 +324,7 @@ class LearningShapeletsModelMixDistances(nn.Module):
         
         x_out = self.shapelets_euclidean(x, masking)
         x_out = torch.squeeze(x_out, 1)
+
         #x_out = torch.nn.functional.normalize(x_out, dim=1)
         x_out = self.bn1(x_out)
         x_out = x_out.reshape(n_samples, num_lengths, -1)
@@ -349,14 +350,6 @@ class LearningShapeletsModelMixDistances(nn.Module):
         out = torch.cat(out, dim=2)
         
         out = out.reshape(n_samples, -1)
-        
-        
-        
-        #print(out.shape)
-        #out = self.projection(out)
-        
-        # if optimize == 'acc':
-        #     out = self.linear(out)
         
         
         return out

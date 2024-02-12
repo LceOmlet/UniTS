@@ -10,6 +10,8 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.metrics import rand_score
+from sklearn.preprocessing import RobustScaler
+from sklearn.model_selection import cross_val_score
 
 @TEST_MODULE.register("kmeans")
 class KmeanModule:
@@ -37,10 +39,22 @@ class KmeanModule:
 @TEST_MODULE.register("svm")
 class SVMModule:
     def __init__(self, repr, label, kernel="rbf", gamma='scale', search=False, **kwargs):
-        self.svc = SVC(kernel=kernel, gamma=gamma)
+        self.scaler = RobustScaler()
+        repr = self.scaler.fit_transform(repr)
+        acc_val = -1
+        C_best = None    
+        for C in [10 ** i for i in range(-4, 5)]:
+            clf = SVC(C=C, random_state=42)
+            acc_i = cross_val_score(clf, repr, label, cv=5,)
+            if acc_i.mean() > acc_val:
+                C_best = C
+        self.svc = SVC(kernel=kernel, gamma=gamma, C=C_best)
+        
         self.svc.fit(repr, label)
     
     def evaluate(self, repr, label, **kwargs):
+        # scaler = RobustScaler()
+        repr = self.scaler.fit_transform(repr)
         pred = self.svc.predict(repr)
         report = classification_report(pred, label)
         score = accuracy_score(pred, label)
@@ -51,9 +65,11 @@ class SVMModule:
     
     @staticmethod
     def collate(model, X, **kwargs):
-        return {
+        rst = {
             "repr": model.encode(X, **kwargs)
         }
+        return rst
+        
 
 
 @TEST_MODULE.register("logistic_regression")
