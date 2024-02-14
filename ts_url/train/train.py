@@ -420,7 +420,7 @@ def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_opt
 
 @PRETRAIN_STEP.register("t_loss")
 def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, evaluator, **kwargs):
-    X, target, target_masks, padding_masks, label, IDs = batch
+    X, target, target_masks, padding_masks, label, IDs = tuple(batch.values())
     X = X.to(device)
     target =target.to(device)
     target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
