@@ -1,7 +1,7 @@
 try:
-    from ..registry import EVALUATORS, EVALUATE_STEP, PRETRAIN_EVALUATE_INFER, EVALUATE_AGG, EVAL_LOOP_INIT
+    from ..registry import EVALUATE, EVALUATE_STEP, PRETRAIN_EVALUATE_STEP, MAKE_EVAL_REPORT, EVAL_LOOP_INIT
 except:
-    from registry import EVALUATORS
+    from registry import EVALUATE
 import torch
 from collections import OrderedDict
 from copy import deepcopy
@@ -36,15 +36,15 @@ def infer_imputation(reprs, target, masks, ridge, loss_module):
     return loss_module(torch.tensor(target), torch.tensor(pred), torch.tensor(masks)).detach().cpu().numpy().mean()
 
 @EVAL_LOOP_INIT.register("pretraining")
-def pretraining_eval_loop_init(model, dataloader, test_module, device, **kwargs):
+def pretraining_eval_loop_init(model, dataloader, evaluator, device, **kwargs):
     for batch in dataloader:
         for k in batch:
             batch[k] = batch[k].to(device) if isinstance(batch[k], torch.Tensor) else batch[k]
-        test_module.append_train(model, **batch)
+        evaluator.append_train(model, **batch)
 
 @EVALUATE_STEP.register("imputation")
-def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kwargs):
-    X, target, mask, padding_mask, label, ID = batch
+def evaluate_imputation(batch, model, device, val_loss_module, evaluator, **kwargs):
+    X, target, mask, padding_mask, label, ID = tuple(batch.values())
     target = target.to(device)
     mask = mask.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
     padding_mask = padding_mask.to(device)  # 0s: ignore
@@ -61,11 +61,11 @@ def evaluate_imputation(batch, model, device, val_loss_module, test_module, **kw
         loss = torch.tensor([0])
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the 
-    test_module.append_valid(model, X=X, prediction=prediction, target=target, mask=mask, metrics=loss)
+    evaluator.append_valid(model, X=X, prediction=prediction, target=target, mask=mask, metrics=loss)
     return batch_loss, mean_loss, len(loss)
 
 @EVALUATE_STEP.register("pretraining")
-def evaluate_pretraining(batch, model, device, model_name, val_loss_module, test_module, **kwargs):
+def evaluate_pretraining(batch, model, device, model_name, val_loss_module, evaluator, **kwargs):
     X, target, mask, padding_mask, label, ID = tuple(batch.values())
     target = target.to(device)
     mask = mask.to(device)  
@@ -79,14 +79,14 @@ def evaluate_pretraining(batch, model, device, model_name, val_loss_module, test
         "X": X,
         "padding_mask": padding_mask,
         "device": device,
-        "test_module": test_module
+        "evaluator": evaluator
     }
-    batch_loss, mean_loss, active_elements = PRETRAIN_EVALUATE_INFER.get(model_name)(**pretrain_evaluate_kwargs)
-    test_module.append_valid(model, X=X, target=target, ID=ID, mask=mask, label=label)
+    batch_loss, mean_loss, active_elements = PRETRAIN_EVALUATE_STEP.get(model_name)(**pretrain_evaluate_kwargs)
+    evaluator.append_valid(model, X=X, target=target, ID=ID, mask=mask, label=label)
     return batch_loss, mean_loss, active_elements
 
-@PRETRAIN_EVALUATE_INFER.register("mvts_transformer")
-def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, mask, val_loss_module, test_module, **kwargs):
+@PRETRAIN_EVALUATE_STEP.register("mvts_transformer")
+def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, mask, val_loss_module, evaluator, **kwargs):
     prediction = model(X.to(device), padding_masks=padding_mask) 
     loss = val_loss_module(prediction, target, mask)  # (num_active,) individual loss (square error per element) for each active value in 
     # print(loss.shape)
@@ -100,14 +100,14 @@ def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, 
         loss = torch.tensor([0])
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization the 
-    # test_module.append_valid(model, X=X, mask=padding_mask, metrics=loss.cpu().numpy())
+    # evaluator.append_valid(model, X=X, mask=padding_mask, metrics=loss.cpu().numpy())
     active_elements = len(loss)
     return batch_loss, mean_loss, active_elements
 
-@PRETRAIN_EVALUATE_INFER.register("ts2vec")
-@PRETRAIN_EVALUATE_INFER.register("ts_tcc")
-@PRETRAIN_EVALUATE_INFER.register("t_loss")
-@PRETRAIN_EVALUATE_INFER.register("csl")
+@PRETRAIN_EVALUATE_STEP.register("ts2vec")
+@PRETRAIN_EVALUATE_STEP.register("ts_tcc")
+@PRETRAIN_EVALUATE_STEP.register("t_loss")
+@PRETRAIN_EVALUATE_STEP.register("csl")
 def pretrain_evaluate_ts2vec(X, model, device, padding_mask, **kwargs):
     mean_loss = float('inf')
     active_elements = 1
@@ -115,7 +115,7 @@ def pretrain_evaluate_ts2vec(X, model, device, padding_mask, **kwargs):
     return batch_loss, mean_loss, active_elements
 
 @EVALUATE_STEP.register("classification")
-def evaluate_classification(batch, model, device, val_loss_module, test_module, **kwargs):
+def evaluate_classification(batch, model, device, val_loss_module, evaluator, **kwargs):
     X, target, padding_mask, ID = tuple(batch.values())
     target = target.to(device)
     padding_mask = padding_mask.to(device)
@@ -127,11 +127,11 @@ def evaluate_classification(batch, model, device, val_loss_module, test_module, 
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = torch.mean(loss).cpu().item()
     active_elements = len(loss)
-    test_module.append_valid(model, mask=padding_mask, X=X, label=target, prediction=prediction, ID=ID)
+    evaluator.append_valid(model, mask=padding_mask, X=X, label=target, prediction=prediction, ID=ID)
     return batch_loss, mean_loss, active_elements
 
 @EVALUATE_STEP.register("clustering")
-def evaluate_clustering(batch, model, device, test_module, **kwargs):
+def evaluate_clustering(batch, model, device, evaluator, **kwargs):
     X, target, padding_mask, ID = batch
     target = target.to(device)
     padding_mask = padding_mask.to(device) 
@@ -139,11 +139,11 @@ def evaluate_clustering(batch, model, device, test_module, **kwargs):
     mean_loss = float('inf')
     active_elements = 1
     batch_loss = 0
-    test_module.append_valid(model, X=X, mask=padding_mask, label=target, prediction=prediction, ID=ID)
+    evaluator.append_valid(model, X=X, mask=padding_mask, label=target, prediction=prediction, ID=ID)
     return batch_loss, mean_loss, active_elements 
 
 @EVALUATE_STEP.register("anomaly_detection")
-def evaluate_anomaly_detection(batch, model, device, val_loss_module, test_module, **kwargs):
+def evaluate_anomaly_detection(batch, model, device, val_loss_module, evaluator, **kwargs):
     X, target, padding_mask, ID = batch
     target = target.to(device)
     padding_mask = padding_mask.to(device)
@@ -155,11 +155,11 @@ def evaluate_anomaly_detection(batch, model, device, val_loss_module, test_modul
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = torch.mean(loss).cpu().item()
     active_elements = len(loss)
-    test_module.append_valid(model, X=X, mask=padding_mask, target=target, prediction=prediction, ID=ID, score=loss, metric=loss)
+    evaluator.append_valid(model, X=X, mask=padding_mask, target=target, prediction=prediction, ID=ID, score=loss, metric=loss)
     return batch_loss, mean_loss, active_elements
 
 @EVALUATE_STEP.register("regression")
-def evaluate_regression(batch, model, device, val_loss_module, test_module, **kwargs):
+def evaluate_regression(batch, model, device, val_loss_module, evaluator, **kwargs):
     X, target, padding_mask, features, ID = batch
     target = target.to(device)
     padding_mask = padding_mask.to(device) 
@@ -172,20 +172,20 @@ def evaluate_regression(batch, model, device, val_loss_module, test_module, **kw
     batch_loss = torch.sum(loss).cpu().item()
     mean_loss = torch.mean(loss).cpu().item()
     active_elements = len(loss)
-    test_module.append_valid(model, metrics=loss, X=X, mask=padding_mask, target=target, prediction=prediction, ID=ID)
+    evaluator.append_valid(model, metrics=loss, X=X, mask=padding_mask, target=target, prediction=prediction, ID=ID)
     return batch_loss, mean_loss, active_elements
 
-@EVALUATE_AGG.register("imputation")
+@MAKE_EVAL_REPORT.register("imputation")
 def eval_agg_imputation(**kwargs):
     pass
 
-@EVALUATE_AGG.register("pretraining")
-def eval_agg_ts2vec_ts_tcc_t_loss(test_module, val_loss_module, logger, epoch_metrics, **kwargs):
-    if test_module is not None:
+@MAKE_EVAL_REPORT.register("pretraining")
+def eval_agg_ts2vec_ts_tcc_t_loss(evaluator, val_loss_module, logger, epoch_metrics, **kwargs):
+    if evaluator is not None:
         infer_kwargs = {
             "val_loss_module": val_loss_module
         }
-        epoch_metrics.update(test_module.infer(**infer_kwargs))
+        epoch_metrics.update(evaluator.infer(**infer_kwargs))
     else:
         epoch_metrics.update({
             "report": 0,
@@ -193,34 +193,34 @@ def eval_agg_ts2vec_ts_tcc_t_loss(test_module, val_loss_module, logger, epoch_me
         })
     return epoch_metrics
 
-@EVALUATE_AGG.register("classification")
-def eval_agg_classfication(test_module, epoch_metrics, **kwargs):
-    report = classification_report(np.argmax(test_module.get("prediction"), axis=-1), 
-                                test_module.get("label"))
+@MAKE_EVAL_REPORT.register("classification")
+def eval_agg_classfication(evaluator, epoch_metrics, **kwargs):
+    report = classification_report(np.argmax(evaluator.get("prediction"), axis=-1), 
+                                evaluator.get("label"))
     epoch_metrics["report"] = report
 
-@EVALUATE_AGG.register("clustering")
-def eval_agg_clustering(test_module, epoch_metrics, **kwargs):
-    report = test_module.infer()
+@MAKE_EVAL_REPORT.register("clustering")
+def eval_agg_clustering(evaluator, epoch_metrics, **kwargs):
+    report = evaluator.infer()
     epoch_loss = report["NMI"]
     report = json.dumps(report, indent="  ")
     epoch_metrics["report"] = report
     epoch_metrics['loss'] = float(epoch_loss)
 
-@EVALUATE_AGG.register("regression")
+@MAKE_EVAL_REPORT.register("regression")
 def eval_agg_regression(epoch_metrics, epoch_loss, **kwargs):
     epoch_metrics["report"] = str(epoch_loss)
 
-@EVALUATE_AGG.register("anomaly_detection")
-def eval_agg_anomaly_detection(test_module, epoch_metrics, **kwargs):
-    # print(test_module.get("target").shape, test_module.get("score").shape)
-    auc_score = auc(test_module.get("target"), test_module.get("score"))
+@MAKE_EVAL_REPORT.register("anomaly_detection")
+def eval_agg_anomaly_detection(evaluator, epoch_metrics, **kwargs):
+    # print(evaluator.get("target").shape, evaluator.get("score").shape)
+    auc_score = auc(evaluator.get("target"), evaluator.get("score"))
     epoch_metrics['auc'] = auc_score
     epoch_metrics['report'] = auc_score
 
-@EVALUATORS.register("all_eval")
+@EVALUATE.register("default")
 def evaluate(model, valid_dataloader, task, device, val_loss_module, 
-             model_name, print_interval, print_callback, logger, test_module=None,
+             model_name, print_interval, print_callback, logger, evaluator=None,
                epoch_num=None, keep_all=True):
     model.eval()
     epoch_loss = 0  # total loss of epoch
@@ -238,7 +238,7 @@ def evaluate(model, valid_dataloader, task, device, val_loss_module,
             "device": device,
             "model_name": model_name,
             "val_loss_module": val_loss_module,
-            "test_module": test_module
+            "evaluator": evaluator
         }
         batch_loss, mean_loss, active_elements = EVALUATE_STEP.get(task)(**evaluate_step_kwargs)
         epoch_loss += batch_loss
@@ -261,14 +261,17 @@ def evaluate(model, valid_dataloader, task, device, val_loss_module,
         "epoch_metrics": epoch_metrics,
         "val_loss_module": val_loss_module,
         "logger": logger,
-        "test_module": test_module,
+        "evaluator": evaluator,
         "model_name": model_name,
         "epoch_loss": epoch_loss
     } 
 
-    EVALUATE_AGG.get(task)(**eval_aggr_kwargs)
+    make_report = MAKE_EVAL_REPORT.get(task)
+ 
+    if make_report is not None:
+        make_report(**eval_aggr_kwargs)
 
-    per_batch = test_module.per_batch_valid
+    per_batch = evaluator.per_batch_valid
     for key in per_batch:
         # print(key)
         per_batch[key] = list2array(per_batch[key])

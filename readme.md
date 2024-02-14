@@ -75,7 +75,8 @@ Here we provide an example of hyper-parameters selected for an imputation task, 
     "mask_distribution": "geometric",
     "@mask_distribution/choice": ["geometric", "bernoulli"],
     "mean_mask_length": 3,
-    "exclude_feats": null
+    "exclude_feats": null,
+    "evaluator":"ridge"
 }
 ```
 The hyper-parameters can be changed at anytime before a task being invoked.

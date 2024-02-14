@@ -20,5 +20,5 @@
     "jitter_ratio": 0.001,
     "max_seg": 5,
     "print_interval": 10,
-    "test_module": "ridge"
+    "evaluator": "ridge"
 }

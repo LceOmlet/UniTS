@@ -13,5 +13,5 @@
     "l2_reg": 0,
     "epochs": 10,
     "print_interval": 10,
-    "test_module": "svm"
+    "evaluator": "svm"
 }

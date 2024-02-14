@@ -1,4 +1,4 @@
-from ..registry.registry import DATALOADERS, PRETRAINING_TRAIN_LOADER, COLLATE_FN
+from ..registry.registry import DATALOADERS, PRETRAIN_LOADERS, COLLATE_FN
 from ..process_data import *
 from torch.utils.data import DataLoader
 
@@ -20,7 +20,7 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
     return dataloader, valid_dataloader
 
 @DATALOADERS.register("pretraining")
-def get_pretrain_loaders(dls, optim_config, model_name, logger, **kwargs):
+def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, **kwargs):
     data = [dls.train_ds[i][0] for i in range(len(dls.train_ds))]
     label = [dls.train_ds[i][1] for i in range(len(dls.train_ds))]
     train_ds = ImputationDataset(data, label=label, mean_mask_length=optim_config['mean_mask_length'],
@@ -38,20 +38,20 @@ def get_pretrain_loaders(dls, optim_config, model_name, logger, **kwargs):
         "optim_config": optim_config,
         "collate_fn": COLLATE_FN.get(model_name)
     }
-    dataloader = PRETRAINING_TRAIN_LOADER.get(model_name)(**loader_config)
+    dataloader = PRETRAIN_LOADERS.get(model_name)(**loader_config)
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
     return  dataloader, valid_dataloader
 
-@PRETRAINING_TRAIN_LOADER.register("mvts_transformer")
-@PRETRAINING_TRAIN_LOADER.register("t_loss")
-@PRETRAINING_TRAIN_LOADER.register("ts2vec")
-@PRETRAINING_TRAIN_LOADER.register("csl")
+@PRETRAIN_LOADERS.register("mvts_transformer")
+@PRETRAIN_LOADERS.register("t_loss")
+@PRETRAIN_LOADERS.register("ts2vec")
+@PRETRAIN_LOADERS.register("csl")
 def get_mvts_t_loss_loader(train_ds, optim_config, collate_fn, **kwargs):
     batch_size = optim_config["batch_size"]
     dataloader = DataLoader(train_ds, batch_size=batch_size, collate_fn=collate_fn)
     return dataloader
 
-@PRETRAINING_TRAIN_LOADER.register("ts_tcc")
+@PRETRAIN_LOADERS.register("ts_tcc")
 def get_ts_tcc(train_ds, optim_config, collate_fn, **kwargs):
     dataloader = DataLoader(train_ds, batch_size=optim_config["batch_size"], 
         collate_fn=lambda batch: collate_fn(batch, optim_config["jitter_scale_ratio"], 

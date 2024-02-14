@@ -9,5 +9,5 @@
     "l2_reg": 0,
     "print_interval": 10,
     "epochs": 1,
-    "test_module": "kmeans"
+    "evaluator": "kmeans"
 }

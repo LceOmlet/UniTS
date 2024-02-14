@@ -1,4 +1,4 @@
-from ..registry import TEST_MODULE
+from ..registry import TEST_METHODS
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 import numpy as np
@@ -13,7 +13,7 @@ from sklearn.metrics import rand_score
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import cross_val_score
 
-@TEST_MODULE.register("kmeans")
+@TEST_METHODS.register("kmeans")
 class KmeanModule:
     def __init__(self, **kwargs):
         pass
@@ -36,7 +36,7 @@ class KmeanModule:
         }
 
 
-@TEST_MODULE.register("svm")
+@TEST_METHODS.register("svm")
 class SVMModule:
     def __init__(self, repr, label, kernel="rbf", gamma='scale', search=False, **kwargs):
         self.scaler = RobustScaler()
@@ -72,7 +72,7 @@ class SVMModule:
         
 
 
-@TEST_MODULE.register("logistic_regression")
+@TEST_METHODS.register("logistic_regression")
 class LRModule:
     def __init__(self, repr, label, **kwargs):
         self.lr = LogisticRegression()
@@ -93,7 +93,7 @@ class LRModule:
             "repr": model.encode(X, **kwargs)
         }
 
-@TEST_MODULE.register("ridge")
+@TEST_METHODS.register("ridge")
 class RidgeModule:
     def __init__(self, repr, target, mask, valid_ratio, loss_module, **kwargs):
         alphas = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]

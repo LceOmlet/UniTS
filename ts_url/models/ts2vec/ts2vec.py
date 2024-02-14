@@ -65,7 +65,7 @@ class TS2Vec(nn.Module):
         self.n_iters = 0
     
     def _eval_with_pooling(self, x, mask=None, slicing=None, encoding_window=None):
-        out = self.net(x.to(self.device, non_blocking=True), mask)
+        out = self.net(x, mask)
         if encoding_window == 'full_series':
             if slicing is not None:
                 out = out[:, slicing]

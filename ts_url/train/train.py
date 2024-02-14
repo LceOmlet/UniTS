@@ -1,4 +1,4 @@
-from ..registry.registry import TRAINERS, TRAIN_STEP, PRETRAIN_STEP, TRAIN_AGG, TRAIN_LOOP_INIT, TRAINER_INIT, TEST_MODULE
+from ..registry.registry import TRAIN_FN, TRAIN_STEP, PRETRAIN_STEP, EVALUATOR, TRAIN_LOOP_INIT, TRAINER_INIT, TEST_METHODS
 from collections import OrderedDict
 import torch
 from ..utils.loss import hierarchical_contrastive_loss
@@ -7,6 +7,16 @@ from sklearn.linear_model import Ridge
 import torch.nn.functional as F
 from torch import nn 
 from ..utils.utils import list2array
+from collections.abc import Collection
+
+def have_None(inp):
+    # dict is not allowed here
+    if inp is None:
+        return True
+    elif isinstance(inp, Collection) and not isinstance(inp, torch.Tensor) and not isinstance(inp, np.ndarray):
+        return have_None(inp[0])
+    else:
+        return False
 
 def fit_imputation(reprs, targets, masks, valid_ratio, loss_module):
     reprs = list2array(reprs)
@@ -34,13 +44,8 @@ def fit_imputation(reprs, targets, masks, valid_ratio, loss_module):
     lr.fit(reprs.reshape((reprs.shape[0], -1)), targets.reshape((reprs.shape[0], -1)))
     return lr
 
-@TRAINERS.register("all_train")
-@TRAINERS.register("classification")
-@TRAINERS.register("regression")
-@TRAINERS.register("anomaly_detection")
-@TRAINERS.register("imputation")
-@TRAINERS.register("pretraining")
-def train_epoch(model, dataloader, task, device, loss_module, train_agg,
+@TRAIN_FN.register("default")
+def train_epoch(model, dataloader, task, device, loss_module, evaluator,
                 optimizer, model_name, print_interval, print_callback, val_loss_module,
                 logger, optim_config, t_loss_train=None, temporal_contr_optimizer=None, 
                 epoch_num=None, **kwargs):
@@ -65,7 +70,7 @@ def train_epoch(model, dataloader, task, device, loss_module, train_agg,
             "model": model, 
             "device": device, 
             "optimizer": optimizer, 
-            "train_agg": train_agg,
+            "evaluator": evaluator,
             "model_name": model_name,
             "t_loss_train": t_loss_train,
             "temporal_contr_optimizer": temporal_contr_optimizer,
@@ -103,12 +108,12 @@ def train_epoch(model, dataloader, task, device, loss_module, train_agg,
 
 
 
-@TRAIN_AGG.register("pretraining")
+@EVALUATOR.register("defalt")
 class PretrainAgg:
-    def __init__(self, test_module) -> None:
+    def __init__(self, evaluator) -> None:
         self.per_batch_train = dict()
         self.per_batch_valid = dict()
-        self.test_module = TEST_MODULE.get(test_module)
+        self.evaluator = TEST_METHODS.get(evaluator)
     
     def train_module(self, val_loss_module, logger, valid_ratio=0.125, **kwargs):
         # if self.per_batch_train.get("repr") is None:
@@ -117,24 +122,30 @@ class PretrainAgg:
         
         test_module_kwargs = dict()
         for k in self.per_batch_train:
-            test_module_kwargs[k] = list2array(self.per_batch_train[k])
+            try:
+                test_module_kwargs[k] = list2array(self.per_batch_train[k])
+            except Exception as e:
+                test_module_kwargs[k] = None
+                logger.info(f"Caught an exception: {e}")
+                logger.info(f"collated data: {k} can not be converted into array.")
+
         
         test_module_kwargs.update({
             "valid_ratio": valid_ratio,
             "loss_module": val_loss_module
         })
 
-        if self.test_module is not None:
-            self.model = self.test_module(**test_module_kwargs)
+        if self.evaluator is not None:
+            self.model = self.evaluator(**test_module_kwargs)
         # raise RuntimeError()
     
     def append_train(self, model, **kwargs):
         with torch.no_grad():
             model.eval()
-            kwargs.update(self.test_module.collate(model, **kwargs))
+            kwargs.update(self.evaluator.collate(model, **kwargs))
             model.train()
         for k in kwargs:
-            if kwargs[k][0] is None:
+            if have_None(kwargs[k]):
                 self.per_batch_train[k] = None
                 continue
             if k in self.per_batch_train:
@@ -143,10 +154,10 @@ class PretrainAgg:
                 self.per_batch_train[k] = [kwargs[k]]
 
     def append_valid(self, model, **kwargs):
-        if self.test_module is not None:
+        if self.evaluator is not None:
             with torch.no_grad():
                 model.eval()
-                kwargs.update(self.test_module.collate(model, **kwargs))
+                kwargs.update(self.evaluator.collate(model, **kwargs))
                 model.train()
         for k in kwargs:
             if kwargs[k][0] is None:
@@ -178,10 +189,6 @@ class PretrainAgg:
         else:
             return list2array(self.per_batch_valid[record])
 
-
-@TRAIN_AGG.register("mvts_transformer")
-def train_agg_mvts_transformer(**kwargs):
-    pass
 
 @TRAIN_STEP.register("classification")
 def step_classification(batch, model, device, loss_module, optimizer, **kwargs):
@@ -246,8 +253,8 @@ def step_pretraining(model_name, **kwargs):
     return PRETRAIN_STEP.get(model_name)(**kwargs)
 
 @PRETRAIN_STEP.register("mvts_transformer")
-def step_mvts_transformer(batch, model, device, loss_module, optimizer, train_agg, **kwargs):
-    X, target, target_masks, padding_masks, label, IDs = batch
+def step_mvts_transformer(batch, model, device, loss_module, optimizer, evaluator, **kwargs):
+    X, target, target_masks, padding_masks, label, IDs = tuple(batch.values())
     # print(torch.mean(torch.abs(X)))
     target = target.to(device)
     X = X.to(device)
@@ -264,11 +271,11 @@ def step_mvts_transformer(batch, model, device, loss_module, optimizer, train_ag
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
-    # train_agg.append_train(model, X=X, target=target, label=label, mask=target_masks)
+    # evaluator.append_train(model, X=X, target=target, label=label, mask=target_masks)
     return loss
 
 @PRETRAIN_STEP.register("ts2vec")
-def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwargs):
+def step_ts2vec(batch, model, device, loss_module, optimizer, evaluator, **kwargs):
     gt1, gt2, crop_l, m1, m2, X, mask, label, IDs = tuple(batch.values())
     gt1 = gt1.to(device)
     gt2 = gt2.to(device)
@@ -279,7 +286,7 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwarg
         out1,
         out2
     )
-    # train_agg.append_train(model, X=X, label=label,mask=mask)
+    # evaluator.append_train(model, X=X, label=label,mask=mask)
     optimizer.zero_grad()
     loss.backward()
     # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
@@ -289,11 +296,11 @@ def step_ts2vec(batch, model, device, loss_module, optimizer, train_agg, **kwarg
     return loss
 
 @PRETRAIN_STEP.register("csl")
-def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_agg,
+def step_csl(batch, model, device, loss_module, optimizer, optim_config, evaluator,
              C_accu_q, c_normalising_factor_q, C_accu_k, c_normalising_factor_k, **kwargs):
     X, x_k, x_q, mask, label, IDs = tuple(batch.values())
     X, x_k, x_q = X.to(device), x_k.to(device), x_q.to(device)
-    # train_agg.append_train(model, X=X, label=label, mask=mask)
+    # evaluator.append_train(model, X=X, label=label, mask=mask)
     num_shapelet_lengths = len(model.shapelets_size_and_len)
     num_shapelet_per_length = model.num_shapelets // num_shapelet_lengths
     with torch.autograd.set_detect_anomaly(True):
@@ -371,8 +378,8 @@ def step_csl(batch, model, device, loss_module, optimizer, optim_config, train_a
 
 
 @PRETRAIN_STEP.register("ts_tcc")
-def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_optimizer, train_agg, **kwargs):
-    X, aug1, aug2, mask, label, IDs = tuple(batch.values)
+def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_optimizer, evaluator, **kwargs):
+    X, aug1, aug2, mask, label, IDs = tuple(batch.values())
     data = X.float().to(device)
     X = data
     aug1, aug2 = aug1.float().to(device), aug2.float().to(device)
@@ -408,11 +415,11 @@ def step_ts_tcc(batch, model, device, loss_module, optimizer, temporal_contr_opt
     optimizer.step()
     temporal_contr_optimizer.step()
     target = X.detach().clone()
-    # train_agg.append_train(model, X=X, label=label,mask=mask)
+    # evaluator.append_train(model, X=X, label=label,mask=mask)
     return loss
 
 @PRETRAIN_STEP.register("t_loss")
-def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, train_agg, **kwargs):
+def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, evaluator, **kwargs):
     X, target, target_masks, padding_masks, label, IDs = batch
     X = X.to(device)
     target =target.to(device)
@@ -425,7 +432,7 @@ def step_t_loss(batch, model, device, loss_module, optimizer, t_loss_train, trai
     loss.backward()
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=4.0)
     optimizer.step()
-    # train_agg.append_train(model, X=X, label=label, mask=target_masks)
+    # evaluator.append_train(model, X=X, label=label, mask=target_masks)
     return loss
 
 @TRAIN_LOOP_INIT.register("csl")

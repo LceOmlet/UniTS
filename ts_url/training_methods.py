@@ -34,7 +34,7 @@ from sklearn.metrics import normalized_mutual_info_score
 from sklearn.cluster import KMeans
 from sklearn.metrics import rand_score
 from sklearn.metrics import roc_auc_score as auc 
-from .registry import EVALUATORS, TRAINERS, DATALOADERS, LOSSES, TRAIN_LOOP_INIT, TRAINER_INIT, TRAIN_AGG, EVAL_LOOP_INIT
+from .registry import EVALUATE, TRAIN_FN, DATALOADERS, LOSSES, TRAIN_LOOP_INIT, TRAINER_INIT, EVALUATOR, EVAL_LOOP_INIT
 from .evaluators import evaluators
 from .train import train
 from .dataloader import dataloaders
@@ -63,7 +63,7 @@ class Trainer:
         self.best_metrics = None
         self.reprs = None
         self.save_path = save_path 
-        self.test_module = None
+        self.evaluator = None
         
         self.task = task
         
@@ -90,7 +90,7 @@ class Trainer:
 
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
-        self.train_agg = TRAIN_AGG.get("pretraining")(optim_config.get("test_module"))
+        self.evaluator = EVALUATOR.get("defalt")(optim_config.get("evaluator"))
         self.NEG_METRICS = {'loss'}  # metrics for which "better" is less
         # print(data_configs)
         # exit()
@@ -181,7 +181,7 @@ class Trainer:
             print_str += '{}: {:8f} | '.format(k, v)
         self.logger.info(print_str)
 
-        # print(key_metric)
+        print(key_metric)
         if key_metric in self.NEG_METRICS:
             if self.best_value is None:
                 self.best_value = 1e7
@@ -234,7 +234,7 @@ class Trainer:
             eval_loop_init_kwargs = {
                 "model": self.model,
                 "dataloader": self.dataloader,
-                "test_module": self.train_agg,
+                "evaluator": self.evaluator,
                 "device": self.device
             }
 
@@ -245,7 +245,7 @@ class Trainer:
                 "logger": self.logger
             }
 
-            self.train_agg.train_module(**train_agg_kwargs)
+            self.evaluator.train_module(**train_agg_kwargs)
 
         kwargs.update({
             "model": self.model,
@@ -257,14 +257,14 @@ class Trainer:
             "print_interval": self.print_interval,
             "print_callback": self.print_callback,
             "logger": self.logger,
-            "test_module": self.train_agg
+            "evaluator": self.evaluator
         })
         
-        return EVALUATORS.get("all_eval")(**kwargs)
+        return EVALUATE.get("default")(**kwargs)
 
     def train_epoch(self, epoch_num, **kwargs):
 
-        self.train_agg.clear()
+        self.evaluator.clear()
 
         kwargs.update({
             "model": self.model,
@@ -272,7 +272,7 @@ class Trainer:
             "dataloader": self.dataloader,
             "task": self.task,
             "device": self.device,
-            "train_agg": self.train_agg,
+            "evaluator": self.evaluator,
             "loss_module": self.loss_module,
             "optimizer": self.optimizer,
             "model_name": self.model_name,
@@ -285,14 +285,14 @@ class Trainer:
 
         kwargs.update(self.init_trainer)
 
-        trainer_fn = TRAINERS.get(self.task)
+        trainer_fn = TRAIN_FN.get("default")
         if trainer_fn is not None:
             results = trainer_fn(**kwargs)
         else:
             results = None
         
         
-        # self.test_module =  results.get("test_module")
+        # self.evaluator =  results.get("evaluator")
         return results
     
     def fit(self):

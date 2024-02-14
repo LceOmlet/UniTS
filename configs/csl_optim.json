@@ -18,5 +18,5 @@
     "@epochs": 10,
     "epochs": 50,
     "print_interval": 10,
-    "test_module": "svm"
+    "evaluator": "svm"
 }

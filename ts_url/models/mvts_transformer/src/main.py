@@ -30,7 +30,7 @@ from running import setup, pipeline_factory, validate, check_progress, NEG_METRI
 from utils import utils
 from datasets.data import data_factory, Normalizer
 from datasets.datasplit import split_dataset
-from models.ts_transformer import model_factory
+from models.mvts_transformer import model_factory
 from models.loss import get_loss_module
 from optimizers import get_optimizer
 

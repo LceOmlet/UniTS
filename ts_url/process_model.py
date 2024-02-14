@@ -120,9 +120,16 @@ class ts2vec(TS2Vec):
     def __init__(self, feat_dim, output_dims=320, hidden_dims=64, max_len=100, depth=10, device='cpu', max_train_length=None, temporal_unit=0, after_iter_callback=None, after_epoch_callback=None, **kwargs):
         super().__init__(feat_dim, output_dims, hidden_dims, max_len, depth, device, max_train_length, temporal_unit, after_iter_callback, after_epoch_callback)
     
-    def encode(self, data, reduce_method="mean", **kwargs):
+    def encode(self, data, mask=None, reduce_method="mean", **kwargs):
+        if mask is None:
+            mask = torch.zeros_like(data).to(dtype=torch.bool, device=data.device)
+        # try:
         embeddings = self.encode_masked(data, 
-                                torch.zeros_like(data).to(dtype=torch.bool)) 
+                            mask) 
+        # except:
+        #     print(mask)
+        #     print(data)
+        #     raise RuntimeError()
         embeddings = reduce(embeddings, reduce_method)
         return embeddings
     
@@ -133,7 +140,7 @@ class mvts_transformer(TSTransformerEncoder):
 
     def encode(self, data, padding_mask=None, reduce_method="mean", **kwargs):
         if padding_mask is None:
-            padding_mask = torch.ones(data.shape[: 2], dtype=torch.bool)
+            padding_mask = torch.ones(data.shape[: 2], dtype=torch.bool, device=data.device)
         embedding = self.get_encodding(data, padding_mask)
         embedding = reduce(embedding, reduce_method)
         return embedding

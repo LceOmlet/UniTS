@@ -1,5 +1,5 @@
 optim_configures = {
-	"mvts_transformer": "./ts_url/models/default_configs/ts_transformer_optim.json",
+	"mvts_transformer": "./ts_url/models/default_configs/mvts_transformer_optim.json",
 	"ts2vec": "./ts_url/models/default_configs/ts2vec_optim.json",
     "ts_tcc": "./ts_url/models/default_configs/ts_tcc_optim.json",
     "t_loss": "./ts_url/models/default_configs/t_loss_optim.json",
@@ -8,7 +8,7 @@ optim_configures = {
 }
 
 model_configures = {
-    "mvts_transformer": "ts_url/models/default_configs/ts_transformer.json",
+    "mvts_transformer": "ts_url/models/default_configs/mvts_transformer.json",
     "ts2vec": "ts_url/models/default_configs/ts2vec.json",
     "ts_tcc": "ts_url/models/default_configs/ts_tcc.json",
     "t_loss": "ts_url/models/default_configs/t_loss.json",

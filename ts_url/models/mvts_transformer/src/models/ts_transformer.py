@@ -179,8 +179,24 @@ class TransformerBatchNormEncoderLayer(nn.modules.Module):
         Shape:
             see the docs in Transformer class.
         """
+        # param = list(self.self_attn.parameters())
+        # if src.device == "cpu" or src_key_padding_mask.device == "cpu" or (src_mask is not None and src_mask.device == "cpu"):
+        #     print(src)
+        #     print(src_key_padding_mask)
+        #     print(src_mask)
+        #     raise RuntimeError()
+        # try:
         src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
+                            key_padding_mask=src_key_padding_mask)[0]
+        # except:
+        #     print(src)
+        #     print(src_key_padding_mask)
+        #     print(src_mask)
+        #     param = self.self_attn.parameters()
+        #     for p in param:
+        #         print(p.device)
+        #     raise RuntimeError()
+
         src = src + self.dropout1(src2)  # (seq_len, batch_size, d_model)
         src = src.permute(1, 2, 0)  # (batch_size, d_model, seq_len)
         # src = src.reshape([src.shape[0], -1])  # (batch_size, seq_length * d_model)

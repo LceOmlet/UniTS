@@ -19,5 +19,5 @@
     "nb_random_samples": 10,
     "negative_penalty": 1,
     "print_interval": 10,
-    "test_module": "svm"
+    "evaluator": "svm"
 }
