@@ -49,8 +49,6 @@ def train_epoch(model, dataloader, task, device, loss_module, evaluator,
                 optimizer, model_name, print_interval, print_callback, val_loss_module,
                 logger, optim_config, t_loss_train=None, temporal_contr_optimizer=None, 
                 epoch_num=None, **kwargs):
-    if task == "clustering":
-        raise NotImplementedError()
     epoch_metrics = OrderedDict()
     model.train()
     epoch_loss = 0  # total loss of epoch
@@ -63,40 +61,45 @@ def train_epoch(model, dataloader, task, device, loss_module, evaluator,
             "device": device
         }
         kwargs_init.update(init_loop(**init_kwargs))
-    
-    for i, batch in enumerate(dataloader):
-        train_step_config = {
-            "batch": batch, 
-            "model": model, 
-            "device": device, 
-            "optimizer": optimizer, 
-            "evaluator": evaluator,
-            "model_name": model_name,
-            "t_loss_train": t_loss_train,
-            "temporal_contr_optimizer": temporal_contr_optimizer,
-            "loss_module": loss_module,
-            "optim_config": optim_config
-        }
-        train_step_config.update(kwargs_init)
-        loss = TRAIN_STEP.get(task)(**train_step_config)
 
-        if len(loss.shape):
-            loss = loss.reshape(loss.shape[0], -1)
-            loss = torch.mean(loss, dim=-1)
-        if not loss.shape:
-            loss = loss.unsqueeze(0)
-        
-        batch_loss = torch.sum(loss)
-        mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization
+    train_step = TRAIN_STEP.get(task)
+    if train_step is not None:
+        for i, batch in enumerate(dataloader):
+            train_step_config = {
+                "batch": batch, 
+                "model": model, 
+                "device": device, 
+                "optimizer": optimizer, 
+                "evaluator": evaluator,
+                "model_name": model_name,
+                "t_loss_train": t_loss_train,
+                "temporal_contr_optimizer": temporal_contr_optimizer,
+                "loss_module": loss_module,
+                "optim_config": optim_config
+            }
+            train_step_config.update(kwargs_init)
+            loss = train_step(**train_step_config)
 
-        metrics = {"loss": mean_loss.item()}
-        if i % print_interval == 0:
-            ending = "" if epoch_num is None else 'Epoch {} '.format(epoch_num)
-            print_callback(i, metrics, prefix='Training ' + ending, total_batches=len(dataloader))
+            if len(loss.shape):
+                loss = loss.reshape(loss.shape[0], -1)
+                loss = torch.mean(loss, dim=-1)
+            if not loss.shape:
+                loss = loss.unsqueeze(0)
+            
+            batch_loss = torch.sum(loss)
+            mean_loss = batch_loss / len(loss)  # mean loss (over active elements) used for optimization
 
-        with torch.no_grad():
-            total_active_elements += len(loss)
-            epoch_loss += batch_loss.item()  # add total loss of batch
+            metrics = {"loss": mean_loss.item()}
+            if i % print_interval == 0:
+                ending = "" if epoch_num is None else 'Epoch {} '.format(epoch_num)
+                print_callback(i, metrics, prefix='Training ' + ending, total_batches=len(dataloader))
+
+            with torch.no_grad():
+                total_active_elements += len(loss)
+                epoch_loss += batch_loss.item()  # add total loss of batch
+    else:
+        epoch_loss = 0.
+        total_active_elements = 1
 
 
     epoch_loss = epoch_loss / total_active_elements  # average loss per element for whole epoch

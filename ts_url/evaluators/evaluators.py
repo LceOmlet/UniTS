@@ -132,7 +132,7 @@ def evaluate_classification(batch, model, device, val_loss_module, evaluator, **
 
 @EVALUATE_STEP.register("clustering")
 def evaluate_clustering(batch, model, device, evaluator, **kwargs):
-    X, target, padding_mask, ID = batch
+    X, target, padding_mask, ID = tuple(batch.values())
     target = target.to(device)
     padding_mask = padding_mask.to(device) 
     prediction = model.encode(X.to(device), padding_mask)
@@ -144,7 +144,7 @@ def evaluate_clustering(batch, model, device, evaluator, **kwargs):
 
 @EVALUATE_STEP.register("anomaly_detection")
 def evaluate_anomaly_detection(batch, model, device, val_loss_module, evaluator, **kwargs):
-    X, target, padding_mask, ID = batch
+    X, target, padding_mask, ID = tuple(batch.values())
     target = target.to(device)
     padding_mask = padding_mask.to(device)
     prediction = model(X.to(device), padding_mask) 
@@ -160,11 +160,10 @@ def evaluate_anomaly_detection(batch, model, device, val_loss_module, evaluator,
 
 @EVALUATE_STEP.register("regression")
 def evaluate_regression(batch, model, device, val_loss_module, evaluator, **kwargs):
-    X, target, padding_mask, features, ID = batch
+    X, target, padding_mask, ID = tuple(batch.values())
     target = target.to(device)
     padding_mask = padding_mask.to(device) 
     prediction = model(X.to(device), padding_mask) 
-    X = features
     loss = val_loss_module(prediction, target)
     if len(loss.shape) > 1:
         loss = loss.reshape(loss.shape[0], -1)

@@ -90,6 +90,8 @@ class Trainer:
 
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
+        # print(optim_config.get("evaluator"))
+        # raise RuntimeError()
         self.evaluator = EVALUATOR.get("defalt")(optim_config.get("evaluator"))
         self.NEG_METRICS = {'loss'}  # metrics for which "better" is less
         # print(data_configs)
@@ -240,12 +242,12 @@ class Trainer:
 
             eval_loop_init(**eval_loop_init_kwargs)
 
-            train_agg_kwargs = {
-                "val_loss_module":self.val_loss_module,
-                "logger": self.logger
-            }
+        train_agg_kwargs = {
+            "val_loss_module":self.val_loss_module,
+            "logger": self.logger
+        }
 
-            self.evaluator.train_module(**train_agg_kwargs)
+        self.evaluator.train_module(**train_agg_kwargs)
 
         kwargs.update({
             "model": self.model,
