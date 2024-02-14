@@ -192,7 +192,7 @@ class PretrainAgg:
 
 @TRAIN_STEP.register("classification")
 def step_classification(batch, model, device, loss_module, optimizer, **kwargs):
-    X, targets, padding_masks, IDs = batch
+    X, targets, padding_masks, IDs = tuple(batch.values())
     targets = targets.to(device)
     padding_masks = padding_masks.to(device)  # 0s: ignore
     # regression: (batch_size, num_labels); classification: (batch_size, num_classes) of logits
@@ -209,7 +209,7 @@ def step_classification(batch, model, device, loss_module, optimizer, **kwargs):
 
 @TRAIN_STEP.register("anomaly_detection")
 def step_anomaly_detection(batch, model, device, loss_module, optimizer, **kwargs):
-    X, targets, padding_masks, IDs = batch
+    X, targets, padding_masks, IDs = tuple(batch.values())
     padding_masks = padding_masks.to(device)
     predictions = model(X.to(device), padding_masks)
     loss = loss_module(predictions, X)
