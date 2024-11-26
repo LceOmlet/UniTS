@@ -3,3 +3,4 @@ from .image_like import *
 from .symbolic import *
 from .ts_transformation import *
 from .wavelet import *
+from .timevae import *

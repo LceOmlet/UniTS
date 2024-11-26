@@ -1,15 +1,23 @@
 class Registry:
     def __init__(self):
         self._registry = {}
+        self._type = {}
 
-    def register(self, name):
+    def register(self, name, m_type=None):
         def decorator(func_or_class):
             self._registry[name] = func_or_class
+            self._type[name] = m_type
             return func_or_class
         return decorator
 
     def get(self, name):
-        return self._registry.get(name)
+        return self._registry.get(name, self._registry.get('default'))
+    
+    def get_type(self, name):
+        return self._type.get(name)
+    
+    def get_names(self):
+        return list(self._registry.keys())
 
 
 

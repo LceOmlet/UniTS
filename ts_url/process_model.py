@@ -22,15 +22,19 @@ from .models.CSL_GNN import csl_pad
 from .models.CSL_GNN import csl_pad_rec
 from .models.gemma.gemma import SFA_Gemma
 from .models.tinyllama.tinyllama import SFA_TinyLlama
+from .models import *
+# from  . import models 
+# print(dir(models))
+# exit()
 
 @MODELS.register("ts_tcc")
 class TS_TCC(nn.Module):
     def __init__(self, device, kernel_size, feat_dim, stride, dropout, output_dims,
-                                num_classes, timesteps, max_len) -> None:
+                                num_classes, timesteps, seq_len) -> None:
         super(TS_TCC, self).__init__()
         final_out_channels = output_dims
         input_channels = feat_dim
-        features_len = max_len
+        features_len = seq_len
         self.model = base_Model(features_len,kernel_size, input_channels, stride, dropout, final_out_channels,
                                 num_classes, timesteps).to(device)
         self.tenporal_contr_model = TC(device, final_out_channels, timesteps).to(device)
@@ -46,9 +50,17 @@ class TS_TCC(nn.Module):
         repr = reduce(repr, reduce_method)
         return repr
 
+@MODELS.register("same")
+class SameEncoder():
+    def __init__(self, base_model, **kwargs):
+        self.original_model = base_model
+    
+    def __getattr__(self, name):
+        return getattr(self.original_model, name)
+
 @MODELS.register("t_loss")
 class T_LOSS(CausalCNNEncoder):
-    def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, max_len, **kwargs):
+    def __init__(self, feat_dim, channels, depth, reduced_size, output_dims, kernel_size, device, seq_len, **kwargs):
         out_channels = output_dims
         super(T_LOSS, self).__init__(feat_dim, channels, depth, reduced_size, out_channels, kernel_size)
     
@@ -117,8 +129,8 @@ logger = logging.getLogger("__main__")
 
 @MODELS.register("ts2vec")
 class ts2vec(TS2Vec):
-    def __init__(self, feat_dim, output_dims=320, hidden_dims=64, max_len=100, depth=10, device='cpu', max_train_length=None, temporal_unit=0, after_iter_callback=None, after_epoch_callback=None, **kwargs):
-        super().__init__(feat_dim, output_dims, hidden_dims, max_len, depth, device, max_train_length, temporal_unit, after_iter_callback, after_epoch_callback)
+    def __init__(self, feat_dim, output_dims=320, hidden_dims=64, seq_len=100, depth=10, device='cpu', max_train_length=None, temporal_unit=0, after_iter_callback=None, after_epoch_callback=None, **kwargs):
+        super().__init__(feat_dim, output_dims, hidden_dims, seq_len, depth, device, max_train_length, temporal_unit, after_iter_callback, after_epoch_callback)
     
     def encode(self, data, mask=None, reduce_method="mean", **kwargs):
         if mask is None:
@@ -135,8 +147,8 @@ class ts2vec(TS2Vec):
     
 @MODELS.register("mvts_transformer")
 class mvts_transformer(TSTransformerEncoder):
-    def __init__(self, feat_dim, max_len, output_dims, n_heads, num_layers, dim_feedforward, dropout=0.1, pos_encoding='fixed', activation='gelu', norm='BatchNorm', device="cpu", freeze=False, ** kwargs):
-        super().__init__(feat_dim, max_len, output_dims, n_heads, num_layers, dim_feedforward, dropout, pos_encoding, activation, norm, device, freeze)
+    def __init__(self, feat_dim, seq_len, output_dims, n_heads, num_layers, dim_feedforward, dropout=0.1, pos_encoding='fixed', activation='gelu', norm='BatchNorm', device="cpu", freeze=False, ** kwargs):
+        super().__init__(feat_dim, seq_len, output_dims, n_heads, num_layers, dim_feedforward, dropout, pos_encoding, activation, norm, device, freeze)
 
     def encode(self, data, padding_mask=None, reduce_method="mean", **kwargs):
         if padding_mask is None:
@@ -147,9 +159,9 @@ class mvts_transformer(TSTransformerEncoder):
 
 @MODELS.register("csl")
 class CSL(LearningShapeletsModelMixDistances):
-    def __init__(self, max_len, feat_dim, output_dim=320,**kwargs) -> None:
+    def __init__(self, seq_len, feat_dim, output_dim=320,**kwargs) -> None:
         
-        len_ts = max_len
+        len_ts = seq_len
         num_shapelets = output_dim // 8
         shapelets_size_and_len = {int(i): num_shapelets for i in np.linspace(min(128, max(3, int(0.1 * len_ts))), int(0.8 * len_ts), 8, dtype=int)}
         self.shapelets_size_and_len = shapelets_size_and_len
@@ -170,7 +182,7 @@ class FussionModel(nn.Module):
         for idx, (model_name, ckpt_path, model_config) in enumerate(zip(model_names, ckpt_paths, model_configs)):
             model_config.update({
                 "feat_dim": dls_setting["input_feat_dim"],
-                "max_len": dls_setting["seq_len"],
+                "seq_len": dls_setting["seq_len"],
                 "device": device
             })
             self.outputs_dims.append(model_config["output_dims"])
@@ -246,11 +258,12 @@ def get_model(model_name, dls_setting, model_config, task="self-supervised", dev
         if key[0] != '@':
             model_config[key] = model_config_[key]
     model_class = MODELS.get(model_name)
-    model_config.update({
-        "feat_dim": dls_setting["input_feat_dim"],
-        "max_len": dls_setting["seq_len"],
-        "device": device
-    })
+    model_config.update(dict(
+        feat_dim=dls_setting["input_feat_dim"], 
+        seq_len=dls_setting["seq_len"], 
+        device=device
+    ))
+    
     print(model_name)
     # print(model_config)
     model = model_class(**model_config)

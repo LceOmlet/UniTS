@@ -55,6 +55,30 @@ def get_t_loss_loss(optim_config, **kwargs):
 @PRETRAIN_LOSSES.register("mvts_transformer")
 def get_mvts_transformer_loss(**kwargs):
     return LOSSES.get("imputation")(**kwargs)
+@PRETRAIN_LOSSES.register("time_vae")
+def get_time_vae_loss(reconstruction_wt, **kwargs):
+    def _get_reconstruction_loss(self, X, X_recons):
+        def get_reconst_loss_by_axis(X, X_recons, dim):
+            x_r = torch.mean(X, dim=dim)
+            x_c_r = torch.mean(X_recons, dim=dim)
+            err = torch.pow(x_r - x_c_r, 2)
+            loss = torch.sum(err)
+            return loss
+
+        err = torch.pow(X - X_recons, 2)
+        reconst_loss = torch.sum(err)
+        
+        reconst_loss += get_reconst_loss_by_axis(X, X_recons, dim=2)  # by time axis
+        # reconst_loss += get_reconst_loss_by_axis(X, X_recons, dim=1)  # by feature axis 
+
+        return reconst_loss
+    def loss_function(self, X, X_recons, z_mean, z_log_var, reconstruction_wt):
+        reconstruction_loss = _get_reconstruction_loss(X, X_recons)
+        kl_loss = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - z_log_var.exp())
+        total_loss = reconstruction_wt * reconstruction_loss + kl_loss
+        return total_loss, reconstruction_loss, kl_loss
+    
+    return partial(loss_function, reconstruction_wt=reconstruction_wt)
 
 def off_diagonal(x):
     n, m = x.shape
@@ -76,9 +100,11 @@ def std_loss(x):
     std_loss = torch.mean(F.relu(1 - std_x)) / 2
     return std_loss
 
+deep_clustering_acc = 0
+normalizing_c = 0
 feature_weights_ = defaultdict(lambda :1)
-def vicloss(base_model, X, models, transform_features, optimizer, feature_weights=None, train=True, rec=False, rec_loss_w = 25, cov_loss_w=25, std_loss_w=25, repr_loss_w=1, **kwargs):
-    
+def vicloss(base_model, X, models, transform_features, optimizer, feature_weights=None, train=True, rec=False, alpha=0, rec_loss_w = 25, cov_loss_w=25, std_loss_w=25, repr_loss_w=1, **kwargs):
+    global deep_clustering_acc, normalizing_c
     if feature_weights is None:
         feature_weights = feature_weights_
 
@@ -135,6 +161,7 @@ def vicloss(base_model, X, models, transform_features, optimizer, feature_weight
         
         
         data_ = transform_features[t]
+        # print(data_.shape)
         
         # embeddings_layer = model_.bert.get_input_embeddings()
         # exit()
@@ -159,25 +186,17 @@ def vicloss(base_model, X, models, transform_features, optimizer, feature_weight
         losses[t + "_std_loss"] = std_loss_
         cov_loss_all += cov_loss_
         std_loss_all += std_loss_
-        # if t == "cgau2":
-        #     print("cgau2")
-        #     print(repr_)
-    # print("mmfa")
-    # print(main_repr)
+        
     reprs = torch.cat(reprs, dim=1)
-    scores = torch.softmax(reprs * main_repr.unsqueeze(1) / math.sqrt(main_repr.shape[-1]), dim=1)
-    # scores = torch.argmin((reprs-main_repr.unsqueeze(1))**2, dim=1, keepdim=True)
-    # repr_ = torch.mean(reprs* scores.detach(), dim=1)
-    # repr_ = torch.gather(reprs, 1, scores).squeeze()
-    # print(reprs.shape, scores.shape, repr_.shape)
-
-    # repr_loss += F.mse_loss(repr_.detach(), main_repr)
-    total_loss += cov_loss_w * (cov_loss_all + main_cov_loss) \
-        + std_loss_w * (std_loss_all + main_std_loss) + \
+    
+    deep_clustering_cur = cov_loss_w * (cov_loss_all + main_cov_loss) \
+        + std_loss_w * (std_loss_all + main_std_loss)
+        
+    total_loss +=  deep_clustering_cur + \
              repr_loss_w * repr_loss
     total_loss.backward()
-    print(total_loss)
-    check_gradients(model_)
+    torch.nn.utils.clip_grad_norm_(base_model.parameters(), max_norm=2.0)
+    # check_gradients(model_)
     optimizer.step()
     losses["loss"] = total_loss
     torch.autograd.set_grad_enabled(False)
@@ -185,8 +204,8 @@ def vicloss(base_model, X, models, transform_features, optimizer, feature_weight
 
 @PRETRAIN_LOSSES.register("mmfa_rec")
 def get_mmfa_loss(optim_config, **kwargs):
-    return partial(vicloss, rec=True, kwargs=optim_config["loss"])
+    return partial(vicloss, rec=True, **optim_config["loss"])
 
 @PRETRAIN_LOSSES.register("mmfa")
 def get_mmfa_loss(optim_config, **kwargs):
-    return partial(vicloss, kwargs=optim_config["loss"])
+    return partial(vicloss, **optim_config["loss"])

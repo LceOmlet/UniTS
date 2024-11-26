@@ -8,6 +8,7 @@ import torch.nn.functional as F
 from torch import nn 
 from ..utils.utils import list2array
 from collections.abc import Collection
+import copy
 
 def have_None(inp):
     # dict is not allowed here
@@ -266,15 +267,43 @@ def step_imputation(batch, model, device, loss_module, optimizer, **kwargs):
 def step_pretraining(model_name, **kwargs):
     return PRETRAIN_STEP.get(model_name)(**kwargs)
 
+@PRETRAIN_STEP.register("time_vae")
+def step_time_vae(batch, model, device, optimizer, **kwargs):
+    X = batch["X"]
+    X = X.to(device)
+    X = X.permute(0, 2, 1)
+    optimizer.zero_grad()
+    
+    z_mean, z_log_var, z = model.encoder(X)
+    reconstruction = model.decoder(z)
+    
+    reconstruction = reconstruction / (torch.std(reconstruction.reshape(reconstruction.shape[0], -1), dim=-1)[..., None, None] + 1e-7)
+    # reconstruction = (reconstruction) / (torch.std(reconstruction, dim=-1, keepdim=True) + 1e-7)
+    loss, recon_loss, kl = model.loss_function(X, reconstruction, z_mean, z_log_var)
+    
+    # Normalize loss by batch size
+    loss = loss / X.size(0)
+    recon_loss = recon_loss / X.size(0)
+    kl = kl / X.size(0)
+    
+    loss.backward()
+    optimizer.step()
+    
+    return {"loss": loss, "recon_loss": recon_loss, "kl": kl, "std": torch.std(reconstruction), "train_std": torch.std(X)}
+    
+
 @PRETRAIN_STEP.register("mvts_transformer")
 def step_mvts_transformer(batch, model, device, loss_module, optimizer, evaluator, **kwargs):
     X, target, target_masks, padding_masks, label, IDs = tuple(batch.values())
+    X = X.permute(0, 2, 1)
+    target = target.permute(0, 2, 1)
+    target_masks = target_masks.permute(0, 2, 1)
     # print(torch.mean(torch.abs(X)))
     target = target.to(device)
     X = X.to(device)
     X[target_masks] = 0
     target_masks = target_masks.to(device)  # 1s: mask and predict, 0s: unaffected input (ignore)
-    padding_masks = torch.ones(X.shape[0], X.shape[2]).to(dtype=bool)
+    padding_masks = torch.ones(X.shape[0], X.shape[1]).to(dtype=bool)
     padding_masks = padding_masks.to(device)  # 0s: ignore
     predictions = model(X.to(device), padding_masks)  # (batch_size, padded_length, feat_dim)
     # Cascade noise masks (batch_size, padded_length, feat_dim) and padding masks (batch_size, padded_length)
@@ -491,15 +520,26 @@ def train_init_ts_tcc(model, optim_config, **kwargs):
         "temporal_contr_optimizer": temporal_contr_optimizer
     }
 
+
+def is_param_in_optimizer(optimizer, params):
+    param_ids = {id(p) for group in optimizer.param_groups for p in group['params']}
+    
+    for param in params:
+        if id(param) in param_ids:
+            return True  # 参数已存在
+    return False
+        
 @TRAINER_INIT.register("mmfa_rec")
 @TRAINER_INIT.register("mmfa")
 def train_init_ts_tcc(optimizer, optim_config, device, **kwargs):
     transformations = optim_config["transformations"]
     models = dict()
     for t in transformations:
+        model_args = copy.deepcopy(transformations[t]["model"])
+        model_args.update(dict(base_model=kwargs["model"]))
         transformations[t]["model"]["device"] = device
         models[t] = MODELS.get(transformations[t]["model"]["model_name"]) \
-            (**transformations[t]["model"])
+            (**model_args)
         if transformations[t]["model"]["model_name"] in ["Gemma", "TinyLlama"]:
             pass
         elif isinstance(device, list):
@@ -508,12 +548,14 @@ def train_init_ts_tcc(optimizer, optim_config, device, **kwargs):
             models[t] = torch.nn.DataParallel(models[t], device_ids=device)
         else:
             models[t] = models[t].to(device)
-        params = {'params': models[t].parameters(), }
+        params = {'params': models[t].parameters(), 'lr': optim_config['lr']}
         if "lr" in transformations[t]["model"]:
             print( f"{transformations[t]['model']} learning rate: {transformations[t]['model']['lr']}")
             params["lr"] = transformations[t]["model"]["lr"]
-        optimizer.add_param_group(params)
-        
+
+        # 使用该函数判断是否应该添加
+        if not is_param_in_optimizer(optimizer, params['params']):
+            optimizer.add_param_group(params)        
             
     return {
         "models": models

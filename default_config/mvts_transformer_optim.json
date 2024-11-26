@@ -13,5 +13,5 @@
     "l2_reg": 0,
     "epochs": 5,
     "print_interval": 10,
-    "evaluator": "isolation"
+    "evaluator": "svm"
 }

@@ -90,7 +90,7 @@ def load_model(model, model_path, optimizer=None, resume=False, change_output=Fa
                lr=None, lr_step=None, lr_factor=None):
     start_epoch = 0
     checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
-    state_dict = deepcopy(checkpoint['state_dict'])
+    state_dict = checkpoint['state_dict']
     if change_output:
         for key, val in checkpoint['state_dict'].items():
             if key.startswith('output_layer'):

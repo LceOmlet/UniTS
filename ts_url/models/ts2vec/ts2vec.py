@@ -25,7 +25,7 @@ class TS2Vec(nn.Module):
         feat_dim,
         output_dims=320,
         hidden_dims=64,
-        max_len=100,
+        seq_len=100,
         depth=10,
         device='cpu',
         max_train_length=None,

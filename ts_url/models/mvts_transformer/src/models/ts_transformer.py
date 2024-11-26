@@ -74,15 +74,15 @@ class FixedPositionalEncoding(nn.Module):
     Args:
         d_model: the embed dim (required).
         dropout: the dropout value (default=0.1).
-        max_len: the max. length of the incoming sequence (default=1024).
+        seq_len: the max. length of the incoming sequence (default=1024).
     """
 
-    def __init__(self, d_model, dropout=0.1, max_len=1024, scale_factor=1.0):
+    def __init__(self, d_model, dropout=0.1, seq_len=1024, scale_factor=1.0):
         super(FixedPositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
 
-        pe = torch.zeros(max_len, d_model)  # positional encoding
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        pe = torch.zeros(seq_len, d_model)  # positional encoding
+        position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
@@ -104,12 +104,12 @@ class FixedPositionalEncoding(nn.Module):
 
 class LearnablePositionalEncoding(nn.Module):
 
-    def __init__(self, d_model, dropout=0.1, max_len=1024):
+    def __init__(self, d_model, dropout=0.1, seq_len=1024):
         super(LearnablePositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
         # Each position gets its own embedding
-        # Since indices are always 0 ... max_len, we don't have to do a look-up
-        self.pe = nn.Parameter(torch.empty(max_len, 1, d_model))  # requires_grad automatically set to True
+        # Since indices are always 0 ... seq_len, we don't have to do a look-up
+        self.pe = nn.Parameter(torch.empty(seq_len, 1, d_model))  # requires_grad automatically set to True
         nn.init.uniform_(self.pe, -0.02, 0.02)
 
     def forward(self, x):
@@ -212,17 +212,17 @@ class TransformerBatchNormEncoderLayer(nn.modules.Module):
 
 class TSTransformerEncoder(nn.Module):
 
-    def __init__(self, feat_dim, max_len, output_dims, n_heads, num_layers, dim_feedforward, dropout=0.1,
+    def __init__(self, feat_dim, seq_len, output_dims, n_heads, num_layers, dim_feedforward, dropout=0.1,
                  pos_encoding='fixed', activation='gelu', norm='BatchNorm', device="cpu", freeze=False):
         super(TSTransformerEncoder, self).__init__()
         self.device = device
-        self.max_len = max_len
+        self.seq_len = seq_len
         d_model = output_dims
         self.d_model = d_model
         self.n_heads = n_heads
 
         self.project_inp = nn.Linear(feat_dim, d_model)
-        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, dropout=dropout*(1.0 - freeze), max_len=max_len)
+        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, dropout=dropout*(1.0 - freeze), seq_len=seq_len)
 
         if norm == 'LayerNorm':
             encoder_layer = TransformerEncoderLayer(d_model, self.n_heads, dim_feedforward, dropout*(1.0 - freeze), activation=activation)
@@ -247,11 +247,9 @@ class TSTransformerEncoder(nn.Module):
         Returns:
             output: (batch_size, seq_length, feat_dim)
         """
-        X = X.permute(0, 2, 1)
         # permute because pytorch convention for transformers is [seq_length, batch_size, feat_dim]. padding_masks [batch_size, feat_dim]
         inp = X.permute(1, 0, 2)
-        inp = self.project_inp(inp) * math.sqrt(
-            self.d_model)  # [seq_length, batch_size, d_model] project input vectors to d_model dimensional space
+        inp = self.project_inp(inp) * math.sqrt(self.d_model)  # [seq_length, batch_size, d_model] project input vectors to d_model dimensional space
         inp = self.pos_enc(inp)  # add positional encoding
         # NOTE: logic for padding masks is reversed to comply with definition in MultiHeadAttention, TransformerEncoderLayer
         output = self.transformer_encoder(inp, src_key_padding_mask=~padding_masks)  # (seq_length, batch_size, d_model)
@@ -285,14 +283,14 @@ class TSTransformerEncoder(nn.Module):
     def encode(self, data, padding_mask):
         return self.get_encodding(data, padding_mask)
 
-def padding_mask(lengths, max_len=None):
+def padding_mask(lengths, seq_len=None):
 	"""
-	Used to mask padded positions: creates a (batch_size, max_len) boolean mask from a tensor of sequence lengths,
+	Used to mask padded positions: creates a (batch_size, seq_len) boolean mask from a tensor of sequence lengths,
 	where 1 means keep element at this position (time step)
 	"""
 	batch_size = lengths.numel()
-	max_len = max_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
-	return (torch.arange(0, max_len, device=lengths.device)
+	seq_len = seq_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
+	return (torch.arange(0, seq_len, device=lengths.device)
 			.type_as(lengths)
 			.repeat(batch_size, 1)
 			.lt(lengths.unsqueeze(1)))
@@ -303,16 +301,16 @@ class TSTransformerEncoderClassiregressor(nn.Module):
     softmax. Concatenates final layer embeddings and uses 0s to ignore padding embeddings in final output layer.
     """
 
-    def __init__(self, feat_dim, max_len, d_model, n_heads, num_layers, dim_feedforward, num_classes,
+    def __init__(self, feat_dim, seq_len, d_model, n_heads, num_layers, dim_feedforward, num_classes,
                  dropout=0.1, pos_encoding='fixed', activation='gelu', norm='BatchNorm', freeze=False):
         super(TSTransformerEncoderClassiregressor, self).__init__()
 
-        self.max_len = max_len
+        self.seq_len = seq_len
         self.d_model = d_model
         self.n_heads = n_heads
 
         self.project_inp = nn.Linear(feat_dim, d_model)
-        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, dropout=dropout*(1.0 - freeze), max_len=max_len)
+        self.pos_enc = get_pos_encoder(pos_encoding)(d_model, dropout=dropout*(1.0 - freeze), seq_len=seq_len)
 
         if norm == 'LayerNorm':
             encoder_layer = TransformerEncoderLayer(d_model, self.n_heads, dim_feedforward, dropout*(1.0 - freeze), activation=activation)
@@ -327,10 +325,10 @@ class TSTransformerEncoderClassiregressor(nn.Module):
 
         self.feat_dim = feat_dim
         self.num_classes = num_classes
-        self.output_layer = self.build_output_module(d_model, max_len, num_classes)
+        self.output_layer = self.build_output_module(d_model, seq_len, num_classes)
 
-    def build_output_module(self, d_model, max_len, num_classes):
-        output_layer = nn.Linear(d_model * max_len, num_classes)
+    def build_output_module(self, d_model, seq_len, num_classes):
+        output_layer = nn.Linear(d_model * seq_len, num_classes)
         # no softmax (or log softmax), because CrossEntropyLoss does this internally. If probabilities are needed,
         # add F.log_softmax and use NLLoss
         return output_layer

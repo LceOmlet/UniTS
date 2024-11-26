@@ -18,6 +18,7 @@ from collections import defaultdict
 from .ad_datasets import UCR, data_generator1
 from. utils.utils import normalize
 from torch import nn
+from scipy.interpolate import interp1d
 # import tfsnippet as spt
 
 interfusion = ['omi-6', 'omi-9', 'omi-4', 'omi-7', 'machine-2-2', 'omi-10', 'omi-8', 'omi-11', 'machine-1-7', 
@@ -100,14 +101,14 @@ def scaling(x, sigma=1.1):
 	return np.concatenate((ai), axis=1)
 
 
-def padding_mask(lengths, max_len=None):
+def padding_mask(lengths, seq_len=None):
 	"""
-	Used to mask padded positions: creates a (batch_size, max_len) boolean mask from a tensor of sequence lengths,
+	Used to mask padded positions: creates a (batch_size, seq_len) boolean mask from a tensor of sequence lengths,
 	where 1 means keep element at this position (time step)
 	"""
 	batch_size = lengths.numel()
-	max_len = max_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
-	return (torch.arange(0, max_len, device=lengths.device)
+	seq_len = seq_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
+	return (torch.arange(0, seq_len, device=lengths.device)
 			.type_as(lengths)
 			.repeat(batch_size, 1)
 			.lt(lengths.unsqueeze(1)))
@@ -135,14 +136,14 @@ def take_per_row(A, indx, num_elem):
 	return A[torch.arange(all_indx.shape[0])[:,None], all_indx]
 
 
-def collate_superv(data, max_len=None):
+def collate_superv(data, seq_len=None):
 	"""Build mini-batch tensors from a list of (X, mask) tuples. Mask input. Create
 	Args:
 		data: len(batch_size) list of tuples (X, y).
 			- X: torch tensor of shape (seq_length, feat_dim); variable seq_length.
 			- y: torch tensor of shape (num_labels,) : class indices or numerical targets
 				(for classification or regression, respectively). num_labels > 1 for multi-task models
-		max_len: global fixed sequence length. Used for architectures requiring fixed length input,
+		seq_len: global fixed sequence length. Used for architectures requiring fixed length input,
 			where the batch length cannot vary dynamically. Longer sequences are clipped, shorter are padded with 0s
 	Returns:
 		X: (batch_size, padded_length, feat_dim) torch tensor of masked features (input)
@@ -157,17 +158,17 @@ def collate_superv(data, max_len=None):
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
 	lengths = [X.shape[0] for X in features]  # original sequence length for each time series
-	if max_len is None:
-		max_len = max(lengths)
-	X = torch.zeros(batch_size, max_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
+	if seq_len is None:
+		seq_len = max(lengths)
+	X = torch.zeros(batch_size, seq_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
 	for i in range(batch_size):
-		end = min(lengths[i], max_len)
+		end = min(lengths[i], seq_len)
 		X[i, :end, :] = features[i][:end, :]
 
 	targets = torch.stack(labels, dim=0)  # (batch_size, num_labels)
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
-								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+								 seq_len=seq_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
 	
 	batch = {
 		'X': X,
@@ -189,7 +190,7 @@ def time_generator(timestamp):
 	res[days + hours + int(timestamp % mins)] = 1  # min
 	return res
 
-def collate_superv_regression(data, max_len=None, pred_len=1):
+def collate_superv_regression(data, seq_len=None, pred_len=1):
 
 	batch_size = len(data)
 	features, IDs = zip(*data)
@@ -200,15 +201,15 @@ def collate_superv_regression(data, max_len=None, pred_len=1):
 	target = features[:,-pred_len:, :]
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
-	if max_len is None:
-		max_len = max(lengths)
-	X = torch.zeros(batch_size, max_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
+	if seq_len is None:
+		seq_len = max(lengths)
+	X = torch.zeros(batch_size, seq_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
 	for i in range(batch_size):
-		end = min(features.shape[1], max_len)
+		end = min(features.shape[1], seq_len)
 		X[i, :end, :] = features[i][:end, :]
 
 	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
-								 max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+								 seq_len=seq_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
 	
 	batch = {
 		"X": features,
@@ -313,7 +314,40 @@ def set_nan_to_zero(a):
     a[where_are_NaNs] = 0
     return a 
 
-def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window=100, stride=1):
+def interpolate_third_dimension(arr, new_size=16, kind='linear'):
+    """
+    将一个三维数组在第三维上插值到指定大小。
+
+    参数：
+    - arr: 输入的三维 NumPy 数组，形状为 (x, y, z_old)
+    - new_size: 插值后的第三维大小，默认值为 16
+    - kind: 插值类型，默认为 'linear'，可选 'quadratic'、'cubic' 等
+
+    返回：
+    - 插值后的三维 NumPy 数组，形状为 (x, y, new_size)
+    """
+    # 获取原始第三维的大小
+    z_old = arr.shape[2]
+    z_old_indices = np.arange(z_old)
+    
+    # 生成插值后的第三维索引
+    z_new_indices = np.linspace(0, z_old - 1, new_size)
+    
+    # 将数组重塑为二维，以便进行插值
+    arr_reshaped = arr.reshape(-1, z_old)
+    
+    # 创建插值函数
+    f = interp1d(z_old_indices, arr_reshaped, kind=kind, axis=1)
+    
+    # 进行插值
+    arr_interp = f(z_new_indices)
+    
+    # 将数组恢复为三维，第三维大小为 new_size
+    arr_interp = arr_interp.reshape(arr.shape[0], arr.shape[1], new_size)
+    
+    return arr_interp
+
+def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window=100, stride=1, min_length=16):
 	# 100% train data
 	if dsid.lower() in interfusion:
 		(x_train, _), (x_test, y_test) = get_interfusion_data(dsid)
@@ -343,6 +377,8 @@ def get_unsupervised_data(dsid, filepath="", train_ratio=1, test_ratio=1, window
 			else:
 				X_test = X_test[:, :, :X.shape[2]]
 		X = np.concatenate([X, X_test], axis=0)
+		if X.shape[2] < min_length:
+			X = interpolate_third_dimension(X, min_length)
 		X = set_nan_to_zero(X)
 		y = np.concatenate([y, y_test], axis=0)
 	return X, y, splits
@@ -390,13 +426,13 @@ def get_datas(data_configs, **kwargs):
 	# if y_.dtype != np.dtype('<U3') and y_.dtype != np.dtype('<U2'):
 	# 	tfms[1] = None
 	y_ = y_.reshape(-1)
-	if X_.shape[1] > 64:
-		X_ = torch.tensor(X_)
-		adaptive_avgpool = nn.AdaptiveAvgPool2d(output_size=(64, X_.shape[-1]))
-		X_ = adaptive_avgpool(X_)
-		X_ = X_.numpy()
-	if X_.shape[-1] > 1200:
-		X_ = X[..., 1200:]
+	max_input_length = kwargs.get("max_input_length", 1200)
+	if X_.shape[2] > max_input_length:
+		X_ = X_[:,:,:max_input_length]
+	max_input_dim = kwargs.get("max_input_dim", 20)
+	if X_.shape[1] > max_input_dim:
+		X_ = X_[:,:max_input_dim]
+	
 	if y_ is not None:
 		dls = Dls(X_, y=y_, splits=split_)
 	else:
@@ -510,7 +546,7 @@ def noise_mask(X, masking_ratio, lm=3, mode='separate', distribution='geometric'
 @DATASET.register("mmfa_rec")
 @DATASET.register("mmfa")
 class AugmentationDataset(Dataset):
-	def __init__(self, data, d_name, optim_config, label=None, **kwargs):
+	def __init__(self, data, d_name, optim_config, device, label=None, **kwargs):
 		super(AugmentationDataset, self).__init__()
 		transformations = optim_config["transformations"]
 		if label is not None:
@@ -523,10 +559,11 @@ class AugmentationDataset(Dataset):
 		# data = np.transpose(np.array(data), (-1, -2))
 		for t in transformations:
 			t_ = deepcopy(transformations[t])
-			t_["X"] = data
-			t_["d_name"] = d_name
-			t_["y"] = label
-			# print(t)
+
+			t_.update(dict(X=data, d_name=d_name, y=label, device=device))
+			# print(t_)
+			# exit()
+            # print(t)
 			self.transformations[t] = TRANSFORMATION.get(t)(**t_)
 		
 		data = torch.tensor(data).float()
@@ -569,11 +606,7 @@ class AugmentationDataset(Dataset):
 	def __len__(self):
 		return len(self.IDs)
 
-@DATASET.register("csl")
-@DATASET.register("ts2vec")
-@DATASET.register("ts_tcc")
-@DATASET.register("t_loss")
-@DATASET.register("mvts_transformer")
+@DATASET.register("default")
 class ImputationDataset(Dataset):
 	"""Dynamically computes missingness (noise) mask for each sample"""
 

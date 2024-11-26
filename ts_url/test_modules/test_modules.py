@@ -14,6 +14,8 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingClassifier
 from sklearn.ensemble import IsolationForest
+from fastdtw import fastdtw
+from scipy.spatial.distance import euclidean
 
 def reconstruct_label(timestamp, label):
     timestamp = np.asarray(timestamp, np.int64)
@@ -203,7 +205,95 @@ class AlignmentLossScore:
             )
         }
 
+def average_dtw(series_group1, series_group2):
+    """
+    计算两组 n 个 d 维时间序列的平均 DTW 距离。
 
+    Args:
+        series_group1 (list of np.ndarray): 第一组 n 个 d 维时间序列，每个元素是一个 (T1, d) 形状的时间序列
+        series_group2 (list of np.ndarray): 第二组 n 个 d 维时间序列，每个元素是一个 (T2, d) 形状的时间序列
+
+    Returns:
+        float: 两组时间序列的平均 DTW 距离
+    """
+    # 检查输入长度是否一致
+    if len(series_group1) != len(series_group2):
+        raise ValueError("两组时间序列数量不一致")
+    
+    n = len(series_group1)  # 序列组的数量
+    total_dtw = 0.0
+    
+    for seq1, seq2 in zip(series_group1, series_group2):
+        # 检查每个时间序列的维度是否一致
+        if seq1.shape[0] != seq2.shape[0]:
+            raise ValueError("对应时间序列的维度不一致")
+        
+        # 计算当前 d 维时间序列的平均 DTW 距离
+        d = seq1.shape[0]
+        avg_dtw = 0.0
+        
+        for i in range(d):
+            # 对每个维度单独计算 DTW 距离
+            # print(seq1[i, :].shape, seq2[i, :].shape, seq1[i,:].ndim)
+            distance, _ = fastdtw(seq1[i, :], seq2[i, :], dist=2)
+            # distance = np.mean((seq1[i, :]- seq2[i, :]) ** 2)
+            avg_dtw += distance / len(seq1[i, :])
+        
+        # 取每个 d 维时间序列的平均 DTW 距离
+        avg_dtw /= d
+        total_dtw += avg_dtw
+    
+    # 返回所有时间序列的平均 DTW 距离
+    return total_dtw / n
+
+@TEST_METHODS.register("time_vae")
+class AlignmentLossScore:
+    def __init__(self, X, X_rec, **kwargs) -> None:
+        self.train_repr = repr
+        self.train_X = X
+        self.train_X_rec = X_rec
+        
+    def evaluate(self, X, X_rec, **kwargs):
+        rec_std = np.std(X_rec)
+        train_rec_std = np.std(self.train_X_rec)
+        std_X = np.std(X, axis=-1)
+        std_rec_X = np.std(X_rec, axis=-1)
+        X_rec = X_rec * (std_X / std_rec_X)[..., None]
+        std_X = np.std(self.train_X, axis=-1)
+        std_rec_X = np.std(self.train_X_rec, axis=-1)
+        train_X_rec = self.train_X_rec * (std_X / std_rec_X)[..., None]
+        test_dtw = average_dtw(X, X_rec)
+        return {
+            "train_rec_loss": np.mean((self.train_X - train_X_rec) ** 2),
+            "test_rec_loss": np.mean((X - X_rec) ** 2),
+            "rec_std": rec_std,
+            "train_rec_std": train_rec_std,
+            "test_dtw": test_dtw
+        }
+    
+    @staticmethod
+    def collate(model, X, **kwargs):
+        X_ = X.permute(0, 2, 1)
+        z_mean, z_log_var, z = model.encoder(X_)
+        repr = AlignmentLossScore.sample(z_mean, z_log_var, 4)
+        # repr = z_mean + torch.rand_like(z_mean, device=z_mean.device, dtype=z_mean.dtype) * 0.8
+        # print(repr - z_mean)
+        X_rec = model.decode(repr).permute(0, 2, 1) 
+        X_rec = X_rec 
+        return {
+            "repr": z_mean,
+            "log_var": z_log_var,
+            "X": X,
+            "X_rec": X_rec
+        }
+        
+    @staticmethod
+    def sample(z_mean, z_log_var, scale=1):
+        batch = z_mean.size(0)
+        dim = z_mean.size(1)
+        epsilon = torch.randn(batch, dim).to(z_mean.device) * scale
+        return z_mean + torch.exp(0.5 * z_log_var) * epsilon
+        
 @TEST_METHODS.register("spec")
 class KmeanModule:
     def __init__(self, **kwargs):

@@ -20,18 +20,18 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
     return dataloader, valid_dataloader
 
 @DATALOADERS.register("pretraining")
-def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, data_configs, **kwargs):
+def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, data_configs, device, **kwargs):
     # print(data_configs)
     d_name = "_".join([d['dsid'] for d in data_configs])
     data = [dls.train_ds[i][0] for i in range(len(dls.train_ds))]
     label = [dls.train_ds[i][1] for i in range(len(dls.train_ds))]
-    dataset_kwargs = {
-        "data": data,
-        "label": label,
-        "d_name": d_name,
-        "mask_row": False,
-        "optim_config": optim_config
-    }
+    dataset_kwargs = dict(data=data, 
+        label=label, 
+        d_name=d_name, 
+        mask_row=False, 
+        optim_config=optim_config, 
+        device=device
+    )
     DataSet = DATASET.get(model_name)
     train_ds = DataSet(**dataset_kwargs)
     dataset_kwargs.update(optim_config)
@@ -43,22 +43,17 @@ def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, data_configs, **
                 masking_ratio=optim_config['masking_ratio'], mask_mode=optim_config['mask_mode'],
                 mask_distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'], shuffle=False)
     valid_dataloader = DataLoader(valid_ds, batch_size=optim_config["batch_size"], collate_fn=COLLATE_FN.get("unsupervise"), shuffle=False)
-    loader_config = {
-        "train_ds": train_ds,
-        "optim_config": optim_config,
-        "collate_fn": COLLATE_FN.get(model_name)
-    }
+    loader_config = dict(train_ds=train_ds, 
+        optim_config=optim_config, 
+        collate_fn=COLLATE_FN.get(model_name)
+    )
+
     dataloader = PRETRAIN_LOADERS.get(model_name)(**loader_config)
     # print(len(dataloader.dataset), len(valid_dataloader.dataset))
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
     return  dataloader, valid_dataloader
 
-@PRETRAIN_LOADERS.register("mvts_transformer")
-@PRETRAIN_LOADERS.register("t_loss")
-@PRETRAIN_LOADERS.register("ts2vec")
-@PRETRAIN_LOADERS.register("csl")
-@PRETRAIN_LOADERS.register("mmfa_rec")
-@PRETRAIN_LOADERS.register("mmfa")
+@PRETRAIN_LOADERS.register("default")
 def get_mvts_t_loss_loader(train_ds, optim_config, collate_fn, **kwargs):
     batch_size = optim_config["batch_size"]
     dataloader = DataLoader(train_ds, batch_size=batch_size, collate_fn=collate_fn, drop_last=True)

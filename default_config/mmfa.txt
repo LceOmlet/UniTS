@@ -21,5 +21,10 @@
             "model":{
                 "model_name": "ResNet1d"
             }
+        },
+        "weasel":{
+            "model":{
+                "model_name": "LongFormer"
+            }
         }
     }

@@ -326,13 +326,13 @@ class LearningShapeletsModel(nn.Module):
    
   
 
-@MODELS.register("mmfa")
+# @MODELS.register("mmfa")
 class LearningShapeletsModelMixDistancesGCN(nn.Module):
    
-    def __init__(self, feat_dim=1, num_classes=None, max_len=224, dist_measure='mix',
+    def __init__(self, feat_dim=1, num_classes=None, seq_len=224, dist_measure='mix',
                  to_cuda=True, checkpoint=False, output_dim=320, **kwargs):
         super(LearningShapeletsModelMixDistancesGCN, self).__init__()
-        len_ts = max_len
+        len_ts = seq_len
         in_channels = feat_dim
 
         # len_ts = 224
@@ -421,35 +421,22 @@ class LearningShapeletsModelMixDistancesGCN(nn.Module):
         out = torch.cat(out, dim=-1)
 
         bs, c, l, s = out.shape
-        # out_ = self.res(out.permute(0, 1, 3, 2).reshape(bs * c, s, l))
-        # out_ = out_.reshape(bs, c, self.output_dim)
-        # out_ = out_.mean(dim=1)
 
         out, _ = torch.max(out, dim=2)
-        # 创建一个包含所有节点对的完全图
-        # print(out.shape)
-        # exit()
+        
         N = out.shape[1]
         edge_index = torch.tensor([[i, j] for i in range(N) for j in range(N) if i != j], dtype=torch.long).t().cuda()
 
-        # 对于无向图，使用下面的代码将边转换为无向边
-        # edge_index = to_undirected(edge_index)
         out_ = torch.mean(out, dim=1)
-        # out = self.gcn(out, edge_index, None)
         out = out_
 
 
         out = out.reshape(n_samples, -1)
 
-        # out = self.act(out)
-
-        # feature = self.outpt(out)
         feature = out
         project = self.projector(feature)
         
         
-        #print(out.shape)
-        #out = self.projection(out)
         multi_scale_shapelet_energy = [out[:, length_i * self.num_shapelets: (length_i + 1) * self.num_shapelets] for length_i in range(self.num_shapelets_length)]
         
         if train:

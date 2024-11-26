@@ -12,6 +12,7 @@ from functools import partial
 class WaveLet(VoidTransfromation):
     def __init__(self, X, d_name, resize_shape=224, dset_type="train", wavelet="db3", logger=None, **kwargs):
         os.makedirs("augmentation", exist_ok=True)
+        batch_size, self.channel, n = X.shape
         save_path = f"augmentation/wave_{d_name}_{resize_shape}_{wavelet}_{dset_type}.pt"
         coeffs = []
         if os.path.exists(save_path):
@@ -20,11 +21,21 @@ class WaveLet(VoidTransfromation):
         train_size, channel, n = X.shape
         scale = resize_shape // 2
         scales = np.arange(1, scale + 1, 1)
-        # X = X.reshape((train_size * channel, n))
+        
         if logger is None:
             print("wavelet trainsform to: " + save_path)
         else:
             logger.info("wavelet trainsform to: " + save_path)
+        desired_channels = 10
+        n, channel, t = X.shape
+        if channel > desired_channels:
+            # X = X.view((n, channel, t))
+            # print(X.size)
+            # print(X.size())
+            X = F.adaptive_avg_pool2d(torch.tensor(X), (desired_channels, t))
+            X = X.numpy()
+            # X = X.view((n, desired_channels, t))
+        # X = X.reshape((train_size * channel, n))
         for d in tqdm(X):
             d_ = []
             for dd in d:
@@ -50,8 +61,18 @@ class WaveLet(VoidTransfromation):
         print("final saved")
         self.coeffs = coeffs
     
-    def transform(self, x, index, **kwargs):
-        return self.coeffs[index].unsqueeze(0).float()
+    def transform(self, x, index, desired_channels=8, **kwargs):
+        wavelet = self.coeffs[index].unsqueeze(0).float()
+        desired_channels = 10
+        batch_size = wavelet.shape[0]
+        resize_shape = wavelet.shape[-1]
+        channels = wavelet.shape[1]
+        desired_channels = 8
+        if channels > desired_channels:
+            wavelet = wavelet.view((batch_size, channels, resize_shape * resize_shape))
+            wavelet = F.adaptive_avg_pool2d(wavelet, (desired_channels, resize_shape * resize_shape))
+            wavelet = wavelet.view((batch_size, desired_channels, resize_shape, resize_shape))
+        return wavelet
 
 
 

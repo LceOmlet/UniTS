@@ -76,7 +76,7 @@ def evaluate_pretraining(batch, model, device, model_name, val_loss_module, eval
      X=X, 
      device=device, 
      evaluator=evaluator)
-
+    
     batch_loss, mean_loss, active_elements = PRETRAIN_EVALUATE_STEP.get(model_name)(**pretrain_evaluate_kwargs)
     evaluator.append_valid(model, X=X, ID=ID, mask=mask, label=label)
     return batch_loss, mean_loss, active_elements
@@ -99,13 +99,7 @@ def pretrain_evaluate_mvts_transformer(X, model,  device, target, padding_mask, 
     active_elements = len(loss)
     return batch_loss, mean_loss, active_elements
 
-@PRETRAIN_EVALUATE_STEP.register("mvts_transformer")
-@PRETRAIN_EVALUATE_STEP.register("ts2vec")
-@PRETRAIN_EVALUATE_STEP.register("ts_tcc")
-@PRETRAIN_EVALUATE_STEP.register("t_loss")
-@PRETRAIN_EVALUATE_STEP.register("csl")
-@PRETRAIN_EVALUATE_STEP.register("mmfa_rec")
-@PRETRAIN_EVALUATE_STEP.register("mmfa")
+@PRETRAIN_EVALUATE_STEP.register("default")
 def pretrain_evaluate_ts2vec( **kwargs):
     mean_loss = float('inf')
     active_elements = 1
@@ -279,12 +273,17 @@ def evaluate(model, valid_dataloader, task, device, val_loss_module,
         make_report(**eval_aggr_kwargs)
 
     per_batch = evaluator.per_batch_valid
+    per_batch_train = evaluator.per_batch_train
     for key in per_batch:
-        # print(key)
         per_batch[key] = list2array(per_batch[key])
-    per_batch_idxed = deepcopy(per_batch)
-
-    # handle.remove()
+        
+    for key in per_batch_train:
+        try:
+            per_batch_train[key] = list2array(per_batch_train[key])
+        except:
+            logger.info(f"key: {key}, can not be converted to array.")
+        
+    per_batch_idxed = {"valid": deepcopy(per_batch), "train": deepcopy(per_batch_train)}
 
     if keep_all:
         return epoch_metrics, per_batch_idxed

@@ -23,7 +23,7 @@ class GADF(VoidTransfromation):
         gadf_batch = F.interpolate(gadf_batch, size=(resize_shape, resize_shape), 
                     mode='bilinear', align_corners=False)
         
-        desired_channels = 32
+        desired_channels = 8
         if channel > desired_channels:
             gadf_batch = gadf_batch.view((batch_size, channel, resize_shape * resize_shape))
             gadf_batch = F.adaptive_avg_pool2d(gadf_batch, (desired_channels, resize_shape * resize_shape))
@@ -62,7 +62,7 @@ class R_Plot(VoidTransfromation):
         #     resize_shape = resize_shape // 2
         rp_batch = F.interpolate(rp_batch, size=(resize_shape, resize_shape), 
                     mode='bilinear', align_corners=False)
-        desired_channels = 32
+        desired_channels = 8
         if channel > desired_channels:
             # print(rp_batch.shape)
             rp_batch = rp_batch.view((batch_size, channel, resize_shape * resize_shape))

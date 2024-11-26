@@ -8,8 +8,19 @@ import tsaug
 from collections import defaultdict
 
 
+@COLLATE_FN.register("time_vae")
+def collate_time_vae(data, **kwargs):
+    batch_size = len(data)
+    x, masks, label, IDs = zip(*data)
+    x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
+    return {
+		"X": x,
+		"label": label,
+		"IDs": IDs
+	}
+
 @COLLATE_FN.register("ts2vec")
-def collate_ts2vec(data, max_len=None, mask_compensation=None):
+def collate_ts2vec(data, seq_len=None, mask_compensation=None):
 	batch_size = len(data)
 	x, masks, label, IDs = zip(*data)
 	x = torch.cat([x_.unsqueeze(0) for x_ in x], dim=0)
@@ -81,13 +92,13 @@ def collate_unsupervise(data):
 
 @COLLATE_FN.register("mvts_transformer")
 @COLLATE_FN.register("t_loss")
-def collate_mvts_transformer(data, max_len=None, mask_compensation=False):
+def collate_mvts_transformer(data, seq_len=None, mask_compensation=False):
 	"""Build mini-batch tensors from a list of (X, mask) tuples. Mask input. Create
 	Args:
 		data: len(batch_size) list of tuples (X, mask).
 			- X: torch tensor of shape (feat_dim, seq_length); variable seq_length.
 			- mask: boolean torch tensor of shape (seq_length, feat_dim); variable seq_length.
-		max_len: global fixed sequence length. Used for architectures requiring fixed length input,
+		seq_len: global fixed sequence length. Used for architectures requiring fixed length input,
 			where the batch length cannot vary dynamically. Longer sequences are clipped, shorter are padded with 0s
 	Returns:
 		X: (batch_size, padded_length, feat_dim) torch tensor of masked features (input)
@@ -102,20 +113,20 @@ def collate_mvts_transformer(data, max_len=None, mask_compensation=False):
 
 	# Stack and pad features and masks (convert 2D to 3D tensors, i.e. add batch dimension)
 	lengths = [X.shape[0] for X in features]  # original sequence length for each time series
-	if max_len is None:
-		max_len = max(lengths)
-	X = torch.zeros(batch_size, max_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
+	if seq_len is None:
+		seq_len = max(lengths)
+	X = torch.zeros(batch_size, seq_len, features[0].shape[-1])  # (batch_size, padded_length, feat_dim)
 	target_masks = torch.zeros_like(X,
 									dtype=torch.bool)  # (batch_size, padded_length, feat_dim) masks related to objective
 	for i in range(batch_size):
-		end = min(lengths[i], max_len)
+		end = min(lengths[i], seq_len)
 		X[i, :end, :] = features[i][:end, :]
 		target_masks[i, :end, :] = masks[i][:end, :]
 
 	targets = X.clone()
 	if mask_compensation:
 		X = compensate_masking(X, target_masks)
-	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16), max_len=max_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
+	padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16), seq_len=seq_len)  # (batch_size, padded_length) boolean tensor, "1" means keep
 	target_masks = ~target_masks  # inverse logic: 0 now means ignore, 1 means predict
 	batch = {
 		"X": X,

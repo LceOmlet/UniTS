@@ -33,3 +33,5 @@ app_st*
 .vscode*
 check*
 **/__pycache__/
+log_results*
+test_scripts*

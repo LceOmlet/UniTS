@@ -191,7 +191,7 @@ class ResNet12Backbone(nn.Module):
         embedding_dropout=0.0,  # dropout for embedding
         dropblock_dropout=0.1,  # dropout for residual layers
         dropblock_size=5,
-        num_filters=(32, 128, 256, 180),
+        num_filters=(16, 64, 128, 180),
         pool_size=5
     ):
         super(ResNet12Backbone, self).__init__()
@@ -350,7 +350,7 @@ class ResNet12(nn.Module):
         embedding_dropout=0.0,  # dropout for embedding
         dropblock_dropout=0.1,  # dropout for residual layers
         dropblock_size=5,
-        num_filters = (32, 128, 256, 16),
+        num_filters = (16, 32, 256, 16),
         pool_size=5,
         **kwargs
     ):
@@ -383,7 +383,7 @@ class ResNet12(nn.Module):
 
 if __name__ == '__main__':
     model = ResNet12(output_dim=5, avg_pool=False, 
-                     dropblock_dropout=0.0, num_filters=[32, 128, 256, 32],
+                     dropblock_dropout=0.0,
                      pool_size=4, hidden_size=512)
     img = torch.randn(7, 1, 128, 128)
     model = model.to('cuda')
