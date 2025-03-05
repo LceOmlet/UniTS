@@ -16,7 +16,7 @@
     "lr": 1e-2,
     "l2_reg": 0,
     "@epochs": 10,
-    "epochs": 50,
+    "epochs": 10,
     "print_interval": 10,
-    "evaluator": "svm"
+    "evaluator": "ridge"
 }

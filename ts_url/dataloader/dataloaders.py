@@ -23,6 +23,7 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
 def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, **kwargs):
     data = [dls.train_ds[i][0] for i in range(len(dls.train_ds))]
     label = [dls.train_ds[i][1] for i in range(len(dls.train_ds))]
+    print(optim_config)
     train_ds = ImputationDataset(data, label=label, mean_mask_length=optim_config['mean_mask_length'],
                 masking_ratio=optim_config['masking_ratio'], mode=optim_config['mask_mode'],
                 distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'], mask_row=False)

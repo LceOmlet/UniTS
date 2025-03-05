@@ -53,7 +53,10 @@ def train_epoch(model, dataloader, task, device, loss_module, evaluator,
     model.train()
     epoch_loss = 0  # total loss of epoch
     total_active_elements = 0  # total unmasked elements in epoch
-    init_loop = TRAIN_LOOP_INIT.get(model_name)
+    if task == "pretraining":
+        init_loop = TRAIN_LOOP_INIT.get(model_name)
+    else:
+        init_loop = None
     kwargs_init = {}
     if init_loop is not None:
         init_kwargs = {
@@ -226,6 +229,7 @@ def step_anomaly_detection(batch, model, device, loss_module, optimizer, **kwarg
 @TRAIN_STEP.register("regression")
 def step_regression(batch, model, device, loss_module, optimizer, **kwargs):
     X, preds, padding_masks, IDs = tuple(batch.values())
+    preds = preds.to(device)
     predictions = model(X.to(device), padding_masks)
     # print(predictions.shape, preds.shape)
     loss = loss_module(predictions, preds)

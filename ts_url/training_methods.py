@@ -79,6 +79,8 @@ class Trainer:
         if isinstance(p_path, str):
             with open(p_path, "rb") as model_config_f:
                 self.model_config = json.load(model_config_f)
+        elif isinstance(p_path, dict):
+            self.model_config = p_path
         elif task == "pretraining":
             raise NotImplementedError() 
         
