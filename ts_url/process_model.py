@@ -186,6 +186,7 @@ class FussionModel(nn.Module):
                 "device": device
             })
             self.outputs_dims.append(model_config["output_dims"])
+            print(model_name)
             model_class = MODELS.get(model_name)
             setattr(self, "model_" + str(idx), model_class(**model_config))
             getattr(self, "model_" + str(idx)).load_state_dict(torch.load(ckpt_path)["state_dict"])
@@ -228,7 +229,9 @@ def get_fusion_model(checkpoints,  dls_setting, device='cpu', pred_len=None, **k
     model_configs = []
     ckpt_paths = []
     for idx, ckpt in enumerate(checkpoints):
+        # print(ckpt)
         ckpt_ = os.path.basename(ckpt)
+        # print(ckpt_)
         model_name = "_".join(ckpt_.split("_")[6:])
         model_names.append(model_name)
         dirs = os.listdir(ckpt)
@@ -242,6 +245,7 @@ def get_fusion_model(checkpoints,  dls_setting, device='cpu', pred_len=None, **k
                     model_configs.append(json.load(f))
             elif ".pth" in dr:
                 ckpt_paths.append(dr)
+    # print(ckpt_paths)
     fusion_model = FussionModel(model_names, optim_configs, dls_setting, model_configs, ckpt_paths, device,"max",pred_len)
     print(model_configs)
     for cfg in model_configs:
