@@ -1,8 +1,0 @@
-[
-    {
-        "output_dims": 320,
-        "feat_dim": 6,
-        "max_len": 100,
-        "device": "cuda"
-    }
-]
