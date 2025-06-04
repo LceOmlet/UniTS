@@ -176,7 +176,13 @@ def vicloss(base_model, X, models, transform_features, optimizer, feature_weight
         reprs.append(repr_.unsqueeze(1))
         # print(t)
         # print(repr_)
-        inv_loss_ = F.mse_loss(main_repr, repr_)
+        try:
+            inv_loss_ = F.mse_loss(main_repr, repr_)
+        except:
+            print(type(model_))
+            import traceback
+            traceback.print_exc()
+            raise RuntimeError()
         repr_loss += inv_loss_
         losses[t + "_inv_loss"] = inv_loss_
         features = features - features.mean(dim=0)

@@ -44,6 +44,7 @@ from .test_modules import test_modules
 from . import process_model
 from .transformations import wavelet
 import datetime
+import yaml  # 添加在文件开头的import部分
 
 class MicrosecondFormatter(logging.Formatter):
     converter = datetime.datetime.fromtimestamp
@@ -145,7 +146,7 @@ def setup_logger(name, log_file, level=logging.INFO):
     
 
 class Trainer:
-    def __init__(self, data_configs, model_name, p_path, 
+    def __init__(self, data_configs, model_name, model_config, 
                  device, optim_config, task="pretraining", logger=None, save_path=".", fine_tune_config=None, ckpt_paths=None, **kwargs) -> None:
         if isinstance(device, list):
             devices = device
@@ -167,24 +168,36 @@ class Trainer:
             logger = setup_logger("__main__", os.path.join(save_path, "run.log"))
         self.logger = logger
 
+        # 修改optim_config加载逻辑
         if isinstance(optim_config, str):
-            with open(optim_config, "rb") as optim_config_f:
-                optim_config = json.load(optim_config_f)
-        self.optim_config = optim_config
+            if optim_config.endswith('.yaml') or optim_config.endswith('.yml'):
+                with open(optim_config, 'r') as f:
+                    self.optim_config = yaml.safe_load(f)
+            else:
+                with open(optim_config, 'r') as f:
+                    self.optim_config = json.load(f)
+        else:
+            self.optim_config = optim_config
 
-        if isinstance(p_path, str):
-            with open(p_path, "rb") as model_config_f:
-                self.model_config = json.load(model_config_f)
-        elif task == "pretraining":
-            raise NotImplementedError() 
+        # 修改model_config加载逻辑 
+        if isinstance(model_config, str):
+            if model_config.endswith('.yaml') or model_config.endswith('.yml'):
+                with open(model_config, 'r') as f:
+                    self.model_config = yaml.safe_load(f)
+            else:
+                with open(model_config, 'r') as f:
+                    self.model_config = json.load(f)
+        else:
+            self.model_config = model_config
+        # elif task == "pretraining":
+        # self.model_config = model_config
         
         loss_config = dict(model_name=model_name, optim_config=optim_config, device=device)
         loss_config.update(optim_config.get("loss", {}))
 
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
-        # print(optim_config.get("evaluator"))
-        # raise RuntimeError()
+        
         self.evaluator = EVALUATOR.get("default")(optim_config.get("evaluator"))
         self.POS_METRICS = {'accuracy', 'f1'}  # metrics for which "better" is less
         # print(data_configs)
@@ -219,7 +232,10 @@ class Trainer:
         self.print_interval = optim_config.get("print_interval", 10)
         self.evaluate_interval = optim_config.get("evaluate_interval", 1)
         
+        
         optimizer = optim_class(self.model.parameters(), lr=optim_config['lr'], weight_decay=self.l2_reg)
+        
+        
         self.optimizer = optimizer
 
         if initer is not None:
@@ -391,7 +407,7 @@ if __name__ == '__main__':
     task_name="imputation"
     fine_tune_config = {"fusion":"concat", "i_ratio":0.15}
     # fusion = None
-    hp_path, p_path = "", ""
+    hp_path, model_config = "", ""
     print_interval = 10
     loss_module = get_loss_module(task_name)
     with open("/home/username/Desktop/flatkit/ts_url/models/default_configs/ts2vec_optim.json") as optim:
@@ -404,9 +420,9 @@ if __name__ == '__main__':
     os.makedirs(save_path, exist_ok=True)
     logger = setup_logger("__main__." + save_name, os.path.join(save_path, "run.log"))
     
-    trainer = Trainer(data_configs, model_name, hp_path, p_path, 
+    trainer = Trainer(data_configs, model_name, hp_path, model_config, 
                 torch.device('cpu'), task=task_name, optim_config=optim_config, fine_tune_config=fine_tune_config, logger=logger, ckpt_paths=ckpt)
-    """(data_configs, model_name, hp_path, p_path, 
+    """(data_configs, model_name, hp_path, model_config, 
                 'cpu', task="pretraining", optim_config=optim_config)"""
     os.makedirs("./test", exist_ok=True)
     trainer.train_epoch(10)

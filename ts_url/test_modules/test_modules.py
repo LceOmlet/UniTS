@@ -16,6 +16,7 @@ from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingCla
 from sklearn.ensemble import IsolationForest
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
+from sklearn.metrics import roc_auc_score, roc_curve, precision_recall_curve, auc
 
 def reconstruct_label(timestamp, label):
     timestamp = np.asarray(timestamp, np.int64)
@@ -115,6 +116,77 @@ class IsolationForest_:
         self.scaler = RobustScaler()
         repr = self.scaler.fit_transform(repr)
         
+    def calculate_vus_roc(self, scores, labels, window_size=100):
+        """Calculate VUS-ROC (Volume Under the Surface ROC) metric.
+        
+        Args:
+            scores: Anomaly scores
+            labels: Ground truth labels
+            window_size: Size of sliding window for calculating ROC curves
+            
+        Returns:
+            VUS-ROC score
+        """
+        # Check for NaN values
+        if np.isnan(scores).any() or np.isnan(labels).any():
+            print("Warning: NaN values detected in scores or labels")
+            return np.nan
+            
+        n_windows = len(scores) - window_size + 1
+        if n_windows <= 0:
+            print("Warning: Window size too large for the data")
+            return np.nan
+            
+        vus_roc = 0
+        valid_windows = 0
+        
+        for i in range(n_windows):
+            window_scores = scores[i:i+window_size]
+            window_labels = labels[i:i+window_size]
+            
+            # Skip windows with only one class
+            if len(np.unique(window_labels)) < 2:
+                continue
+                
+            try:
+                # Calculate ROC curve for this window
+                fpr, tpr, _ = roc_curve(window_labels, window_scores)
+                if len(fpr) > 1 and len(tpr) > 1:  # Ensure we have enough points
+                    vus_roc += auc(fpr, tpr)
+                    valid_windows += 1
+            except Exception as e:
+                print(f"Warning: Error calculating ROC for window {i}: {str(e)}")
+                continue
+        
+        if valid_windows == 0:
+            print("Warning: No valid windows for ROC calculation")
+            return np.nan
+            
+        return vus_roc / valid_windows
+    
+    def calculate_vus_pr(self, scores, labels, window_size=100):
+        """Calculate VUS-PR (Volume Under the Surface PR) metric.
+        
+        Args:
+            scores: Anomaly scores
+            labels: Ground truth labels
+            window_size: Size of sliding window for calculating PR curves
+            
+        Returns:
+            VUS-PR score
+        """
+        n_windows = len(scores) - window_size + 1
+        vus_pr = 0
+        
+        for i in range(n_windows):
+            window_scores = scores[i:i+window_size]
+            window_labels = labels[i:i+window_size]
+            
+            # Calculate PR curve for this window
+            precision, recall, _ = precision_recall_curve(window_labels, window_scores)
+            vus_pr += auc(recall, precision)
+            
+        return vus_pr / n_windows
 
     def evaluate(self, repr, label, per_batch, **kwargs):
         # repr = self.scaler.fit_transform(repr)
@@ -122,9 +194,12 @@ class IsolationForest_:
         best_f1 = 0
         best_acc = 0
         best_cc = 0
+        best_scores = None
         for cc in conts:
             self.isolat = IsolationForest(contamination=cc)
-            pred = self.isolat.fit_predict(repr) == -1
+            self.isolat.fit(repr)  # First fit the model
+            scores = -self.isolat.score_samples(repr)  # Get continuous anomaly scores
+            pred = scores > np.percentile(scores, (1-cc)*100)  # Convert to binary predictions
             for delay in range(1, 20):
                 f1, precision, recall, acc, predict, label = regulize_anom_label_pred(pred, label, delay=delay)
                 if f1 >= best_f1:
@@ -132,19 +207,31 @@ class IsolationForest_:
                     best_acc = acc
                     best_cc = cc
                     best_predict = predict
+                    best_scores = scores
                     DELAY = delay
                     best_precision = precision
                     best_recall = recall
+        
+        # Calculate additional metrics
+        auc_roc = roc_auc_score(label, best_scores)
+        vus_roc = self.calculate_vus_roc(best_scores, label)
+        vus_pr = self.calculate_vus_pr(best_scores, label)
+        
         print(f"best delay: {DELAY}")
         print(f"best cc: {best_cc}")
-        # print(label.shape)
-        # raise RuntimeError()
+        print(f"AUC-ROC: {auc_roc:.4f}")
+        print(f"VUS-ROC: {vus_roc:.4f}")
+        print(f"VUS-PR: {vus_pr:.4f}")
+        
         return {
             "f1": best_f1,
             "accuracy": best_acc,
             "precision": best_precision,
             "recall": best_recall,
-            "predict": best_predict
+            "predict": best_predict,
+            "auc_roc": auc_roc,
+            "vus_roc": vus_roc,
+            "vus_pr": vus_pr
         }
     @staticmethod
     def collate(model, X, **kwargs):

@@ -28,10 +28,12 @@ gather*
 generate*
 test*
 calc_cd*
-ad_datasets*
+./ad_datasets*
 app_st*
 .vscode*
 check*
 **/__pycache__/
 log_results*
 test_scripts*
+results_*
+default_config

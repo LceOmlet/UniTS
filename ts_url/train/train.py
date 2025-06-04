@@ -540,6 +540,9 @@ def train_init_ts_tcc(optimizer, optim_config, device, **kwargs):
         transformations[t]["model"]["device"] = device
         models[t] = MODELS.get(transformations[t]["model"]["model_name"]) \
             (**model_args)
+        # print(optim_config["transformations"])
+        # # # print(model_args)
+        # raise RuntimeError()
         if transformations[t]["model"]["model_name"] in ["Gemma", "TinyLlama"]:
             pass
         elif isinstance(device, list):

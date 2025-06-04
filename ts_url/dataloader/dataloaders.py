@@ -8,12 +8,8 @@ def get_imputation_loaders(dls, fine_tune_config, optim_config, logger, **kwargs
     optim_config["mask_mode"] = "concurrent"
     train_ds = [(dls.train_ds[i][0],) for i in range(len(dls.train_ds))]
     valid_ds = [(dls.valid_ds[i][0],) for i in range(len(dls.valid_ds))]
-    train_ds = ImputationDataset(train_ds, mean_mask_length=optim_config['mean_mask_length'],
-                masking_ratio=optim_config['masking_ratio'], mask_mode=optim_config['mask_mode'],
-                mask_distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'], mask_row=False, shuffle=False)
-    valid_ds = ImputationDataset(valid_ds, mean_mask_length=optim_config['mean_mask_length'],
-                masking_ratio=optim_config['masking_ratio'], mask_mode=optim_config['mask_mode'],
-                mask_distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'])
+    train_ds = ImputationDataset(train_ds, mask_row=False, shuffle=False, **optim_config)
+    valid_ds = ImputationDataset(valid_ds, **optim_config)
     valid_dataloader = DataLoader(valid_ds, batch_size=64, collate_fn=COLLATE_FN.get("unsupervise"))
     dataloader = DataLoader(train_ds, batch_size=optim_config["batch_size"], collate_fn=COLLATE_FN.get("unsupervise"), drop_last=True)
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
@@ -39,16 +35,14 @@ def get_PRETRAINLOADERSs(dls, optim_config, model_name, logger, data_configs, de
     label = [dls.valid_ds[i][1] for i in range(len(dls.valid_ds))]
     # print(f"valid anom num: {sum(label)}")
     # raise RuntimeError()
-    valid_ds = ImputationDataset(data, label=label, mean_mask_length=optim_config['mean_mask_length'],
-                masking_ratio=optim_config['masking_ratio'], mask_mode=optim_config['mask_mode'],
-                mask_distribution=optim_config['mask_distribution'], exclude_feats=optim_config['exclude_feats'], shuffle=False)
+    valid_ds = ImputationDataset(data, label=label, shuffle=False, **optim_config)
     valid_dataloader = DataLoader(valid_ds, batch_size=optim_config["batch_size"], collate_fn=COLLATE_FN.get("unsupervise"), shuffle=False)
     loader_config = dict(train_ds=train_ds, 
         optim_config=optim_config, 
         collate_fn=COLLATE_FN.get(model_name)
     )
 
-    dataloader = PRETRAIN_LOADERS.get(model_name)(**loader_config)
+    dataloader = PRETRAIN_LOADERS.get(model_name)(**loader_config, drop_last=True)
     # print(len(dataloader.dataset), len(valid_dataloader.dataset))
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
     return  dataloader, valid_dataloader
@@ -63,7 +57,7 @@ def get_mvts_t_loss_loader(train_ds, optim_config, collate_fn, **kwargs):
 def get_ts_tcc(train_ds, optim_config, collate_fn, **kwargs):
     dataloader = DataLoader(train_ds, batch_size=optim_config["batch_size"], 
         collate_fn=lambda batch: collate_fn(batch, optim_config["jitter_scale_ratio"], 
-        optim_config["jitter_ratio"], optim_config["max_seg"]))
+        optim_config["jitter_ratio"], optim_config["max_seg"]),  drop_last=True)
     return dataloader
 
 @DATALOADERS.register("classification")

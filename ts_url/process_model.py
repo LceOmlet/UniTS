@@ -30,7 +30,7 @@ from .models import *
 @MODELS.register("ts_tcc")
 class TS_TCC(nn.Module):
     def __init__(self, device, kernel_size, feat_dim, stride, dropout, output_dims,
-                                num_classes, timesteps, seq_len) -> None:
+                                num_classes, timesteps, seq_len, **kwargs) -> None:
         super(TS_TCC, self).__init__()
         final_out_channels = output_dims
         input_channels = feat_dim
@@ -266,10 +266,15 @@ def get_model(model_name, dls_setting, model_config, task="self-supervised", dev
     
     print(model_name)
     # print(model_config)
-    model = model_class(**model_config)
-    logger.info(model_config)
-    logger.info(model)
-    return model, model_config
+    try:
+        model = model_class(**model_config)
+        logger.info(model_config)
+        logger.info(model)
+        return model, model_config
+    except:
+        print(model_config)
+        print(type(model_class))
+        raise RuntimeError()
         
 
 
