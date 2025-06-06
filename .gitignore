@@ -36,4 +36,5 @@ check*
 log_results*
 test_scripts*
 results_*
-default_config
+default_configexp2/**/*.npz
+exp2/**/*.pth
