@@ -1,0 +1,2561 @@
+(dataloaders.py:47) 2025-06-04 20:25:25.157924 | INFO : train_ds length: 160, valid_ds length: 74
+(process_model.py:275) 2025-06-04 20:25:25.417721 | INFO : {'output_dims': 320, 'feat_dim': 10, 'seq_len': 400, 'device': 'cpu'}
+(process_model.py:276) 2025-06-04 20:25:25.417934 | INFO : CSL(
+  (shapelets_euclidean): ShapeletsDistBlocks(
+    (blocks): ModuleList(
+      (0-7): 8 x MinEuclideanDistBlock()
+    )
+  )
+  (shapelets_cosine): ShapeletsDistBlocks(
+    (blocks): ModuleList(
+      (0-7): 8 x MaxCosineSimilarityBlock(
+        (relu): ReLU()
+      )
+    )
+  )
+  (shapelets_cross_correlation): ShapeletsDistBlocks(
+    (blocks): ModuleList(
+      (0): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(40,), stride=(1,))
+      )
+      (1): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(80,), stride=(1,))
+      )
+      (2): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(120,), stride=(1,))
+      )
+      (3): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(160,), stride=(1,))
+      )
+      (4): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(200,), stride=(1,))
+      )
+      (5): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(240,), stride=(1,))
+      )
+      (6): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(280,), stride=(1,))
+      )
+      (7): MaxCrossCorrelationBlock(
+        (shapelets): Conv1d(10, 14, kernel_size=(320,), stride=(1,))
+      )
+    )
+  )
+  (linear): Linear(in_features=320, out_features=2, bias=True)
+  (projection): Sequential(
+    (0): BatchNorm1d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (bn1): BatchNorm1d(104, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (bn2): BatchNorm1d(104, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (bn3): BatchNorm1d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (projection2): Sequential(
+    (0): Linear(in_features=320, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=128, bias=True)
+  )
+  (projector): Sequential(
+    (0): Linear(in_features=320, out_features=4096, bias=True)
+    (1): ReLU(inplace=True)
+    (2): Linear(in_features=4096, out_features=8192, bias=False)
+  )
+)
+(training_methods.py:262) 2025-06-04 20:25:26.913806 | INFO : Training Epoch 0   0.0% | batch:         0 of        10
+	loss: 1.28382
+
+(training_methods.py:265) 2025-06-04 20:25:28.882489 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:29.799842 | INFO : Evaluating Epoch 0   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:29.922052 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.039034366607666 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:29.922249 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.039034366607666 seconds
+(training_methods.py:277) 2025-06-04 20:25:29.922304 | INFO : Avg batch val. time: 0.2078068733215332 seconds
+(training_methods.py:278) 2025-06-04 20:25:29.922346 | INFO : Avg sample val. time: 0.014041004954157648 seconds
+(training_methods.py:284) 2025-06-04 20:25:29.922394 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.21      0.24        19
+           1       0.27      0.50      0.35        16
+           2       0.53      0.42      0.47        19
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:25:29.922448 | INFO : Epoch 0 Validation Summary: epoch: 0.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:25:30.170097 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:30.427722 | INFO : Training Epoch 1   0.0% | batch:         0 of        10
+	loss: 0.148767
+
+(training_methods.py:265) 2025-06-04 20:25:32.448353 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:33.339189 | INFO : Evaluating Epoch 1   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:33.448836 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0001778602600098 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:33.449028 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.019606113433838 seconds
+(training_methods.py:277) 2025-06-04 20:25:33.449099 | INFO : Avg batch val. time: 0.20392122268676757 seconds
+(training_methods.py:278) 2025-06-04 20:25:33.449151 | INFO : Avg sample val. time: 0.01377846099234916 seconds
+(training_methods.py:284) 2025-06-04 20:25:33.449204 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.21      0.24        19
+           1       0.23      0.39      0.29        18
+           2       0.47      0.39      0.42        18
+           3       0.33      0.26      0.29        19
+
+    accuracy                           0.31        74
+   macro avg       0.33      0.31      0.31        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:25:33.449260 | INFO : Epoch 1 Validation Summary: epoch: 1.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:25:34.179320 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:34.496974 | INFO : Training Epoch 2   0.0% | batch:         0 of        10
+	loss: 0.0812651
+
+(training_methods.py:265) 2025-06-04 20:25:36.565019 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:37.480311 | INFO : Evaluating Epoch 2   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:37.595459 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0301194190979004 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:37.595679 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0231105486551921 seconds
+(training_methods.py:277) 2025-06-04 20:25:37.595735 | INFO : Avg batch val. time: 0.20462210973103842 seconds
+(training_methods.py:278) 2025-06-04 20:25:37.595779 | INFO : Avg sample val. time: 0.013825818225070164 seconds
+(training_methods.py:284) 2025-06-04 20:25:37.595832 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.20      0.24        20
+           1       0.23      0.41      0.30        17
+           2       0.47      0.44      0.45        16
+           3       0.33      0.24      0.28        21
+
+    accuracy                           0.31        74
+   macro avg       0.33      0.32      0.32        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:25:37.595888 | INFO : Epoch 2 Validation Summary: epoch: 2.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:25:38.510298 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:38.798676 | INFO : Training Epoch 3   0.0% | batch:         0 of        10
+	loss: 0.0607426
+
+(training_methods.py:265) 2025-06-04 20:25:40.819937 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:41.717627 | INFO : Evaluating Epoch 3   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:41.826968 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.006535291671753 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:41.827161 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0189667344093323 seconds
+(training_methods.py:277) 2025-06-04 20:25:41.827233 | INFO : Avg batch val. time: 0.20379334688186646 seconds
+(training_methods.py:278) 2025-06-04 20:25:41.827278 | INFO : Avg sample val. time: 0.013769820735261246 seconds
+(training_methods.py:284) 2025-06-04 20:25:41.827328 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.19      0.23        21
+           1       0.23      0.41      0.30        17
+           2       0.47      0.44      0.45        16
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.31        74
+   macro avg       0.33      0.32      0.32        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:25:41.827397 | INFO : Epoch 3 Validation Summary: epoch: 3.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:25:42.750797 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:43.028925 | INFO : Training Epoch 4   0.0% | batch:         0 of        10
+	loss: 0.0501329
+
+(training_methods.py:265) 2025-06-04 20:25:45.015660 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:45.902332 | INFO : Evaluating Epoch 4   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:46.011155 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9951913356781006 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:46.011339 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.014211654663086 seconds
+(training_methods.py:277) 2025-06-04 20:25:46.011393 | INFO : Avg batch val. time: 0.2028423309326172 seconds
+(training_methods.py:278) 2025-06-04 20:25:46.011435 | INFO : Avg sample val. time: 0.013705562900852513 seconds
+(training_methods.py:284) 2025-06-04 20:25:46.011482 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.17      0.22        23
+           1       0.23      0.41      0.30        17
+           2       0.40      0.43      0.41        14
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.30        74
+   macro avg       0.31      0.32      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:25:46.011535 | INFO : Epoch 4 Validation Summary: epoch: 4.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:25:46.828890 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:47.141869 | INFO : Training Epoch 5   0.0% | batch:         0 of        10
+	loss: 0.0435603
+
+(training_methods.py:265) 2025-06-04 20:25:49.123382 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:50.027668 | INFO : Evaluating Epoch 5   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:50.135939 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0122432708740234 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:50.136141 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0138835906982422 seconds
+(training_methods.py:277) 2025-06-04 20:25:50.136198 | INFO : Avg batch val. time: 0.20277671813964843 seconds
+(training_methods.py:278) 2025-06-04 20:25:50.136244 | INFO : Avg sample val. time: 0.013701129604030299 seconds
+(training_methods.py:284) 2025-06-04 20:25:50.136294 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.17      0.22        23
+           1       0.23      0.41      0.30        17
+           2       0.40      0.43      0.41        14
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.30        74
+   macro avg       0.31      0.32      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:25:50.136350 | INFO : Epoch 5 Validation Summary: epoch: 5.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:25:50.908709 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:51.176268 | INFO : Training Epoch 6   0.0% | batch:         0 of        10
+	loss: 0.0390411
+
+(training_methods.py:265) 2025-06-04 20:25:53.116610 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:54.007938 | INFO : Evaluating Epoch 6   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:54.121079 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0040841102600098 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:54.121303 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0124836649213518 seconds
+(training_methods.py:277) 2025-06-04 20:25:54.121362 | INFO : Avg batch val. time: 0.20249673298427034 seconds
+(training_methods.py:278) 2025-06-04 20:25:54.121407 | INFO : Avg sample val. time: 0.013682211688126375 seconds
+(training_methods.py:284) 2025-06-04 20:25:54.121458 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.18      0.22        22
+           1       0.23      0.41      0.30        17
+           2       0.47      0.47      0.47        15
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.31        74
+   macro avg       0.33      0.33      0.32        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:25:54.121514 | INFO : Epoch 6 Validation Summary: epoch: 6.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:25:55.055034 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:55.392895 | INFO : Training Epoch 7   0.0% | batch:         0 of        10
+	loss: 0.0356701
+
+(training_methods.py:265) 2025-06-04 20:25:57.364451 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:25:58.264721 | INFO : Evaluating Epoch 7   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:25:58.381953 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0171525478363037 seconds
+
+(training_methods.py:276) 2025-06-04 20:25:58.382240 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0130672752857208 seconds
+(training_methods.py:277) 2025-06-04 20:25:58.382301 | INFO : Avg batch val. time: 0.20261345505714418 seconds
+(training_methods.py:278) 2025-06-04 20:25:58.382360 | INFO : Avg sample val. time: 0.013690098314671903 seconds
+(training_methods.py:284) 2025-06-04 20:25:58.382414 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.17      0.22        23
+           1       0.23      0.41      0.30        17
+           2       0.40      0.43      0.41        14
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.30        74
+   macro avg       0.31      0.32      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:25:58.382475 | INFO : Epoch 7 Validation Summary: epoch: 7.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:25:59.268807 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:25:59.546153 | INFO : Training Epoch 8   0.0% | batch:         0 of        10
+	loss: 0.0329722
+
+(training_methods.py:265) 2025-06-04 20:26:01.608047 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:02.596580 | INFO : Evaluating Epoch 8   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:02.707982 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0994932651519775 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:02.708232 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0226701630486383 seconds
+(training_methods.py:277) 2025-06-04 20:26:02.708306 | INFO : Avg batch val. time: 0.20453403260972766 seconds
+(training_methods.py:278) 2025-06-04 20:26:02.708354 | INFO : Avg sample val. time: 0.013819867068224842 seconds
+(training_methods.py:284) 2025-06-04 20:26:02.708412 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.29      0.18      0.22        22
+           1       0.27      0.44      0.33        18
+           2       0.40      0.43      0.41        14
+           3       0.33      0.25      0.29        20
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.33      0.31        74
+weighted avg       0.32      0.31      0.30        74
+
+(training_methods.py:290) 2025-06-04 20:26:02.708478 | INFO : Epoch 8 Validation Summary: epoch: 8.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:03.656732 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:03.930208 | INFO : Training Epoch 9   0.0% | batch:         0 of        10
+	loss: 0.0307554
+
+(training_methods.py:265) 2025-06-04 20:26:06.006905 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:07.009361 | INFO : Evaluating Epoch 9   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:07.123492 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1162340641021729 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:07.123757 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0320265531539916 seconds
+(training_methods.py:277) 2025-06-04 20:26:07.123816 | INFO : Avg batch val. time: 0.2064053106307983 seconds
+(training_methods.py:278) 2025-06-04 20:26:07.123865 | INFO : Avg sample val. time: 0.013946304772351238 seconds
+(training_methods.py:284) 2025-06-04 20:26:07.123918 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.44      0.33        18
+           2       0.40      0.43      0.41        14
+           3       0.33      0.23      0.27        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.31      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:26:07.123996 | INFO : Epoch 9 Validation Summary: epoch: 9.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:26:08.004399 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:08.362005 | INFO : Training Epoch 10   0.0% | batch:         0 of        10
+	loss: 0.0288807
+
+(training_methods.py:265) 2025-06-04 20:26:10.465855 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:11.402912 | INFO : Evaluating Epoch 10   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:11.513049 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0465307235717773 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:11.513283 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0333451141010632 seconds
+(training_methods.py:277) 2025-06-04 20:26:11.513343 | INFO : Avg batch val. time: 0.20666902282021266 seconds
+(training_methods.py:278) 2025-06-04 20:26:11.513390 | INFO : Avg sample val. time: 0.01396412316352788 seconds
+(training_methods.py:284) 2025-06-04 20:26:11.513443 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:11.513499 | INFO : Epoch 10 Validation Summary: epoch: 10.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:12.415198 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:12.721369 | INFO : Training Epoch 11   0.0% | batch:         0 of        10
+	loss: 0.0272689
+
+(training_methods.py:265) 2025-06-04 20:26:14.777480 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:15.686883 | INFO : Evaluating Epoch 11   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:15.796589 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.018526315689087 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:15.796794 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0321102142333984 seconds
+(training_methods.py:277) 2025-06-04 20:26:15.796857 | INFO : Avg batch val. time: 0.2064220428466797 seconds
+(training_methods.py:278) 2025-06-04 20:26:15.796905 | INFO : Avg sample val. time: 0.013947435327478358 seconds
+(training_methods.py:284) 2025-06-04 20:26:15.796981 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:15.797055 | INFO : Epoch 11 Validation Summary: epoch: 11.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:16.756161 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:17.067449 | INFO : Training Epoch 12   0.0% | batch:         0 of        10
+	loss: 0.0258818
+
+(training_methods.py:265) 2025-06-04 20:26:19.113508 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:20.034242 | INFO : Evaluating Epoch 12   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:20.144625 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0304782390594482 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:20.144817 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0319846776815562 seconds
+(training_methods.py:277) 2025-06-04 20:26:20.144891 | INFO : Avg batch val. time: 0.20639693553631125 seconds
+(training_methods.py:278) 2025-06-04 20:26:20.144938 | INFO : Avg sample val. time: 0.013945738887588597 seconds
+(training_methods.py:284) 2025-06-04 20:26:20.144992 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:20.145062 | INFO : Epoch 12 Validation Summary: epoch: 12.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:21.042074 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:21.327924 | INFO : Training Epoch 13   0.0% | batch:         0 of        10
+	loss: 0.0246681
+
+(training_methods.py:265) 2025-06-04 20:26:23.281170 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:24.220040 | INFO : Evaluating Epoch 13   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:24.335362 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0535917282104492 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:24.335611 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0335280384336198 seconds
+(training_methods.py:277) 2025-06-04 20:26:24.335673 | INFO : Avg batch val. time: 0.20670560768672397 seconds
+(training_methods.py:278) 2025-06-04 20:26:24.335720 | INFO : Avg sample val. time: 0.013966595113967835 seconds
+(training_methods.py:284) 2025-06-04 20:26:24.335778 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:24.335858 | INFO : Epoch 13 Validation Summary: epoch: 13.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:25.276638 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:25.576221 | INFO : Training Epoch 14   0.0% | batch:         0 of        10
+	loss: 0.0235819
+
+(training_methods.py:265) 2025-06-04 20:26:27.536421 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:28.450608 | INFO : Evaluating Epoch 14   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:28.559255 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.022467851638794 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:28.559456 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0327906926472983 seconds
+(training_methods.py:277) 2025-06-04 20:26:28.559521 | INFO : Avg batch val. time: 0.20655813852945965 seconds
+(training_methods.py:278) 2025-06-04 20:26:28.559587 | INFO : Avg sample val. time: 0.013956630981720248 seconds
+(training_methods.py:284) 2025-06-04 20:26:28.559685 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:28.559768 | INFO : Epoch 14 Validation Summary: epoch: 14.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:29.611256 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:29.894204 | INFO : Training Epoch 15   0.0% | batch:         0 of        10
+	loss: 0.0226086
+
+(training_methods.py:265) 2025-06-04 20:26:31.928599 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:32.922742 | INFO : Evaluating Epoch 15   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:33.035934 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1067719459533691 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:33.036198 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0374145209789276 seconds
+(training_methods.py:277) 2025-06-04 20:26:33.036258 | INFO : Avg batch val. time: 0.20748290419578552 seconds
+(training_methods.py:278) 2025-06-04 20:26:33.036306 | INFO : Avg sample val. time: 0.014019115148363886 seconds
+(training_methods.py:284) 2025-06-04 20:26:33.036362 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:33.036440 | INFO : Epoch 15 Validation Summary: epoch: 15.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:33.988087 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:34.286428 | INFO : Training Epoch 16   0.0% | batch:         0 of        10
+	loss: 0.0217254
+
+(training_methods.py:265) 2025-06-04 20:26:36.268569 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:37.302711 | INFO : Evaluating Epoch 16   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:37.413360 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1441805362701416 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:37.413562 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0436948748195873 seconds
+(training_methods.py:277) 2025-06-04 20:26:37.413638 | INFO : Avg batch val. time: 0.20873897496391747 seconds
+(training_methods.py:278) 2025-06-04 20:26:37.413686 | INFO : Avg sample val. time: 0.014103984794859288 seconds
+(training_methods.py:284) 2025-06-04 20:26:37.413740 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:37.413818 | INFO : Epoch 16 Validation Summary: epoch: 16.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:38.482886 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:38.737335 | INFO : Training Epoch 17   0.0% | batch:         0 of        10
+	loss: 0.0209274
+
+(training_methods.py:265) 2025-06-04 20:26:40.861424 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:41.805165 | INFO : Evaluating Epoch 17   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:41.919086 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.057244062423706 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:41.919288 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0444476074642606 seconds
+(training_methods.py:277) 2025-06-04 20:26:41.919360 | INFO : Avg batch val. time: 0.20888952149285211 seconds
+(training_methods.py:278) 2025-06-04 20:26:41.919407 | INFO : Avg sample val. time: 0.014114156857625144 seconds
+(training_methods.py:284) 2025-06-04 20:26:41.919460 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:41.919516 | INFO : Epoch 17 Validation Summary: epoch: 17.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:42.962650 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:43.255314 | INFO : Training Epoch 18   0.0% | batch:         0 of        10
+	loss: 0.0201949
+
+(training_methods.py:265) 2025-06-04 20:26:45.233178 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:46.158527 | INFO : Evaluating Epoch 18   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:46.268398 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0346660614013672 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:46.268605 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.043932789250424 seconds
+(training_methods.py:277) 2025-06-04 20:26:46.268680 | INFO : Avg batch val. time: 0.2087865578500848 seconds
+(training_methods.py:278) 2025-06-04 20:26:46.268727 | INFO : Avg sample val. time: 0.014107199854735459 seconds
+(training_methods.py:284) 2025-06-04 20:26:46.268780 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:26:46.268840 | INFO : Epoch 18 Validation Summary: epoch: 18.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:26:47.105879 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:47.380547 | INFO : Training Epoch 19   0.0% | batch:         0 of        10
+	loss: 0.0195241
+
+(training_methods.py:265) 2025-06-04 20:26:49.381662 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:50.273177 | INFO : Evaluating Epoch 19   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:50.381287 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9992401599884033 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:50.381513 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.041698157787323 seconds
+(training_methods.py:277) 2025-06-04 20:26:50.381574 | INFO : Avg batch val. time: 0.2083396315574646 seconds
+(training_methods.py:278) 2025-06-04 20:26:50.381620 | INFO : Avg sample val. time: 0.014077002132261122 seconds
+(training_methods.py:284) 2025-06-04 20:26:50.381672 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.18      0.19        17
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.47      0.29      0.36        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.34      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:26:50.381727 | INFO : Epoch 19 Validation Summary: epoch: 19.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:26:51.319373 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:51.608299 | INFO : Training Epoch 20   0.0% | batch:         0 of        10
+	loss: 0.0189044
+
+(training_methods.py:265) 2025-06-04 20:26:53.561816 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:54.508791 | INFO : Evaluating Epoch 20   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:54.620692 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0584685802459717 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:54.620931 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0424967493329729 seconds
+(training_methods.py:277) 2025-06-04 20:26:54.620990 | INFO : Avg batch val. time: 0.20849934986659457 seconds
+(training_methods.py:278) 2025-06-04 20:26:54.621036 | INFO : Avg sample val. time: 0.014087793909905038 seconds
+(training_methods.py:284) 2025-06-04 20:26:54.621091 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:26:54.621176 | INFO : Epoch 20 Validation Summary: epoch: 20.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:26:55.510288 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:55.820129 | INFO : Training Epoch 21   0.0% | batch:         0 of        10
+	loss: 0.0183348
+
+(training_methods.py:265) 2025-06-04 20:26:57.788699 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:26:58.677741 | INFO : Evaluating Epoch 21   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:26:58.785282 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9960572719573975 seconds
+
+(training_methods.py:276) 2025-06-04 20:26:58.785484 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0403858639977195 seconds
+(training_methods.py:277) 2025-06-04 20:26:58.785560 | INFO : Avg batch val. time: 0.2080771727995439 seconds
+(training_methods.py:278) 2025-06-04 20:26:58.785608 | INFO : Avg sample val. time: 0.014059268432401614 seconds
+(training_methods.py:284) 2025-06-04 20:26:58.785662 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:26:58.785747 | INFO : Epoch 21 Validation Summary: epoch: 21.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:26:59.559665 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:26:59.807856 | INFO : Training Epoch 22   0.0% | batch:         0 of        10
+	loss: 0.0178082
+
+(training_methods.py:265) 2025-06-04 20:27:02.123815 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:03.040543 | INFO : Evaluating Epoch 22   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:03.149748 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0256354808807373 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:03.149945 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0397445429926333 seconds
+(training_methods.py:277) 2025-06-04 20:27:03.150018 | INFO : Avg batch val. time: 0.20794890859852666 seconds
+(training_methods.py:278) 2025-06-04 20:27:03.150066 | INFO : Avg sample val. time: 0.014050601932332882 seconds
+(training_methods.py:284) 2025-06-04 20:27:03.150120 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:03.150175 | INFO : Epoch 22 Validation Summary: epoch: 22.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:03.892183 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:04.177896 | INFO : Training Epoch 23   0.0% | batch:         0 of        10
+	loss: 0.0173175
+
+(training_methods.py:265) 2025-06-04 20:27:06.152199 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:07.124412 | INFO : Evaluating Epoch 23   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:07.233503 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.080712080001831 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:07.233705 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.04145152370135 seconds
+(training_methods.py:277) 2025-06-04 20:27:07.233770 | INFO : Avg batch val. time: 0.20829030474027 seconds
+(training_methods.py:278) 2025-06-04 20:27:07.233832 | INFO : Avg sample val. time: 0.014073669239207432 seconds
+(training_methods.py:284) 2025-06-04 20:27:07.233907 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:07.234004 | INFO : Epoch 23 Validation Summary: epoch: 23.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:08.171036 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:08.441236 | INFO : Training Epoch 24   0.0% | batch:         0 of        10
+	loss: 0.0168634
+
+(training_methods.py:265) 2025-06-04 20:27:10.385314 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:11.276458 | INFO : Evaluating Epoch 24   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:11.384032 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9982373714447021 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:11.384248 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.039722957611084 seconds
+(training_methods.py:277) 2025-06-04 20:27:11.384306 | INFO : Avg batch val. time: 0.2079445915222168 seconds
+(training_methods.py:278) 2025-06-04 20:27:11.384365 | INFO : Avg sample val. time: 0.014050310237987623 seconds
+(training_methods.py:284) 2025-06-04 20:27:11.384418 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:11.384476 | INFO : Epoch 24 Validation Summary: epoch: 24.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:12.137862 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:12.413233 | INFO : Training Epoch 25   0.0% | batch:         0 of        10
+	loss: 0.0164379
+
+(training_methods.py:265) 2025-06-04 20:27:14.390418 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:15.285702 | INFO : Evaluating Epoch 25   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:15.393636 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0028796195983887 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:15.393836 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0383059061490572 seconds
+(training_methods.py:277) 2025-06-04 20:27:15.393910 | INFO : Avg batch val. time: 0.20766118122981142 seconds
+(training_methods.py:278) 2025-06-04 20:27:15.393956 | INFO : Avg sample val. time: 0.014031160893906177 seconds
+(training_methods.py:284) 2025-06-04 20:27:15.394011 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:15.394076 | INFO : Epoch 25 Validation Summary: epoch: 25.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:16.315200 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:16.600614 | INFO : Training Epoch 26   0.0% | batch:         0 of        10
+	loss: 0.0160354
+
+(training_methods.py:265) 2025-06-04 20:27:18.642762 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:19.540003 | INFO : Evaluating Epoch 26   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:19.648266 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.005028247833252 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:19.648458 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0370734002855089 seconds
+(training_methods.py:277) 2025-06-04 20:27:19.648532 | INFO : Avg batch val. time: 0.20741468005710179 seconds
+(training_methods.py:278) 2025-06-04 20:27:19.648580 | INFO : Avg sample val. time: 0.014014505409263633 seconds
+(training_methods.py:284) 2025-06-04 20:27:19.648634 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:19.648692 | INFO : Epoch 26 Validation Summary: epoch: 26.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:20.386768 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:20.670752 | INFO : Training Epoch 27   0.0% | batch:         0 of        10
+	loss: 0.0156611
+
+(training_methods.py:265) 2025-06-04 20:27:22.634526 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:23.549453 | INFO : Evaluating Epoch 27   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:23.666389 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.031531810760498 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:23.666669 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0368754863739014 seconds
+(training_methods.py:277) 2025-06-04 20:27:23.666731 | INFO : Avg batch val. time: 0.20737509727478026 seconds
+(training_methods.py:278) 2025-06-04 20:27:23.666784 | INFO : Avg sample val. time: 0.014011830896944613 seconds
+(training_methods.py:284) 2025-06-04 20:27:23.666844 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:23.666926 | INFO : Epoch 27 Validation Summary: epoch: 27.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:24.536128 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:24.831284 | INFO : Training Epoch 28   0.0% | batch:         0 of        10
+	loss: 0.0153117
+
+(training_methods.py:265) 2025-06-04 20:27:26.774215 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:27.685821 | INFO : Evaluating Epoch 28   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:27.795364 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0207300186157227 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:27.795573 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0363187461063779 seconds
+(training_methods.py:277) 2025-06-04 20:27:27.795630 | INFO : Avg batch val. time: 0.20726374922127558 seconds
+(training_methods.py:278) 2025-06-04 20:27:27.795676 | INFO : Avg sample val. time: 0.014004307379815917 seconds
+(training_methods.py:284) 2025-06-04 20:27:27.795729 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:27.795805 | INFO : Epoch 28 Validation Summary: epoch: 28.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:28.750560 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:29.008158 | INFO : Training Epoch 29   0.0% | batch:         0 of        10
+	loss: 0.0149838
+
+(training_methods.py:265) 2025-06-04 20:27:31.043100 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:31.943992 | INFO : Evaluating Epoch 29   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:32.054424 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0108821392059326 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:32.054715 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0354708592096964 seconds
+(training_methods.py:277) 2025-06-04 20:27:32.054804 | INFO : Avg batch val. time: 0.2070941718419393 seconds
+(training_methods.py:278) 2025-06-04 20:27:32.054872 | INFO : Avg sample val. time: 0.013992849448779682 seconds
+(training_methods.py:284) 2025-06-04 20:27:32.054950 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:32.055052 | INFO : Epoch 29 Validation Summary: epoch: 29.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:32.854173 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:33.115128 | INFO : Training Epoch 30   0.0% | batch:         0 of        10
+	loss: 0.0146755
+
+(training_methods.py:265) 2025-06-04 20:27:35.059127 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:36.017738 | INFO : Evaluating Epoch 30   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:36.130895 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0713353157043457 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:36.131135 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0366277771611367 seconds
+(training_methods.py:277) 2025-06-04 20:27:36.131195 | INFO : Avg batch val. time: 0.20732555543222736 seconds
+(training_methods.py:278) 2025-06-04 20:27:36.131247 | INFO : Avg sample val. time: 0.014008483475150496 seconds
+(training_methods.py:284) 2025-06-04 20:27:36.131305 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:36.131381 | INFO : Epoch 30 Validation Summary: epoch: 30.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:37.023293 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:37.291298 | INFO : Training Epoch 31   0.0% | batch:         0 of        10
+	loss: 0.0143854
+
+(training_methods.py:265) 2025-06-04 20:27:39.226248 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:40.127631 | INFO : Evaluating Epoch 31   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:40.244715 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0181498527526855 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:40.244887 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0360503420233727 seconds
+(training_methods.py:277) 2025-06-04 20:27:40.244960 | INFO : Avg batch val. time: 0.20721006840467454 seconds
+(training_methods.py:278) 2025-06-04 20:27:40.245007 | INFO : Avg sample val. time: 0.014000680297613144 seconds
+(training_methods.py:284) 2025-06-04 20:27:40.245058 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:40.245124 | INFO : Epoch 31 Validation Summary: epoch: 31.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:41.176009 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:41.478184 | INFO : Training Epoch 32   0.0% | batch:         0 of        10
+	loss: 0.0141099
+
+(training_methods.py:265) 2025-06-04 20:27:43.472723 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:44.364152 | INFO : Evaluating Epoch 32   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:44.472772 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9997334480285645 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:44.472965 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.034949830084136 seconds
+(training_methods.py:277) 2025-06-04 20:27:44.473019 | INFO : Avg batch val. time: 0.2069899660168272 seconds
+(training_methods.py:278) 2025-06-04 20:27:44.473063 | INFO : Avg sample val. time: 0.013985808514650486 seconds
+(training_methods.py:284) 2025-06-04 20:27:44.473111 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.26      0.32        23
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.31      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:44.473188 | INFO : Epoch 32 Validation Summary: epoch: 32.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:45.455724 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:45.734441 | INFO : Training Epoch 33   0.0% | batch:         0 of        10
+	loss: 0.0138488
+
+(training_methods.py:265) 2025-06-04 20:27:47.667177 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:48.544777 | INFO : Evaluating Epoch 33   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:48.652632 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9851791858673096 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:48.652826 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0334859876071705 seconds
+(training_methods.py:277) 2025-06-04 20:27:48.652884 | INFO : Avg batch val. time: 0.2066971975214341 seconds
+(training_methods.py:278) 2025-06-04 20:27:48.652930 | INFO : Avg sample val. time: 0.013966026859556358 seconds
+(training_methods.py:284) 2025-06-04 20:27:48.652982 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:48.653040 | INFO : Epoch 33 Validation Summary: epoch: 33.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:49.350117 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:49.634134 | INFO : Training Epoch 34   0.0% | batch:         0 of        10
+	loss: 0.0136001
+
+(training_methods.py:265) 2025-06-04 20:27:51.559742 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:52.452859 | INFO : Evaluating Epoch 34   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:52.560529 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0003938674926758 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:52.560732 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0325404984610422 seconds
+(training_methods.py:277) 2025-06-04 20:27:52.560797 | INFO : Avg batch val. time: 0.20650809969220846 seconds
+(training_methods.py:278) 2025-06-04 20:27:52.560843 | INFO : Avg sample val. time: 0.013953249979203273 seconds
+(training_methods.py:284) 2025-06-04 20:27:52.560894 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:52.560963 | INFO : Epoch 34 Validation Summary: epoch: 34.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:53.534857 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:53.826051 | INFO : Training Epoch 35   0.0% | batch:         0 of        10
+	loss: 0.0133635
+
+(training_methods.py:265) 2025-06-04 20:27:55.757215 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:27:56.658576 | INFO : Evaluating Epoch 35   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:27:56.767114 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0094101428985596 seconds
+
+(training_methods.py:276) 2025-06-04 20:27:56.767330 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0318979885843065 seconds
+(training_methods.py:277) 2025-06-04 20:27:56.767392 | INFO : Avg batch val. time: 0.2063795977168613 seconds
+(training_methods.py:278) 2025-06-04 20:27:56.767441 | INFO : Avg sample val. time: 0.01394456741330144 seconds
+(training_methods.py:284) 2025-06-04 20:27:56.767494 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:27:56.767551 | INFO : Epoch 35 Validation Summary: epoch: 35.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:27:57.647507 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:27:57.916794 | INFO : Training Epoch 36   0.0% | batch:         0 of        10
+	loss: 0.013138
+
+(training_methods.py:265) 2025-06-04 20:27:59.913089 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:00.855616 | INFO : Evaluating Epoch 36   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:00.967809 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0542140007019043 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:00.968007 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0325011240469444 seconds
+(training_methods.py:277) 2025-06-04 20:28:00.968069 | INFO : Avg batch val. time: 0.20650022480938887 seconds
+(training_methods.py:278) 2025-06-04 20:28:00.968117 | INFO : Avg sample val. time: 0.013952717892526275 seconds
+(training_methods.py:284) 2025-06-04 20:28:00.968170 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:00.968232 | INFO : Epoch 36 Validation Summary: epoch: 36.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:01.988053 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:02.268197 | INFO : Training Epoch 37   0.0% | batch:         0 of        10
+	loss: 0.0129221
+
+(training_methods.py:265) 2025-06-04 20:28:04.217023 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:05.099910 | INFO : Evaluating Epoch 37   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:05.208457 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9911403656005859 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:05.208652 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.031412683035198 seconds
+(training_methods.py:277) 2025-06-04 20:28:05.208707 | INFO : Avg batch val. time: 0.2062825366070396 seconds
+(training_methods.py:278) 2025-06-04 20:28:05.208765 | INFO : Avg sample val. time: 0.013938009230205379 seconds
+(training_methods.py:284) 2025-06-04 20:28:05.208816 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:05.208876 | INFO : Epoch 37 Validation Summary: epoch: 37.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:05.914944 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:06.193614 | INFO : Training Epoch 38   0.0% | batch:         0 of        10
+	loss: 0.0127178
+
+(training_methods.py:265) 2025-06-04 20:28:08.168005 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:09.071962 | INFO : Evaluating Epoch 38   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:09.178803 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0103943347930908 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:09.179001 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.03087375102899 seconds
+(training_methods.py:277) 2025-06-04 20:28:09.179058 | INFO : Avg batch val. time: 0.206174750205798 seconds
+(training_methods.py:278) 2025-06-04 20:28:09.179102 | INFO : Avg sample val. time: 0.013930726365256623 seconds
+(training_methods.py:284) 2025-06-04 20:28:09.179152 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:09.179211 | INFO : Epoch 38 Validation Summary: epoch: 38.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:10.085623 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:10.371781 | INFO : Training Epoch 39   0.0% | batch:         0 of        10
+	loss: 0.0125213
+
+(training_methods.py:265) 2025-06-04 20:28:12.381488 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:13.266742 | INFO : Evaluating Epoch 39   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:13.375855 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9940581321716309 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:13.376061 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0299533605575562 seconds
+(training_methods.py:277) 2025-06-04 20:28:13.376124 | INFO : Avg batch val. time: 0.20599067211151123 seconds
+(training_methods.py:278) 2025-06-04 20:28:13.376173 | INFO : Avg sample val. time: 0.013918288656183192 seconds
+(training_methods.py:284) 2025-06-04 20:28:13.376226 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:13.376300 | INFO : Epoch 39 Validation Summary: epoch: 39.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:14.280065 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:14.585811 | INFO : Training Epoch 40   0.0% | batch:         0 of        10
+	loss: 0.0123331
+
+(training_methods.py:265) 2025-06-04 20:28:16.545379 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:17.469690 | INFO : Evaluating Epoch 40   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:17.587976 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0422885417938232 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:17.588247 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0302542186364896 seconds
+(training_methods.py:277) 2025-06-04 20:28:17.588316 | INFO : Avg batch val. time: 0.20605084372729793 seconds
+(training_methods.py:278) 2025-06-04 20:28:17.588361 | INFO : Avg sample val. time: 0.013922354305898508 seconds
+(training_methods.py:284) 2025-06-04 20:28:17.588420 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:17.588500 | INFO : Epoch 40 Validation Summary: epoch: 40.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:18.513527 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:18.802555 | INFO : Training Epoch 41   0.0% | batch:         0 of        10
+	loss: 0.0121542
+
+(training_methods.py:265) 2025-06-04 20:28:20.760750 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:21.655008 | INFO : Evaluating Epoch 41   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:21.764485 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0032567977905273 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:21.764682 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0296114229020619 seconds
+(training_methods.py:277) 2025-06-04 20:28:21.764756 | INFO : Avg batch val. time: 0.20592228458041237 seconds
+(training_methods.py:278) 2025-06-04 20:28:21.764803 | INFO : Avg sample val. time: 0.01391366787705489 seconds
+(training_methods.py:284) 2025-06-04 20:28:21.764856 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.40      0.32        20
+           2       0.33      0.38      0.36        13
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.30        74
+   macro avg       0.30      0.30      0.30        74
+weighted avg       0.30      0.30      0.29        74
+
+(training_methods.py:290) 2025-06-04 20:28:21.764912 | INFO : Epoch 41 Validation Summary: epoch: 41.000000 | loss: 0.000000 | accuracy: 0.297297 | 
+(training_methods.py:320) 2025-06-04 20:28:22.724811 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:23.020753 | INFO : Training Epoch 42   0.0% | batch:         0 of        10
+	loss: 0.0119828
+
+(training_methods.py:265) 2025-06-04 20:28:25.057275 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:25.953460 | INFO : Evaluating Epoch 42   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:26.062082 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0044379234313965 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:26.062288 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0290259926818137 seconds
+(training_methods.py:277) 2025-06-04 20:28:26.062349 | INFO : Avg batch val. time: 0.20580519853636275 seconds
+(training_methods.py:278) 2025-06-04 20:28:26.062397 | INFO : Avg sample val. time: 0.013905756657862348 seconds
+(training_methods.py:284) 2025-06-04 20:28:26.062449 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.40      0.32        20
+           2       0.27      0.33      0.30        12
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.28        74
+   macro avg       0.29      0.29      0.28        74
+weighted avg       0.29      0.28      0.28        74
+
+(training_methods.py:290) 2025-06-04 20:28:26.062536 | INFO : Epoch 42 Validation Summary: epoch: 42.000000 | loss: 0.000000 | accuracy: 0.283784 | 
+(training_methods.py:320) 2025-06-04 20:28:26.867420 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:27.146239 | INFO : Training Epoch 43   0.0% | batch:         0 of        10
+	loss: 0.0118184
+
+(training_methods.py:265) 2025-06-04 20:28:29.095325 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:30.038077 | INFO : Evaluating Epoch 43   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:30.150972 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0551536083221436 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:30.151218 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0296198021281848 seconds
+(training_methods.py:277) 2025-06-04 20:28:30.151287 | INFO : Avg batch val. time: 0.20592396042563696 seconds
+(training_methods.py:278) 2025-06-04 20:28:30.151337 | INFO : Avg sample val. time: 0.013913781109840335 seconds
+(training_methods.py:284) 2025-06-04 20:28:30.151395 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.40      0.32        20
+           2       0.27      0.33      0.30        12
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.28        74
+   macro avg       0.29      0.29      0.28        74
+weighted avg       0.29      0.28      0.28        74
+
+(training_methods.py:290) 2025-06-04 20:28:30.151456 | INFO : Epoch 43 Validation Summary: epoch: 43.000000 | loss: 0.000000 | accuracy: 0.283784 | 
+(training_methods.py:320) 2025-06-04 20:28:31.487866 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:31.756237 | INFO : Training Epoch 44   0.0% | batch:         0 of        10
+	loss: 0.0116602
+
+(training_methods.py:265) 2025-06-04 20:28:33.711042 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:34.595931 | INFO : Evaluating Epoch 44   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:34.704090 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9925887584686279 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:34.704283 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0287968900468614 seconds
+(training_methods.py:277) 2025-06-04 20:28:34.704344 | INFO : Avg batch val. time: 0.20575937800937227 seconds
+(training_methods.py:278) 2025-06-04 20:28:34.704393 | INFO : Avg sample val. time: 0.013902660676308937 seconds
+(training_methods.py:284) 2025-06-04 20:28:34.704445 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.40      0.32        20
+           2       0.27      0.33      0.30        12
+           3       0.40      0.27      0.32        22
+
+    accuracy                           0.28        74
+   macro avg       0.29      0.29      0.28        74
+weighted avg       0.29      0.28      0.28        74
+
+(training_methods.py:290) 2025-06-04 20:28:34.704520 | INFO : Epoch 44 Validation Summary: epoch: 44.000000 | loss: 0.000000 | accuracy: 0.283784 | 
+(training_methods.py:320) 2025-06-04 20:28:35.659591 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:35.961554 | INFO : Training Epoch 45   0.0% | batch:         0 of        10
+	loss: 0.0115075
+
+(training_methods.py:265) 2025-06-04 20:28:37.912904 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:38.792238 | INFO : Evaluating Epoch 45   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:38.899916 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9866230487823486 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:38.900105 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0278800674106763 seconds
+(training_methods.py:277) 2025-06-04 20:28:38.900176 | INFO : Avg batch val. time: 0.20557601348213525 seconds
+(training_methods.py:278) 2025-06-04 20:28:38.900222 | INFO : Avg sample val. time: 0.013890271181225355 seconds
+(training_methods.py:284) 2025-06-04 20:28:38.900275 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.38      0.36        13
+           3       0.47      0.30      0.37        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:28:38.900349 | INFO : Epoch 45 Validation Summary: epoch: 45.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:28:39.837324 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:40.080640 | INFO : Training Epoch 46   0.0% | batch:         0 of        10
+	loss: 0.0113638
+
+(training_methods.py:265) 2025-06-04 20:28:42.104895 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:42.987246 | INFO : Evaluating Epoch 46   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:43.095538 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9902946949005127 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:43.095735 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0270803786338645 seconds
+(training_methods.py:277) 2025-06-04 20:28:43.095798 | INFO : Avg batch val. time: 0.2054160757267729 seconds
+(training_methods.py:278) 2025-06-04 20:28:43.095845 | INFO : Avg sample val. time: 0.013879464576133304 seconds
+(training_methods.py:284) 2025-06-04 20:28:43.095898 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.38      0.36        13
+           3       0.47      0.30      0.37        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:28:43.095983 | INFO : Epoch 46 Validation Summary: epoch: 46.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:28:43.961607 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:44.275736 | INFO : Training Epoch 47   0.0% | batch:         0 of        10
+	loss: 0.0112254
+
+(training_methods.py:265) 2025-06-04 20:28:46.217090 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:47.117229 | INFO : Evaluating Epoch 47   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:47.229514 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0119786262512207 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:47.229781 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0267657587925594 seconds
+(training_methods.py:277) 2025-06-04 20:28:47.229848 | INFO : Avg batch val. time: 0.20535315175851188 seconds
+(training_methods.py:278) 2025-06-04 20:28:47.229898 | INFO : Avg sample val. time: 0.013875212956656207 seconds
+(training_methods.py:284) 2025-06-04 20:28:47.229963 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.38      0.36        13
+           3       0.47      0.30      0.37        23
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.33      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:28:47.230059 | INFO : Epoch 47 Validation Summary: epoch: 47.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:28:48.133955 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:48.446883 | INFO : Training Epoch 48   0.0% | batch:         0 of        10
+	loss: 0.0110905
+
+(training_methods.py:265) 2025-06-04 20:28:50.388389 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:51.272370 | INFO : Evaluating Epoch 48   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:51.380477 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9917616844177246 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:51.380671 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0260513899277668 seconds
+(training_methods.py:277) 2025-06-04 20:28:51.380744 | INFO : Avg batch val. time: 0.20521027798555336 seconds
+(training_methods.py:278) 2025-06-04 20:28:51.380791 | INFO : Avg sample val. time: 0.0138655593233482 seconds
+(training_methods.py:284) 2025-06-04 20:28:51.380844 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:28:51.380903 | INFO : Epoch 48 Validation Summary: epoch: 48.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:28:51.991322 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:52.234678 | INFO : Training Epoch 49   0.0% | batch:         0 of        10
+	loss: 0.0109581
+
+(training_methods.py:265) 2025-06-04 20:28:54.515028 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:55.423217 | INFO : Evaluating Epoch 49   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:55.531492 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0161516666412354 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:55.531681 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0258533954620361 seconds
+(training_methods.py:277) 2025-06-04 20:28:55.531753 | INFO : Avg batch val. time: 0.20517067909240722 seconds
+(training_methods.py:278) 2025-06-04 20:28:55.531800 | INFO : Avg sample val. time: 0.013862883722459947 seconds
+(training_methods.py:284) 2025-06-04 20:28:55.531852 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:28:55.531911 | INFO : Epoch 49 Validation Summary: epoch: 49.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:28:56.338598 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:28:56.652733 | INFO : Training Epoch 50   0.0% | batch:         0 of        10
+	loss: 0.0108312
+
+(training_methods.py:265) 2025-06-04 20:28:58.630569 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:28:59.644490 | INFO : Evaluating Epoch 50   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:28:59.757369 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1263625621795654 seconds
+
+(training_methods.py:276) 2025-06-04 20:28:59.757602 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0278241634368896 seconds
+(training_methods.py:277) 2025-06-04 20:28:59.757682 | INFO : Avg batch val. time: 0.20556483268737794 seconds
+(training_methods.py:278) 2025-06-04 20:28:59.757734 | INFO : Avg sample val. time: 0.013889515722120131 seconds
+(training_methods.py:284) 2025-06-04 20:28:59.757793 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:28:59.757873 | INFO : Epoch 50 Validation Summary: epoch: 50.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:00.738895 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:01.022462 | INFO : Training Epoch 51   0.0% | batch:         0 of        10
+	loss: 0.010709
+
+(training_methods.py:265) 2025-06-04 20:29:02.959747 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:03.847387 | INFO : Evaluating Epoch 51   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:03.954977 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9949479103088379 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:03.955170 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0271919277998118 seconds
+(training_methods.py:277) 2025-06-04 20:29:03.955242 | INFO : Avg batch val. time: 0.20543838555996236 seconds
+(training_methods.py:278) 2025-06-04 20:29:03.955289 | INFO : Avg sample val. time: 0.013880971997294754 seconds
+(training_methods.py:284) 2025-06-04 20:29:03.955342 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:03.955405 | INFO : Epoch 51 Validation Summary: epoch: 51.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:04.679721 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:04.968904 | INFO : Training Epoch 52   0.0% | batch:         0 of        10
+	loss: 0.0105909
+
+(training_methods.py:265) 2025-06-04 20:29:06.988656 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:07.872745 | INFO : Evaluating Epoch 52   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:07.980588 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9915330410003662 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:07.980788 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0265191186149165 seconds
+(training_methods.py:277) 2025-06-04 20:29:07.980849 | INFO : Avg batch val. time: 0.2053038237229833 seconds
+(training_methods.py:278) 2025-06-04 20:29:07.980896 | INFO : Avg sample val. time: 0.013871879981282656 seconds
+(training_methods.py:284) 2025-06-04 20:29:07.980949 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.27      0.36      0.31        11
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.34      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:29:07.981012 | INFO : Epoch 52 Validation Summary: epoch: 52.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:29:08.772917 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:09.053327 | INFO : Training Epoch 53   0.0% | batch:         0 of        10
+	loss: 0.0104745
+
+(training_methods.py:265) 2025-06-04 20:29:11.031255 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:11.997618 | INFO : Evaluating Epoch 53   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:12.106879 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0752253532409668 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:12.107080 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0274210859228063 seconds
+(training_methods.py:277) 2025-06-04 20:29:12.107141 | INFO : Avg batch val. time: 0.20548421718456128 seconds
+(training_methods.py:278) 2025-06-04 20:29:12.107188 | INFO : Avg sample val. time: 0.013884068728686572 seconds
+(training_methods.py:284) 2025-06-04 20:29:12.107241 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.27      0.36      0.31        11
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.34      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:29:12.107315 | INFO : Epoch 53 Validation Summary: epoch: 53.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:29:12.886113 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:13.163851 | INFO : Training Epoch 54   0.0% | batch:         0 of        10
+	loss: 0.010363
+
+(training_methods.py:265) 2025-06-04 20:29:15.111816 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:16.005281 | INFO : Evaluating Epoch 54   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:16.116762 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.004591941833496 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:16.116946 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.027006010575728 seconds
+(training_methods.py:277) 2025-06-04 20:29:16.117018 | INFO : Avg batch val. time: 0.2054012021151456 seconds
+(training_methods.py:278) 2025-06-04 20:29:16.117065 | INFO : Avg sample val. time: 0.013878459602374701 seconds
+(training_methods.py:284) 2025-06-04 20:29:16.117118 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.27      0.36      0.31        11
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.34      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:29:16.117192 | INFO : Epoch 54 Validation Summary: epoch: 54.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:29:16.833461 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:17.113102 | INFO : Training Epoch 55   0.0% | batch:         0 of        10
+	loss: 0.0102556
+
+(training_methods.py:265) 2025-06-04 20:29:19.086121 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:19.984016 | INFO : Evaluating Epoch 55   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:20.091418 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.004997730255127 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:20.091608 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.026613005570003 seconds
+(training_methods.py:277) 2025-06-04 20:29:20.091669 | INFO : Avg batch val. time: 0.20532260111400058 seconds
+(training_methods.py:278) 2025-06-04 20:29:20.091716 | INFO : Avg sample val. time: 0.013873148723918958 seconds
+(training_methods.py:284) 2025-06-04 20:29:20.091769 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.27      0.36      0.31        11
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.34      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:29:20.091839 | INFO : Epoch 55 Validation Summary: epoch: 55.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:29:20.901588 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:21.180445 | INFO : Training Epoch 56   0.0% | batch:         0 of        10
+	loss: 0.0101499
+
+(training_methods.py:265) 2025-06-04 20:29:23.158129 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:24.095991 | INFO : Evaluating Epoch 56   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:24.208599 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0500836372375488 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:24.208781 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0270247710378546 seconds
+(training_methods.py:277) 2025-06-04 20:29:24.208852 | INFO : Avg batch val. time: 0.20540495420757093 seconds
+(training_methods.py:278) 2025-06-04 20:29:24.208899 | INFO : Avg sample val. time: 0.01387871312213317 seconds
+(training_methods.py:284) 2025-06-04 20:29:24.208953 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:24.209012 | INFO : Epoch 56 Validation Summary: epoch: 56.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:25.310261 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:25.602314 | INFO : Training Epoch 57   0.0% | batch:         0 of        10
+	loss: 0.0100479
+
+(training_methods.py:265) 2025-06-04 20:29:27.546209 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:28.459096 | INFO : Evaluating Epoch 57   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:28.572773 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0261902809143066 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:28.573038 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0270103832771038 seconds
+(training_methods.py:277) 2025-06-04 20:29:28.573113 | INFO : Avg batch val. time: 0.20540207665542076 seconds
+(training_methods.py:278) 2025-06-04 20:29:28.573192 | INFO : Avg sample val. time: 0.013878518692933835 seconds
+(training_methods.py:284) 2025-06-04 20:29:28.573254 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:28.573322 | INFO : Epoch 57 Validation Summary: epoch: 57.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:29.445084 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:29.721954 | INFO : Training Epoch 58   0.0% | batch:         0 of        10
+	loss: 0.00994965
+
+(training_methods.py:265) 2025-06-04 20:29:31.661750 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:32.535908 | INFO : Evaluating Epoch 58   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:32.641869 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9797708988189697 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:32.642056 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0262097140489999 seconds
+(training_methods.py:277) 2025-06-04 20:29:32.642141 | INFO : Avg batch val. time: 0.20524194280979996 seconds
+(training_methods.py:278) 2025-06-04 20:29:32.642191 | INFO : Avg sample val. time: 0.013867698838499998 seconds
+(training_methods.py:284) 2025-06-04 20:29:32.642248 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:32.642311 | INFO : Epoch 58 Validation Summary: epoch: 58.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:33.715665 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:33.991821 | INFO : Training Epoch 59   0.0% | batch:         0 of        10
+	loss: 0.00985239
+
+(training_methods.py:265) 2025-06-04 20:29:36.009819 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:36.914397 | INFO : Evaluating Epoch 59   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:37.025800 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0155479907989502 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:37.026036 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.026032018661499 seconds
+(training_methods.py:277) 2025-06-04 20:29:37.026103 | INFO : Avg batch val. time: 0.2052064037322998 seconds
+(training_methods.py:278) 2025-06-04 20:29:37.026154 | INFO : Avg sample val. time: 0.013865297549479717 seconds
+(training_methods.py:284) 2025-06-04 20:29:37.026214 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:37.026277 | INFO : Epoch 59 Validation Summary: epoch: 59.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:37.781056 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:38.057964 | INFO : Training Epoch 60   0.0% | batch:         0 of        10
+	loss: 0.00975784
+
+(training_methods.py:265) 2025-06-04 20:29:40.013361 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:40.973806 | INFO : Evaluating Epoch 60   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:41.086537 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0728092193603516 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:41.086793 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0267988580172178 seconds
+(training_methods.py:277) 2025-06-04 20:29:41.086858 | INFO : Avg batch val. time: 0.20535977160344357 seconds
+(training_methods.py:278) 2025-06-04 20:29:41.086905 | INFO : Avg sample val. time: 0.013875660243475916 seconds
+(training_methods.py:284) 2025-06-04 20:29:41.086966 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.33      0.41        24
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:41.087044 | INFO : Epoch 60 Validation Summary: epoch: 60.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:42.015033 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:42.310975 | INFO : Training Epoch 61   0.0% | batch:         0 of        10
+	loss: 0.00966721
+
+(training_methods.py:265) 2025-06-04 20:29:44.254505 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:45.132683 | INFO : Evaluating Epoch 61   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:45.239722 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9849507808685303 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:45.239913 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0261238890309488 seconds
+(training_methods.py:277) 2025-06-04 20:29:45.239973 | INFO : Avg batch val. time: 0.20522477780618975 seconds
+(training_methods.py:278) 2025-06-04 20:29:45.240021 | INFO : Avg sample val. time: 0.013866539040958767 seconds
+(training_methods.py:284) 2025-06-04 20:29:45.240076 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:29:45.240149 | INFO : Epoch 61 Validation Summary: epoch: 61.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:29:45.845327 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:46.141869 | INFO : Training Epoch 62   0.0% | batch:         0 of        10
+	loss: 0.00957824
+
+(training_methods.py:265) 2025-06-04 20:29:48.147742 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:49.028768 | INFO : Evaluating Epoch 62   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:49.137687 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9895892143249512 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:49.137872 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.025543973559425 seconds
+(training_methods.py:277) 2025-06-04 20:29:49.137944 | INFO : Avg batch val. time: 0.20510879471188498 seconds
+(training_methods.py:278) 2025-06-04 20:29:49.137990 | INFO : Avg sample val. time: 0.013858702345397635 seconds
+(training_methods.py:284) 2025-06-04 20:29:49.138043 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:29:49.138098 | INFO : Epoch 62 Validation Summary: epoch: 62.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:29:49.974297 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:50.273050 | INFO : Training Epoch 63   0.0% | batch:         0 of        10
+	loss: 0.00949156
+
+(training_methods.py:265) 2025-06-04 20:29:52.216443 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:53.165012 | INFO : Evaluating Epoch 63   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:53.278501 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0615530014038086 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:53.278710 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0261066146194935 seconds
+(training_methods.py:277) 2025-06-04 20:29:53.278781 | INFO : Avg batch val. time: 0.2052213229238987 seconds
+(training_methods.py:278) 2025-06-04 20:29:53.278830 | INFO : Avg sample val. time: 0.013866305602966127 seconds
+(training_methods.py:284) 2025-06-04 20:29:53.278883 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:53.278939 | INFO : Epoch 63 Validation Summary: epoch: 63.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:54.253315 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:54.536839 | INFO : Training Epoch 64   0.0% | batch:         0 of        10
+	loss: 0.00940744
+
+(training_methods.py:265) 2025-06-04 20:29:56.494905 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:29:57.408542 | INFO : Evaluating Epoch 64   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:29:57.516327 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0210070610046387 seconds
+
+(training_methods.py:276) 2025-06-04 20:29:57.516520 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0260281599484957 seconds
+(training_methods.py:277) 2025-06-04 20:29:57.516593 | INFO : Avg batch val. time: 0.20520563198969916 seconds
+(training_methods.py:278) 2025-06-04 20:29:57.516640 | INFO : Avg sample val. time: 0.013865245404709401 seconds
+(training_methods.py:284) 2025-06-04 20:29:57.516694 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:29:57.516749 | INFO : Epoch 64 Validation Summary: epoch: 64.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:29:58.480428 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:29:58.848512 | INFO : Training Epoch 65   0.0% | batch:         0 of        10
+	loss: 0.00932533
+
+(training_methods.py:265) 2025-06-04 20:30:00.822966 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:01.703563 | INFO : Evaluating Epoch 65   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:01.810930 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9876754283905029 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:01.811110 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0254470579551929 seconds
+(training_methods.py:277) 2025-06-04 20:30:01.811182 | INFO : Avg batch val. time: 0.20508941159103858 seconds
+(training_methods.py:278) 2025-06-04 20:30:01.811229 | INFO : Avg sample val. time: 0.013857392675070173 seconds
+(training_methods.py:284) 2025-06-04 20:30:01.811281 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.33      0.32        74
+weighted avg       0.35      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:30:01.811337 | INFO : Epoch 65 Validation Summary: epoch: 65.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:30:02.704916 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:02.975723 | INFO : Training Epoch 66   0.0% | batch:         0 of        10
+	loss: 0.00924644
+
+(training_methods.py:265) 2025-06-04 20:30:04.998725 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:05.983507 | INFO : Evaluating Epoch 66   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:06.091713 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0925352573394775 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:06.091895 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0264483743639135 seconds
+(training_methods.py:277) 2025-06-04 20:30:06.091967 | INFO : Avg batch val. time: 0.20528967487278268 seconds
+(training_methods.py:278) 2025-06-04 20:30:06.092014 | INFO : Avg sample val. time: 0.013870923977890722 seconds
+(training_methods.py:284) 2025-06-04 20:30:06.092066 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.14      0.17        21
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.47      0.32      0.38        22
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:30:06.092128 | INFO : Epoch 66 Validation Summary: epoch: 66.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:30:06.989293 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:07.243749 | INFO : Training Epoch 67   0.0% | batch:         0 of        10
+	loss: 0.00916811
+
+(training_methods.py:265) 2025-06-04 20:30:09.214524 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:10.139611 | INFO : Evaluating Epoch 67   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:10.254859 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0400373935699463 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:10.255111 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0266482128816492 seconds
+(training_methods.py:277) 2025-06-04 20:30:10.255173 | INFO : Avg batch val. time: 0.20532964257632985 seconds
+(training_methods.py:278) 2025-06-04 20:30:10.255219 | INFO : Avg sample val. time: 0.013873624498400666 seconds
+(training_methods.py:284) 2025-06-04 20:30:10.255278 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.14      0.17        21
+           1       0.27      0.42      0.33        19
+           2       0.33      0.42      0.37        12
+           3       0.47      0.32      0.38        22
+
+    accuracy                           0.31        74
+   macro avg       0.32      0.32      0.31        74
+weighted avg       0.32      0.31      0.31        74
+
+(training_methods.py:290) 2025-06-04 20:30:10.255355 | INFO : Epoch 67 Validation Summary: epoch: 67.000000 | loss: 0.000000 | accuracy: 0.310811 | 
+(training_methods.py:320) 2025-06-04 20:30:11.047061 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:11.310854 | INFO : Training Epoch 68   0.0% | batch:         0 of        10
+	loss: 0.00909117
+
+(training_methods.py:265) 2025-06-04 20:30:13.239043 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:14.131194 | INFO : Evaluating Epoch 68   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:14.238720 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.99928879737854 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:14.238906 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0262516996134883 seconds
+(training_methods.py:277) 2025-06-04 20:30:14.238978 | INFO : Avg batch val. time: 0.20525033992269764 seconds
+(training_methods.py:278) 2025-06-04 20:30:14.239024 | INFO : Avg sample val. time: 0.013868266210993085 seconds
+(training_methods.py:284) 2025-06-04 20:30:14.239094 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.47      0.32      0.38        22
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.34      0.33        74
+weighted avg       0.34      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:30:14.239151 | INFO : Epoch 68 Validation Summary: epoch: 68.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:30:15.174841 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:15.441119 | INFO : Training Epoch 69   0.0% | batch:         0 of        10
+	loss: 0.00901645
+
+(training_methods.py:265) 2025-06-04 20:30:17.465912 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:18.364097 | INFO : Evaluating Epoch 69   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:18.472176 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.005995273590088 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:18.472370 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0259623220988683 seconds
+(training_methods.py:277) 2025-06-04 20:30:18.472443 | INFO : Avg batch val. time: 0.20519246441977365 seconds
+(training_methods.py:278) 2025-06-04 20:30:18.472491 | INFO : Avg sample val. time: 0.013864355704038761 seconds
+(training_methods.py:284) 2025-06-04 20:30:18.472543 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.47      0.32      0.38        22
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.34      0.33        74
+weighted avg       0.34      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:30:18.472600 | INFO : Epoch 69 Validation Summary: epoch: 69.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:30:19.182143 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:19.466847 | INFO : Training Epoch 70   0.0% | batch:         0 of        10
+	loss: 0.00894337
+
+(training_methods.py:265) 2025-06-04 20:30:21.395787 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:22.338464 | INFO : Evaluating Epoch 70   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:22.448913 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0527570247650146 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:22.449172 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0263397122772646 seconds
+(training_methods.py:277) 2025-06-04 20:30:22.449255 | INFO : Avg batch val. time: 0.20526794245545293 seconds
+(training_methods.py:278) 2025-06-04 20:30:22.449303 | INFO : Avg sample val. time: 0.013869455571314387 seconds
+(training_methods.py:284) 2025-06-04 20:30:22.449359 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.15      0.18        20
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.47      0.32      0.38        22
+
+    accuracy                           0.32        74
+   macro avg       0.34      0.34      0.33        74
+weighted avg       0.34      0.32      0.32        74
+
+(training_methods.py:290) 2025-06-04 20:30:22.449418 | INFO : Epoch 70 Validation Summary: epoch: 70.000000 | loss: 0.000000 | accuracy: 0.324324 | 
+(training_methods.py:320) 2025-06-04 20:30:23.192573 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:23.473194 | INFO : Training Epoch 71   0.0% | batch:         0 of        10
+	loss: 0.00887298
+
+(training_methods.py:265) 2025-06-04 20:30:25.409075 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:26.312952 | INFO : Evaluating Epoch 71   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:26.421347 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0118694305419922 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:26.421556 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0261387361420526 seconds
+(training_methods.py:277) 2025-06-04 20:30:26.421615 | INFO : Avg batch val. time: 0.20522774722841053 seconds
+(training_methods.py:278) 2025-06-04 20:30:26.421661 | INFO : Avg sample val. time: 0.013866739677595306 seconds
+(training_methods.py:284) 2025-06-04 20:30:26.421713 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:26.421771 | INFO : Epoch 71 Validation Summary: epoch: 71.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:27.234089 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:27.562988 | INFO : Training Epoch 72   0.0% | batch:         0 of        10
+	loss: 0.00880391
+
+(training_methods.py:265) 2025-06-04 20:30:29.579552 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:30.473550 | INFO : Evaluating Epoch 72   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:30.581372 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.001492977142334 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:30.581562 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.02580112300507 seconds
+(training_methods.py:277) 2025-06-04 20:30:30.581620 | INFO : Avg batch val. time: 0.20516022460101402 seconds
+(training_methods.py:278) 2025-06-04 20:30:30.581667 | INFO : Avg sample val. time: 0.013862177337906352 seconds
+(training_methods.py:284) 2025-06-04 20:30:30.581719 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:30.581776 | INFO : Epoch 72 Validation Summary: epoch: 72.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:31.433673 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:31.744437 | INFO : Training Epoch 73   0.0% | batch:         0 of        10
+	loss: 0.00873551
+
+(training_methods.py:265) 2025-06-04 20:30:33.687861 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:34.693192 | INFO : Evaluating Epoch 73   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:34.799835 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1114838123321533 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:34.800024 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0269589971851658 seconds
+(training_methods.py:277) 2025-06-04 20:30:34.800097 | INFO : Avg batch val. time: 0.20539179943703317 seconds
+(training_methods.py:278) 2025-06-04 20:30:34.800144 | INFO : Avg sample val. time: 0.013877824286286025 seconds
+(training_methods.py:284) 2025-06-04 20:30:34.800195 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:34.800260 | INFO : Epoch 73 Validation Summary: epoch: 73.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:35.781294 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:36.058305 | INFO : Training Epoch 74   0.0% | batch:         0 of        10
+	loss: 0.00866839
+
+(training_methods.py:265) 2025-06-04 20:30:37.982475 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:38.884340 | INFO : Evaluating Epoch 74   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:38.994181 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0113186836242676 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:38.994387 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0267504596710204 seconds
+(training_methods.py:277) 2025-06-04 20:30:38.994453 | INFO : Avg batch val. time: 0.2053500919342041 seconds
+(training_methods.py:278) 2025-06-04 20:30:38.994500 | INFO : Avg sample val. time: 0.013875006211770546 seconds
+(training_methods.py:284) 2025-06-04 20:30:38.994553 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:38.994610 | INFO : Epoch 74 Validation Summary: epoch: 74.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:39.896972 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:40.190482 | INFO : Training Epoch 75   0.0% | batch:         0 of        10
+	loss: 0.0086039
+
+(training_methods.py:265) 2025-06-04 20:30:42.412937 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:43.317280 | INFO : Evaluating Epoch 75   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:43.428179 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0149269104003906 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:43.428369 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0265948866543018 seconds
+(training_methods.py:277) 2025-06-04 20:30:43.428440 | INFO : Avg batch val. time: 0.20531897733086035 seconds
+(training_methods.py:278) 2025-06-04 20:30:43.428488 | INFO : Avg sample val. time: 0.013872903873706781 seconds
+(training_methods.py:284) 2025-06-04 20:30:43.428541 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:43.428598 | INFO : Epoch 75 Validation Summary: epoch: 75.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:44.075276 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:44.338313 | INFO : Training Epoch 76   0.0% | batch:         0 of        10
+	loss: 0.00854031
+
+(training_methods.py:265) 2025-06-04 20:30:46.343492 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:47.233075 | INFO : Evaluating Epoch 76   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:47.340705 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9968883991241455 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:47.340904 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.026209088114949 seconds
+(training_methods.py:277) 2025-06-04 20:30:47.340977 | INFO : Avg batch val. time: 0.20524181762298982 seconds
+(training_methods.py:278) 2025-06-04 20:30:47.341024 | INFO : Avg sample val. time: 0.013867690379931744 seconds
+(training_methods.py:284) 2025-06-04 20:30:47.341076 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:47.341131 | INFO : Epoch 76 Validation Summary: epoch: 76.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:48.401608 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:48.642038 | INFO : Training Epoch 77   0.0% | batch:         0 of        10
+	loss: 0.00847696
+
+(training_methods.py:265) 2025-06-04 20:30:50.575906 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:51.498854 | INFO : Evaluating Epoch 77   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:51.612009 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0358240604400635 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:51.612258 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.026332356990912 seconds
+(training_methods.py:277) 2025-06-04 20:30:51.612338 | INFO : Avg batch val. time: 0.20526647139818238 seconds
+(training_methods.py:278) 2025-06-04 20:30:51.612386 | INFO : Avg sample val. time: 0.013869356175552865 seconds
+(training_methods.py:284) 2025-06-04 20:30:51.612446 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:51.612509 | INFO : Epoch 77 Validation Summary: epoch: 77.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:52.329702 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:52.619036 | INFO : Training Epoch 78   0.0% | batch:         0 of        10
+	loss: 0.00841592
+
+(training_methods.py:265) 2025-06-04 20:30:54.563131 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:55.460745 | INFO : Evaluating Epoch 78   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:55.570245 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0068390369415283 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:55.570432 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.026085606104211 seconds
+(training_methods.py:277) 2025-06-04 20:30:55.570504 | INFO : Avg batch val. time: 0.20521712122084218 seconds
+(training_methods.py:278) 2025-06-04 20:30:55.570551 | INFO : Avg sample val. time: 0.01386602170411096 seconds
+(training_methods.py:284) 2025-06-04 20:30:55.570604 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:55.570672 | INFO : Epoch 78 Validation Summary: epoch: 78.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:30:56.469359 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:30:56.793981 | INFO : Training Epoch 79   0.0% | batch:         0 of        10
+	loss: 0.00835628
+
+(training_methods.py:265) 2025-06-04 20:30:58.798123 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:30:59.697457 | INFO : Evaluating Epoch 79   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:30:59.804222 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0057284832000732 seconds
+
+(training_methods.py:276) 2025-06-04 20:30:59.804410 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0258311420679092 seconds
+(training_methods.py:277) 2025-06-04 20:30:59.804482 | INFO : Avg batch val. time: 0.20516622841358184 seconds
+(training_methods.py:278) 2025-06-04 20:30:59.804530 | INFO : Avg sample val. time: 0.01386258300091769 seconds
+(training_methods.py:284) 2025-06-04 20:30:59.804583 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:30:59.804637 | INFO : Epoch 79 Validation Summary: epoch: 79.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:00.568759 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:00.855728 | INFO : Training Epoch 80   0.0% | batch:         0 of        10
+	loss: 0.00829771
+
+(training_methods.py:265) 2025-06-04 20:31:02.781163 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:03.726130 | INFO : Evaluating Epoch 80   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:03.837960 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0565288066864014 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:03.838185 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0262101255817178 seconds
+(training_methods.py:277) 2025-06-04 20:31:03.838264 | INFO : Avg batch val. time: 0.20524202511634354 seconds
+(training_methods.py:278) 2025-06-04 20:31:03.838328 | INFO : Avg sample val. time: 0.013867704399752942 seconds
+(training_methods.py:284) 2025-06-04 20:31:03.838389 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:03.838478 | INFO : Epoch 80 Validation Summary: epoch: 80.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:04.659624 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:04.944473 | INFO : Training Epoch 81   0.0% | batch:         0 of        10
+	loss: 0.00824078
+
+(training_methods.py:265) 2025-06-04 20:31:06.872757 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:07.744573 | INFO : Evaluating Epoch 81   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:07.852806 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9797677993774414 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:07.852993 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0256437557499583 seconds
+(training_methods.py:277) 2025-06-04 20:31:07.853066 | INFO : Avg batch val. time: 0.20512875114999166 seconds
+(training_methods.py:278) 2025-06-04 20:31:07.853128 | INFO : Avg sample val. time: 0.013860050753377814 seconds
+(training_methods.py:284) 2025-06-04 20:31:07.853207 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:07.853266 | INFO : Epoch 81 Validation Summary: epoch: 81.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:08.595814 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:09.080136 | INFO : Training Epoch 82   0.0% | batch:         0 of        10
+	loss: 0.00818521
+
+(training_methods.py:265) 2025-06-04 20:31:11.088595 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:11.983646 | INFO : Evaluating Epoch 82   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:12.091337 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0023634433746338 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:12.091529 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0253632700586894 seconds
+(training_methods.py:277) 2025-06-04 20:31:12.091602 | INFO : Avg batch val. time: 0.20507265401173788 seconds
+(training_methods.py:278) 2025-06-04 20:31:12.091649 | INFO : Avg sample val. time: 0.013856260406198506 seconds
+(training_methods.py:284) 2025-06-04 20:31:12.091702 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:12.091757 | INFO : Epoch 82 Validation Summary: epoch: 82.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:12.929606 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:13.201855 | INFO : Training Epoch 83   0.0% | batch:         0 of        10
+	loss: 0.00813022
+
+(training_methods.py:265) 2025-06-04 20:31:15.156554 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:16.155835 | INFO : Evaluating Epoch 83   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:16.264299 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.1073298454284668 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:16.264486 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0263390626226152 seconds
+(training_methods.py:277) 2025-06-04 20:31:16.264557 | INFO : Avg batch val. time: 0.20526781252452303 seconds
+(training_methods.py:278) 2025-06-04 20:31:16.264604 | INFO : Avg sample val. time: 0.013869446792197503 seconds
+(training_methods.py:284) 2025-06-04 20:31:16.264657 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:16.264718 | INFO : Epoch 83 Validation Summary: epoch: 83.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:17.235623 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:17.490447 | INFO : Training Epoch 84   0.0% | batch:         0 of        10
+	loss: 0.00807637
+
+(training_methods.py:265) 2025-06-04 20:31:19.425663 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:20.298124 | INFO : Evaluating Epoch 84   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:20.405637 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9797189235687256 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:20.405820 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0257905903984519 seconds
+(training_methods.py:277) 2025-06-04 20:31:20.405890 | INFO : Avg batch val. time: 0.20515811807969037 seconds
+(training_methods.py:278) 2025-06-04 20:31:20.405937 | INFO : Avg sample val. time: 0.013862035005384485 seconds
+(training_methods.py:284) 2025-06-04 20:31:20.405989 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:20.406045 | INFO : Epoch 84 Validation Summary: epoch: 84.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:21.151952 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:21.438015 | INFO : Training Epoch 85   0.0% | batch:         0 of        10
+	loss: 0.00802343
+
+(training_methods.py:265) 2025-06-04 20:31:23.407438 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:24.313159 | INFO : Evaluating Epoch 85   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:24.421916 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0142168998718262 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:24.422125 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0256560126016305 seconds
+(training_methods.py:277) 2025-06-04 20:31:24.422183 | INFO : Avg batch val. time: 0.2051312025203261 seconds
+(training_methods.py:278) 2025-06-04 20:31:24.422229 | INFO : Avg sample val. time: 0.013860216386508521 seconds
+(training_methods.py:284) 2025-06-04 20:31:24.422281 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:24.422337 | INFO : Epoch 85 Validation Summary: epoch: 85.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:25.444046 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:25.721574 | INFO : Training Epoch 86   0.0% | batch:         0 of        10
+	loss: 0.00797173
+
+(training_methods.py:265) 2025-06-04 20:31:27.732675 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:28.642244 | INFO : Evaluating Epoch 86   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:28.750027 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0168771743774414 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:28.750216 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0255551064151458 seconds
+(training_methods.py:277) 2025-06-04 20:31:28.750288 | INFO : Avg batch val. time: 0.20511102128302916 seconds
+(training_methods.py:278) 2025-06-04 20:31:28.750334 | INFO : Avg sample val. time: 0.013858852789393862 seconds
+(training_methods.py:284) 2025-06-04 20:31:28.750387 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:28.750459 | INFO : Epoch 86 Validation Summary: epoch: 86.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:29.521929 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:29.808368 | INFO : Training Epoch 87   0.0% | batch:         0 of        10
+	loss: 0.00792025
+
+(training_methods.py:265) 2025-06-04 20:31:31.744256 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:32.623114 | INFO : Evaluating Epoch 87   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:32.732018 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9873712062835693 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:32.732205 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.025121198459105 seconds
+(training_methods.py:277) 2025-06-04 20:31:32.732279 | INFO : Avg batch val. time: 0.20502423969182101 seconds
+(training_methods.py:278) 2025-06-04 20:31:32.732326 | INFO : Avg sample val. time: 0.013852989168366286 seconds
+(training_methods.py:284) 2025-06-04 20:31:32.732378 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:32.732435 | INFO : Epoch 87 Validation Summary: epoch: 87.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:33.483986 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:33.758114 | INFO : Training Epoch 88   0.0% | batch:         0 of        10
+	loss: 0.0078707
+
+(training_methods.py:265) 2025-06-04 20:31:35.700481 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:36.598485 | INFO : Evaluating Epoch 88   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:36.706146 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0053431987762451 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:36.706332 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0248989737435672 seconds
+(training_methods.py:277) 2025-06-04 20:31:36.706403 | INFO : Avg batch val. time: 0.20497979474871345 seconds
+(training_methods.py:278) 2025-06-04 20:31:36.706450 | INFO : Avg sample val. time: 0.013849986131669828 seconds
+(training_methods.py:284) 2025-06-04 20:31:36.706501 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:36.706562 | INFO : Epoch 88 Validation Summary: epoch: 88.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:37.428180 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:37.720561 | INFO : Training Epoch 89   0.0% | batch:         0 of        10
+	loss: 0.00782071
+
+(training_methods.py:265) 2025-06-04 20:31:39.716276 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:40.599594 | INFO : Evaluating Epoch 89   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:40.712420 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9957969188690186 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:40.712607 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0245756175782945 seconds
+(training_methods.py:277) 2025-06-04 20:31:40.712680 | INFO : Avg batch val. time: 0.2049151235156589 seconds
+(training_methods.py:278) 2025-06-04 20:31:40.712727 | INFO : Avg sample val. time: 0.013845616453760737 seconds
+(training_methods.py:284) 2025-06-04 20:31:40.712780 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:40.712838 | INFO : Epoch 89 Validation Summary: epoch: 89.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:41.644533 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:41.925195 | INFO : Training Epoch 90   0.0% | batch:         0 of        10
+	loss: 0.00777235
+
+(training_methods.py:265) 2025-06-04 20:31:43.857599 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:44.768866 | INFO : Evaluating Epoch 90   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:44.882528 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0245428085327148 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:44.882792 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.024575257039332 seconds
+(training_methods.py:277) 2025-06-04 20:31:44.882866 | INFO : Avg batch val. time: 0.20491505140786642 seconds
+(training_methods.py:278) 2025-06-04 20:31:44.882912 | INFO : Avg sample val. time: 0.013845611581612596 seconds
+(training_methods.py:284) 2025-06-04 20:31:44.882971 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:44.883033 | INFO : Epoch 90 Validation Summary: epoch: 90.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:45.717325 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:45.981594 | INFO : Training Epoch 91   0.0% | batch:         0 of        10
+	loss: 0.00772543
+
+(training_methods.py:265) 2025-06-04 20:31:47.973568 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:48.870312 | INFO : Evaluating Epoch 91   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:48.977754 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0038833618164062 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:48.977941 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.024350345134735 seconds
+(training_methods.py:277) 2025-06-04 20:31:48.977999 | INFO : Avg batch val. time: 0.20487006902694702 seconds
+(training_methods.py:278) 2025-06-04 20:31:48.978045 | INFO : Avg sample val. time: 0.013842572231550474 seconds
+(training_methods.py:284) 2025-06-04 20:31:48.978096 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:48.978168 | INFO : Epoch 91 Validation Summary: epoch: 91.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:49.662575 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:49.952108 | INFO : Training Epoch 92   0.0% | batch:         0 of        10
+	loss: 0.00767918
+
+(training_methods.py:265) 2025-06-04 20:31:51.977915 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:52.869823 | INFO : Evaluating Epoch 92   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:52.978195 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9999270439147949 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:52.978384 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0240877289925852 seconds
+(training_methods.py:277) 2025-06-04 20:31:52.978456 | INFO : Avg batch val. time: 0.20481754579851702 seconds
+(training_methods.py:278) 2025-06-04 20:31:52.978503 | INFO : Avg sample val. time: 0.013839023364764664 seconds
+(training_methods.py:284) 2025-06-04 20:31:52.978555 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:52.978611 | INFO : Epoch 92 Validation Summary: epoch: 92.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:53.728216 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:53.969014 | INFO : Training Epoch 93   0.0% | batch:         0 of        10
+	loss: 0.00763327
+
+(training_methods.py:265) 2025-06-04 20:31:55.906216 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:31:56.785123 | INFO : Evaluating Epoch 93   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:31:56.893032 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9865303039550781 seconds
+
+(training_methods.py:276) 2025-06-04 20:31:56.893256 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0236881819177182 seconds
+(training_methods.py:277) 2025-06-04 20:31:56.893315 | INFO : Avg batch val. time: 0.20473763638354364 seconds
+(training_methods.py:278) 2025-06-04 20:31:56.893361 | INFO : Avg sample val. time: 0.013833624079969164 seconds
+(training_methods.py:284) 2025-06-04 20:31:56.893412 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:31:56.893469 | INFO : Epoch 93 Validation Summary: epoch: 93.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:31:57.921192 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:31:58.210009 | INFO : Training Epoch 94   0.0% | batch:         0 of        10
+	loss: 0.00758828
+
+(training_methods.py:265) 2025-06-04 20:32:00.152094 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:01.045630 | INFO : Evaluating Epoch 94   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:01.153255 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0008060932159424 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:01.153455 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0234473178261205 seconds
+(training_methods.py:277) 2025-06-04 20:32:01.153530 | INFO : Avg batch val. time: 0.2046894635652241 seconds
+(training_methods.py:278) 2025-06-04 20:32:01.153591 | INFO : Avg sample val. time: 0.01383036915981244 seconds
+(training_methods.py:284) 2025-06-04 20:32:01.153646 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:01.153702 | INFO : Epoch 94 Validation Summary: epoch: 94.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:01.921758 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:32:02.196801 | INFO : Training Epoch 95   0.0% | batch:         0 of        10
+	loss: 0.00754355
+
+(training_methods.py:265) 2025-06-04 20:32:04.139882 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:05.019327 | INFO : Evaluating Epoch 95   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:05.128482 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9882106781005859 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:05.128670 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0230802694956462 seconds
+(training_methods.py:277) 2025-06-04 20:32:05.128742 | INFO : Avg batch val. time: 0.20461605389912924 seconds
+(training_methods.py:278) 2025-06-04 20:32:05.128788 | INFO : Avg sample val. time: 0.013825409047238463 seconds
+(training_methods.py:284) 2025-06-04 20:32:05.128841 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:05.128898 | INFO : Epoch 95 Validation Summary: epoch: 95.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:06.084778 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:32:06.563316 | INFO : Training Epoch 96   0.0% | batch:         0 of        10
+	loss: 0.00750057
+
+(training_methods.py:265) 2025-06-04 20:32:08.500684 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:09.406872 | INFO : Evaluating Epoch 96   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:09.515188 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0142455101013184 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:09.515400 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.02298918950189 seconds
+(training_methods.py:277) 2025-06-04 20:32:09.515459 | INFO : Avg batch val. time: 0.20459783790037803 seconds
+(training_methods.py:278) 2025-06-04 20:32:09.515505 | INFO : Avg sample val. time: 0.013824178236512028 seconds
+(training_methods.py:284) 2025-06-04 20:32:09.515556 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:09.515630 | INFO : Epoch 96 Validation Summary: epoch: 96.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:10.408973 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:32:10.710820 | INFO : Training Epoch 97   0.0% | batch:         0 of        10
+	loss: 0.00745792
+
+(training_methods.py:265) 2025-06-04 20:32:12.641620 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:13.553886 | INFO : Evaluating Epoch 97   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:13.662156 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.020139455795288 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:13.662368 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0229601105865167 seconds
+(training_methods.py:277) 2025-06-04 20:32:13.662443 | INFO : Avg batch val. time: 0.20459202211730335 seconds
+(training_methods.py:278) 2025-06-04 20:32:13.662489 | INFO : Avg sample val. time: 0.01382378527819617 seconds
+(training_methods.py:284) 2025-06-04 20:32:13.662543 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:13.662599 | INFO : Epoch 97 Validation Summary: epoch: 97.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:14.631630 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:32:14.903573 | INFO : Training Epoch 98   0.0% | batch:         0 of        10
+	loss: 0.00741489
+
+(training_methods.py:265) 2025-06-04 20:32:16.836145 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:17.706203 | INFO : Evaluating Epoch 98   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:17.814008 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 0.9774839878082275 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:17.814225 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0225007558109784 seconds
+(training_methods.py:277) 2025-06-04 20:32:17.814299 | INFO : Avg batch val. time: 0.2045001511621957 seconds
+(training_methods.py:278) 2025-06-04 20:32:17.814345 | INFO : Avg sample val. time: 0.013817577781229438 seconds
+(training_methods.py:284) 2025-06-04 20:32:17.814409 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.16      0.18        19
+           1       0.27      0.42      0.33        19
+           2       0.40      0.46      0.43        13
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.35      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:17.814482 | INFO : Epoch 98 Validation Summary: epoch: 98.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:18.569810 | INFO : ckpt updated.
+(training_methods.py:262) 2025-06-04 20:32:18.862060 | INFO : Training Epoch 99   0.0% | batch:         0 of        10
+	loss: 0.00737354
+
+(training_methods.py:265) 2025-06-04 20:32:20.793459 | INFO : Evaluating on validation set ...
+(training_methods.py:262) 2025-06-04 20:32:21.700364 | INFO : Evaluating Epoch 99   0.0% | batch:         0 of         5
+	loss: inf
+
+(training_methods.py:270) 2025-06-04 20:32:21.809500 | INFO : Validation runtime: 0.0 hours, 0.0 minutes, 1.0157639980316162 seconds
+
+(training_methods.py:276) 2025-06-04 20:32:21.809722 | INFO : Avg val. time: 0.0 hours, 0.0 minutes, 1.0224333882331849 seconds
+(training_methods.py:277) 2025-06-04 20:32:21.809782 | INFO : Avg batch val. time: 0.20448667764663697 seconds
+(training_methods.py:278) 2025-06-04 20:32:21.809829 | INFO : Avg sample val. time: 0.013816667408556553 seconds
+(training_methods.py:284) 2025-06-04 20:32:21.809883 | INFO : report:               precision    recall  f1-score   support
+
+           0       0.21      0.17      0.19        18
+           1       0.27      0.42      0.33        19
+           2       0.40      0.43      0.41        14
+           3       0.53      0.35      0.42        23
+
+    accuracy                           0.34        74
+   macro avg       0.35      0.34      0.34        74
+weighted avg       0.36      0.34      0.34        74
+
+(training_methods.py:290) 2025-06-04 20:32:21.809953 | INFO : Epoch 99 Validation Summary: epoch: 99.000000 | loss: 0.000000 | accuracy: 0.337838 | 
+(training_methods.py:320) 2025-06-04 20:32:22.830803 | INFO : ckpt updated.

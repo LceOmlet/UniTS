@@ -1,0 +1,5 @@
+{
+    "feat_dim": 3,
+    "seq_len": 180,
+    "device": "cpu"
+}

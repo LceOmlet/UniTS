@@ -1,0 +1,10 @@
+(dataloaders.py:47) 2025-06-05 01:04:44.450964 | INFO : train_ds length: 275, valid_ds length: 300
+(process_model.py:275) 2025-06-05 01:04:44.454482 | INFO : {'feat_dim': 9, 'seq_len': 144, 'device': 'cpu'}
+(process_model.py:276) 2025-06-05 01:04:44.454615 | INFO : TNC(
+  (encoder): RnnEncoder(
+    (nn): Sequential(
+      (0): Linear(in_features=200, out_features=10, bias=True)
+    )
+    (rnn): GRU(9, 100, bidirectional=True)
+  )
+)

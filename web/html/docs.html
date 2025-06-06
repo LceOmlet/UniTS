@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Flatkit - HTML Version | Bootstrap 4 Web App Kit with AngularJS</title>
+  <meta name="description" content="Admin, Dashboard, Bootstrap, Bootstrap 4, Angular, AngularJS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimal-ui" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- for ios 7 style, multi-resolution icon of 152x152 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-barstyle" content="black-translucent">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <meta name="apple-mobile-web-app-title" content="Flatkit">
+  <!-- for Chrome on Android, multi-resolution icon of 196x196 -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" sizes="196x196" href="../assets/images/logo.png">
+  
+  <!-- style -->
+  <link rel="stylesheet" href="../assets/animate.css/animate.min.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/glyphicons/glyphicons.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/font-awesome/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/material-design-icons/material-design-icons.css" type="text/css" />
+
+  <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
+  <!-- build:css ../assets/styles/app.min.css -->
+  <link rel="stylesheet" href="../assets/styles/app.css" type="text/css" />
+  <!-- endbuild -->
+  <link rel="stylesheet" href="../assets/styles/font.css" type="text/css" />
+</head>
+<body>
+  <div class="app" id="app">
+
+<!-- ############ LAYOUT START-->
+
+  <!-- aside -->
+  <div id="aside" class="app-aside modal nav-dropdown">
+  	<!-- fluid app aside -->
+    <div class="left navside dark dk" data-layout="column">
+  	  <div class="navbar no-radius">
+        <!-- brand -->
+        <a class="navbar-brand">
+        	<div ui-include="'../assets/images/logo.svg'"></div>
+        	<img src="../assets/images/logo.png" alt="." class="hide">
+        	<span class="hidden-folded inline">Flatkit</span>
+        </a>
+        <!-- / brand -->
+      </div>
+      <div class="hide-scroll" data-flex>
+          <nav class="scroll nav-light">
+            
+              <ul class="nav" ui-nav>
+                <li class="nav-header hidden-folded">
+                  <small class="text-muted">Main</small>
+                </li>
+                
+                <li>
+                  <a href="dashboard.html" >
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe3fc;
+                        <span ui-include="'../assets/images/i_0.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Dashboard</span>
+                  </a>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-label">
+                      <b class="label rounded label-sm primary">5</b>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe5c3;
+                        <span ui-include="'../assets/images/i_1.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Apps</span>
+                  </a>
+                  <ul class="nav-sub">
+                    <li>
+                      <a href="inbox.html" >
+                        <span class="nav-text">Inbox</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="contact.html" >
+                        <span class="nav-text">Contacts</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="calendar.html" >
+                        <span class="nav-text">Calendar</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe8f0;
+                        <span ui-include="'../assets/images/i_2.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Layouts</span>
+                  </a>
+                  <ul class="nav-sub">
+                    <li>
+                      <a href="headers.html" >
+                        <span class="nav-text">Header</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="asides.html" >
+                        <span class="nav-text">Aside</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="footers.html" >
+                        <span class="nav-text">Footer</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li>
+                  <a href="widget.html" >
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe8d2;
+                        <span ui-include="'../assets/images/i_3.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Widgets</span>
+                  </a>
+                </li>
+            
+                <li class="nav-header hidden-folded">
+                  <small class="text-muted">Components</small>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-label">
+                      <b class="label label-sm accent">8</b>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe429;
+                        <span ui-include="'../assets/images/i_4.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">UI kit</span>
+                  </a>
+                  <ul class="nav-sub nav-mega nav-mega-3">
+                    <li>
+                      <a href="arrow.html" >
+                        <span class="nav-text">Arrow</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="box.html" >
+                        <span class="nav-text">Box</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="button.html" >
+                        <span class="nav-text">Button</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="color.html" >
+                        <span class="nav-text">Color</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="dropdown.html" >
+                        <span class="nav-text">Dropdown</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="grid.html" >
+                        <span class="nav-text">Grid</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="icon.html" >
+                        <span class="nav-text">Icon</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="label.html" >
+                        <span class="nav-text">Label</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="list.html" >
+                        <span class="nav-text">List Group</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="modal.html" >
+                        <span class="nav-text">Modal</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="nav.html" >
+                        <span class="nav-text">Nav</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="progress.html" >
+                        <span class="nav-text">Progress</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="social.html" >
+                        <span class="nav-text">Social</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="sortable.html" >
+                        <span class="nav-text">Sortable</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="streamline.html" >
+                        <span class="nav-text">Streamline</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="timeline.html" >
+                        <span class="nav-text">Timeline</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="map.vector.html" >
+                        <span class="nav-text">Vector Map</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-label"><b class="label no-bg">9</b></span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe3e8;
+                        <span ui-include="'../assets/images/i_5.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Pages</span>
+                  </a>
+                  <ul class="nav-sub nav-mega">
+                    <li>
+                      <a href="profile.html" >
+                        <span class="nav-text">Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="setting.html" >
+                        <span class="nav-text">Setting</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="search.html" >
+                        <span class="nav-text">Search</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="faq.html" >
+                        <span class="nav-text">FAQ</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="gallery.html" >
+                        <span class="nav-text">Gallery</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="invoice.html" >
+                        <span class="nav-text">Invoice</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="price.html" >
+                        <span class="nav-text">Price</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="blank.html" >
+                        <span class="nav-text">Blank</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="signin.html" >
+                        <span class="nav-text">Sign In</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="signup.html" >
+                        <span class="nav-text">Sign Up</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="forgot-password.html" >
+                        <span class="nav-text">Forgot Password</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="lockme.html" >
+                        <span class="nav-text">Lockme Screen</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="404.html" >
+                        <span class="nav-text">Error 404</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="505.html" >
+                        <span class="nav-text">Error 505</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe39e;
+                        <span ui-include="'../assets/images/i_6.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Form</span>
+                  </a>
+                  <ul class="nav-sub">
+                    <li>
+                      <a href="form.layout.html" >
+                        <span class="nav-text">Form Layout</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.element.html" >
+                        <span class="nav-text">Form Element</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.validation.html" >
+                        <span class="nav-text">Form Validation</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.select.html" >
+                        <span class="nav-text">Select</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.editor.html" >
+                        <span class="nav-text">Editor</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.picker.html">
+                        <span class="nav-text">Picker</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.wizard.html">
+                        <span class="nav-text">Wizard</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="form.dropzone.html" class="no-ajax" >
+                        <span class="nav-text">File Upload</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe896;
+                        <span ui-include="'../assets/images/i_7.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Tables</span>
+                  </a>
+                  <ul class="nav-sub">
+                    <li>
+                      <a href="static.html" >
+                        <span class="nav-text">Static table</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="datatable.html" >
+                        <span class="nav-text">Datatable</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="footable.html" >
+                        <span class="nav-text">Footable</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a>
+                    <span class="nav-caret">
+                      <i class="fa fa-caret-down"></i>
+                    </span>
+                    <span class="nav-label hidden-folded">
+                      <b class="label label-sm info">N</b>
+                    </span>
+                    <span class="nav-icon">
+                      <i class="material-icons">&#xe1b8;
+                        <span ui-include="'../assets/images/i_8.svg'"></span>
+                      </i>
+                    </span>
+                    <span class="nav-text">Charts</span>
+                  </a>
+                  <ul class="nav-sub">
+                    <li>
+                      <a href="chart.html" >
+                        <span class="nav-text">Chart</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="nav-caret">
+                          <i class="fa fa-caret-down"></i>
+                        </span>
+                        <span class="nav-text">Echarts</span>
+                      </a>
+                      <ul class="nav-sub">
+                        <li>
+                          <a href="echarts-line.html" >
+                            <span class="nav-text">line</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-bar.html" >
+                            <span class="nav-text">Bar</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-pie.html" >
+                            <span class="nav-text">Pie</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-scatter.html" >
+                            <span class="nav-text">Scatter</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-radar-chord.html" >
+                            <span class="nav-text">Radar &amp; Chord</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-gauge-funnel.html" >
+                            <span class="nav-text">Gauges &amp; Funnel</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="echarts-map.html" >
+                            <span class="nav-text">Map</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+            
+                <li class="nav-header hidden-folded">
+                  <small class="text-muted">Help</small>
+                </li>
+                
+                <li class="hidden-folded" >
+                  <a href="docs.html" >
+                    <span class="nav-text">Documents</span>
+                  </a>
+                </li>
+            
+              </ul>
+          </nav>
+      </div>
+      <div class="b-t">
+        <div class="nav-fold">
+        	<a href="profile.html">
+        	    <span class="pull-left">
+        	      <img src="../assets/images/a0.jpg" alt="..." class="w-40 img-circle">
+        	    </span>
+        	    <span class="clear hidden-folded p-x">
+        	      <span class="block _500">Jean Reyes</span>
+        	      <small class="block text-muted"><i class="fa fa-circle text-success m-r-sm"></i>online</small>
+        	    </span>
+        	</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / -->
+  
+  <!-- content -->
+  <div id="content" class="app-content box-shadow-z0" role="main">
+    <div class="app-header white box-shadow">
+        <div class="navbar navbar-toggleable-sm flex-row align-items-center">
+            <!-- Open side - Naviation on mobile -->
+            <a data-toggle="modal" data-target="#aside" class="hidden-lg-up mr-3">
+              <i class="material-icons">&#xe5d2;</i>
+            </a>
+            <!-- / -->
+        
+            <!-- Page title - Bind to $state's title -->
+            <div class="mb-0 h5 no-wrap" ng-bind="$state.current.data.title" id="pageTitle"></div>
+        
+            <!-- navbar collapse -->
+            <div class="collapse navbar-collapse" id="collapse">
+              <!-- link and dropdown -->
+              <ul class="nav navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                  <a class="nav-link" href data-toggle="dropdown">
+                    <i class="fa fa-fw fa-plus text-muted"></i>
+                    <span>New</span>
+                  </a>
+                  <div ui-include="'../views/blocks/dropdown.new.html'"></div>
+                </li>
+              </ul>
+        
+              <div ui-include="'../views/blocks/navbar.form.html'"></div>
+              <!-- / -->
+            </div>
+            <!-- / navbar collapse -->
+        
+            <!-- navbar right -->
+            <ul class="nav navbar-nav ml-auto flex-row">
+              <li class="nav-item dropdown pos-stc-xs">
+                <a class="nav-link mr-2" href data-toggle="dropdown">
+                  <i class="material-icons">&#xe7f5;</i>
+                  <span class="label label-sm up warn">3</span>
+                </a>
+                <div ui-include="'../views/blocks/dropdown.notification.html'"></div>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link p-0 clear" href="#" data-toggle="dropdown">
+                  <span class="avatar w-32">
+                    <img src="../assets/images/a0.jpg" alt="...">
+                    <i class="on b-white bottom"></i>
+                  </span>
+                </a>
+                <div ui-include="'../views/blocks/dropdown.user.html'"></div>
+              </li>
+              <li class="nav-item hidden-md-up">
+                <a class="nav-link pl-2" data-toggle="collapse" data-target="#collapse">
+                  <i class="material-icons">&#xe5d4;</i>
+                </a>
+              </li>
+            </ul>
+            <!-- / navbar right -->
+        </div>
+    </div>
+    <div class="app-footer">
+      <div class="p-2 text-xs">
+        <div class="pull-right text-muted py-1">
+          &copy; Copyright <strong>Flatkit</strong> <span class="hidden-xs-down">- Built with Love v1.1.3</span>
+          <a ui-scroll-to="content"><i class="fa fa-long-arrow-up p-x-sm"></i></a>
+        </div>
+        <div class="nav">
+          <a class="nav-link" href="../">About</a>
+          <a class="nav-link" href="http://themeforest.net/user/flatfull/portfolio?ref=flatfull">Get it</a>
+        </div>
+      </div>
+    </div>
+    <div ui-view class="app-body" id="view">
+
+<!-- ############ PAGE START-->
+<div class="p-a-md primary p-y-lg">
+    <h1 class="display-3 _500 l-s-n-2x">Documents</h1>
+    <div class="row">
+      <h4 class="col-md-9 l-h">Over a dozen reusable components to build awesome web project, We provided AnguarJS and Html versions for you.</h4>
+    </div>
+</div>
+<div class="p-a-md">
+  <div class="row p-t-md">
+    <div class="col-sm-3 col-sm-push-9">
+      <div bs-affix data-offset-top="-80" class="pos-stc-sm text">
+        <h5>Contents</h5>
+        <nav>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a href="#intro" ui-scroll-to="intro">Introduction</a>
+            </li>
+            <li class="nav-item">
+              <a href="#build" ui-scroll-to="build">Build tools</a>
+            </li>
+            <li class="nav-item">
+              <a href="#includes" ui-scroll-to="includes">What's include</a>
+            </li>
+            <li class="nav-item">
+              <a href="#css" ui-scroll-to="css">CSS</a>
+            </li>
+            <li class="nav-item">
+              <a href="#angular" ui-scroll-to="angular">Angular</a>
+            </li>
+            <li class="nav-item">
+              <a href="#html" ui-scroll-to="html">html</a>
+            </li>
+          </ul>
+        </nav>
+        <a href="http://themeforest.net/user/flatfull/portfolio" target="_blank" class="btn rounded danger m-y-md">Get this theme</a>
+      </div>
+    </div>
+    <div class="col-sm-9 col-sm-pull-3">
+      <div id="intro">
+        <h2 class="m-b">Intro</h2>
+        <h5 class="_300 l-h">Base on the world's most popular css framework <strong>Bootstrap 4</strong> and the popular js framework <strong>AngularJS</strong>, Flatkit provide the easy way to build your next web project.</h5>
+      </div>
+      <div id="build">
+        <h2 class="m-t-lg m-b">Build tools</h2>
+        <p class="text-md">Flatkit uses <a href="http://nodejs.org" class="text-info">Grunt</a> for its CSS and JavaScript build system, it's optional, you can use this theme without grunt tools, we included all the dependencies in this theme.</p>
+        <ol>
+          <li><a href="https://nodejs.org/download" class="text-info">Download and install Node</a>, which we use to manage our dependencies.</li>
+          <li>Run <code>npm install -g bower grunt-cli</code></li>
+          <li>Run <code>bower install --force-latest</code> to install dependencies</li>
+          <li>Run <code>grunt build</code> to build dist with minified js and css</li>
+          <li>Run <code>npm start</code> to start server</li>
+        </ol>
+
+        <p class="box p-a-sm m-t-md">
+          Note: any commands we tell you to run must be ran from the project's root folder.
+        </p>
+      </div>
+
+      <div id="includes">
+        <h2 class="m-t-lg m-b">What's include</h2>
+        <p>You'll find the following directories and files, grouping common resources and providing both compiled and minified distribution files, as well as raw source files.</p>
+<pre class="box p-a">
+app/
+  |-- bower.json
+  |-- package.json
+  |-- GruntFile.js
+  |-- README.md
+  |-- CHANGELOG.md
+  |-- dist/
+  |-- libs/
+  |   |-- angular/
+  |   |-- jquery/
+  |-- assets/
+  |   |-- scss/
+  |   |-- styles/
+  |   |-- bootstrap/
+  |   |-- fonts/
+  |   |-- images/
+  |-- views/
+  |   |-- blocks/
+  |   |-- chart/
+  |   |-- form/
+  |   |-- layout/
+  |   |-- page/
+  |   |-- table/
+  |   |-- ui/
+  |   |-- widget/
+  |   |-- layout.html
+  |   |-- layout.0.html
+  |   |-- layout.1.html
+  |   |-- layout.2.html
+  |   |-- layout.3.html
+  |   |-- layout.4.html
+  |-- angular/
+  |   |-- api/
+  |   |-- apps/
+  |   |   |-- calendar/
+  |   |   |-- contact/
+  |   |   |-- inbox/
+  |   |   |-- note/
+  |   |   |-- todo/
+  |   |-- scripts/
+  |   |   |-- controllers/
+  |   |   |-- directives/
+  |   |   |-- filters/
+  |   |   |-- services/
+  |   |   |-- app.js
+  |   |   |-- app.ctrl.js
+  |   |   |-- config.js
+  |   |   |-- config.lazyload.js
+  |   |   |-- config.router.js
+  |   |-- index.html
+  |-- html/
+  |   |-- api/
+  |   |-- scripts/
+  |   |   |-- app.js
+  |   |   |-- config.js
+  |   |   |-- config.lazyload.js
+  |   |   |-- config.router.js
+  |   |-- index.html
+</pre>
+      </div>
+      <div id="css">
+        <h2 class="m-t-lg m-b">CSS / Scss</h2>
+        <p class="text-md">You can apply any provided colors to any blocks, even on the Light, Grey, Dark, Black theme.</p>
+        <p>The css file is generated by Scss files. There are many variables you can config to build the css file. many classes are extended from bootstrap css.</p>
+        <h4 class="m-b">Utility classes 
+            <a href="http://v4-alpha.getbootstrap.com/components/utilities/">
+            <i class="fa fa-link text-muted"></i>
+          </a>
+        </h4>
+<h6>Margin</h6>
+<pre class="box p-a">
+.m-0 { margin:        0 !important; }
+.m-t-0 { margin-top:    0 !important; }
+.m-r-0 { margin-right:  0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.m-l-0 { margin-left:   0 !important; }
+.m-x-0 { margin-right:  0 !important; margin-left:   0 !important; }
+.m-y-0 { margin-top:    0 !important; margin-bottom: 0 !important; }
+
+.m-a { margin:        $spacer !important; }
+.m-t { margin-top:    $spacer-y !important; }
+.m-r { margin-right:  $spacer-x !important; }
+.m-b { margin-bottom: $spacer-y !important; }
+.m-l { margin-left:   $spacer-x !important; }
+.m-x { margin-right:  $spacer-x !important; margin-left: $spacer-x !important; }
+.m-y { margin-top:    $spacer-y !important; margin-bottom: $spacer-y !important; }
+.m-x-auto { margin-right: auto !important; margin-left: auto !important; }
+
+.m-a-md { margin:        ($spacer * 1.5) !important; }
+.m-t-md { margin-top:    ($spacer-y * 1.5) !important; }
+.m-r-md { margin-right:  ($spacer-y * 1.5) !important; }
+.m-b-md { margin-bottom: ($spacer-y * 1.5) !important; }
+.m-l-md { margin-left:   ($spacer-y * 1.5) !important; }
+.m-x-md { margin-right:  ($spacer-x * 1.5) !important; margin-left:   ($spacer-x * 1.5) !important; }
+.m-y-md { margin-top:    ($spacer-y * 1.5) !important; margin-bottom: ($spacer-y * 1.5) !important; }
+
+.m-a-lg { margin:        ($spacer * 3) !important; }
+.m-t-lg { margin-top:    ($spacer-y * 3) !important; }
+.m-r-lg { margin-right:  ($spacer-y * 3) !important; }
+.m-b-lg { margin-bottom: ($spacer-y * 3) !important; }
+.m-l-lg { margin-left:   ($spacer-y * 3) !important; }
+.m-x-lg { margin-right:  ($spacer-x * 3) !important; margin-left:   ($spacer-x * 3) !important; }
+.m-y-lg { margin-top:    ($spacer-y * 3) !important; margin-bottom: ($spacer-y * 3) !important; }
+
+.m-a-sm { margin:        ($spacer * 0.5) !important; }
+.m-t-sm { margin-top:    ($spacer-y * 0.5) !important; }
+.m-r-sm { margin-right:  ($spacer-y * 0.5) !important; }
+.m-b-sm { margin-bottom: ($spacer-y * 0.5) !important; }
+.m-l-sm { margin-left:   ($spacer-y * 0.5) !important; }
+.m-x-sm { margin-right:  ($spacer-x * 0.5) !important; margin-left:   ($spacer-x * 0.5) !important; }
+.m-y-sm { margin-top:    ($spacer-y * 0.5) !important; margin-bottom: ($spacer-y * 0.5) !important; }
+
+.m-a-xs { margin:        ($spacer * 0.25) !important; }
+.m-t-xs { margin-top:    ($spacer-y * 0.25) !important; }
+.m-r-xs { margin-right:  ($spacer-y * 0.25) !important; }
+.m-b-xs { margin-bottom: ($spacer-y * 0.25) !important; }
+.m-l-xs { margin-left:   ($spacer-y * 0.25) !important; }
+.m-x-xs { margin-right:  ($spacer-x * 0.25) !important; margin-left:   ($spacer-x * 0.25) !important; }
+.m-y-xs { margin-top:    ($spacer-y * 0.25) !important; margin-bottom: ($spacer-y * 0.25) !important; }
+</pre>
+<h6>Padding</h6>
+<pre class="box p-a">
+.p-a-0 { padding:        0 !important; }
+.p-t-0 { padding-top:    0 !important; }
+.p-r-0 { padding-right:  0 !important; }
+.p-b-0 { padding-bottom: 0 !important; }
+.p-l-0 { padding-left:   0 !important; }
+
+.p-a { padding:        @spacer !important; }
+.p-t { padding-top:    @spacer-y !important; }
+.p-r { padding-right:  @spacer-x !important; }
+.p-b { padding-bottom: @spacer-y !important; }
+.p-l { padding-left:   @spacer-x !important; }
+.p-x { padding-right:  @spacer-x !important; padding-left:   @spacer-x !important; }
+.p-y { padding-top:    @spacer-y !important; padding-bottom: @spacer-y !important; }
+
+.p-a-md { padding:        (@spacer-y * 1.5) !important; }
+.p-t-md { padding-top:    (@spacer-y * 1.5) !important; }
+.p-r-md { padding-right:  (@spacer-y * 1.5) !important; }
+.p-b-md { padding-bottom: (@spacer-y * 1.5) !important; }
+.p-l-md { padding-left:   (@spacer-y * 1.5) !important; }
+.p-x-md { padding-right:  (@spacer-x * 1.5) !important; padding-left:   (@spacer-x * 1.5) !important; }
+.p-y-md { padding-top:    (@spacer-y * 1.5) !important; padding-bottom: (@spacer-y * 1.5) !important; }
+
+.p-a-lg { padding:        (@spacer-y * 3) !important; }
+.p-t-lg { padding-top:    (@spacer-y * 3) !important; }
+.p-r-lg { padding-right:  (@spacer-y * 3) !important; }
+.p-b-lg { padding-bottom: (@spacer-y * 3) !important; }
+.p-l-lg { padding-left:   (@spacer-y * 3) !important; }
+.p-x-lg { padding-right:  (@spacer-x * 3) !important; padding-left:   (@spacer-x * 3) !important; }
+.p-y-lg { padding-top:    (@spacer-y * 3) !important; padding-bottom: (@spacer-y * 3) !important; }
+
+.p-a-sm { padding:        ($spacer * 0.5) !important; }
+.p-t-sm { padding-top:    ($spacer-y * 0.5) !important; }
+.p-r-sm { padding-right:  ($spacer-y * 0.5) !important; }
+.p-b-sm { padding-bottom: ($spacer-y * 0.5) !important; }
+.p-l-sm { padding-left:   ($spacer-y * 0.5) !important; }
+.p-x-sm { padding-right:  ($spacer-x * 0.5) !important; padding-left:   ($spacer-x * 0.5) !important; }
+.p-y-sm { padding-top:    ($spacer-y * 0.5) !important; padding-bottom: ($spacer-y * 0.5) !important; }
+
+.p-a-xs { padding:        ($spacer * 0.25) !important; }
+.p-t-xs { padding-top:    ($spacer-y * 0.25) !important; }
+.p-r-xs { padding-right:  ($spacer-y * 0.25) !important; }
+.p-b-xs { padding-bottom: ($spacer-y * 0.25) !important; }
+.p-l-xs { padding-left:   ($spacer-y * 0.25) !important; }
+.p-x-xs { padding-right:  ($spacer-x * 0.25) !important; padding-left:   ($spacer-x * 0.25) !important; }
+.p-y-xs { padding-top:    ($spacer-y * 0.25) !important; padding-bottom: ($spacer-y * 0.25) !important; }
+
+.padding{
+  padding: 1.5rem 1.5rem;
+}
+
+.padding-out{
+  margin: -1.5rem -1.5rem;
+}
+
+@include media-breakpoint-down(md) {
+  .padding{
+    padding: 1rem 1rem;
+  }
+  .padding-out{
+    margin: -1rem -1rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .padding{
+    padding: 0.5rem 0.5rem;
+  }
+  .padding-out{
+    margin: -0.5rem -0.5rem;
+  }
+  .no-padding-xs{
+    padding: 0;
+  }
+}
+</pre>
+      </div>
+      <div id="angular">
+        <h2 class="m-t-lg m-b">Angular version</h2>
+        <p>Lazy load modules for Angular 1.x, you can config the modules in the config.lazyload.js to load the other dependencies.</p>
+        <h5>Code style</h5>
+        <p><a href="https://github.com/johnpapa/angular-styleguide" target="_blank" class="text-info">https://github.com/johnpapa/angular-styleguide</a></p>
+        <h5>Manage the dependencies</h5>
+        <p>run <code>bower install</code> to install the modules.</p>
+        <p class="box p-a">
+          when run <code>bower install</code>, you may need choose the version for some modules, you can choose the latest version of them, but keep the "angular, angular-animate, angular-aria, angular-cookies, angular-messages, angular-resource, angular-sanitize, angular-touch" have the same version. 
+        </p>
+        <h5>Core modules</h5>
+        <ul>
+          <li>
+            <a href="https://github.com/angular-ui/ui-router">angular-ui-router</a>
+            <p>The de-facto solution to flexible routing with nested views</p>
+          </li>
+
+          <li>
+            <a href="https://github.com/ocombe/ocLazyLoad">ocLazyLoad</a>
+            <p>Load modules on demand (lazy load) in AngularJS.</p>
+          </li>
+
+          <li>
+            <a href="https://github.com/gsklee/ngStorage">ngStorage</a>
+            <p>localStorage and sessionStorage done right for AngularJS.</p>
+          </li>
+
+          <li>
+            <a href="https://github.com/mgcrea/angular-strap">Angular Strap</a>
+            <p>AngularJS 1.2+ native directives for Bootstrap 3/4</p>
+          </li>
+        </ul>
+        <h5>Optional modules</h5>
+        <ul>
+          <li>
+            <h6><a href="http://angular-ui.github.io/ui-utils/">UI.Utils</a></h6>
+            <p>Swiss-Army-Knife of AngularJS tools (with no external dependencies!).</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/angular-ui/ui-select">angular-ui-select</a></h6>
+            <p>AngularJS-native version of Select2 and Selectize</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/summernote/angular-summernote">Angular Summernote</a></h6>
+            <p>AngularJS directive to Summernote</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/Venturocket/angular-slider">venturocket-angular-slider</a></h6>
+            <p>Slider directive for AngularJS.</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/nickperkinslondon/angular-bootstrap-nav-tree">angular-bootstrap-nav-tree</a></h6>
+            <p>An AngularJS directive that creates a Tree based on a Bootstrap "nav" list.</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/danialfarid/angular-file-upload">angular-file-upload</a></h6>
+            <p>An AngularJS directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/alexk111/ngImgCrop">ngImgCrop</a></h6>
+            <p>Image Crop directive for AngularJS</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/lorenzofox3/Smart-Table">angular-smart-table</a></h6>
+            <p>Code source of Smart Table module: a table/grid for Angularjs</p>
+          </li>
+
+          <li>
+            <h6><a href="https://github.com/angular-ui/ui-map">angular-ui-map</a></h6>
+            <p>Google Maps</p>
+          </li>
+        </ul>
+      </div>
+      <div id="html">
+        <h2 class="m-t-lg m-b">Html version</h2>
+        <p>The html version use ajax to load some blocks, you need put the files on a server to preview.</p>
+        <p>Located in the "html" folder, it also use lazyload for plugins</p>
+        <h5>Core modules</h5>
+        <ul>
+          <li>
+            <h6>ui-jp</h6>
+            <p>Dynamic jQuery plugin call on dom 
+              <br>
+              <code>&lt;div ui-jp="easyPieChart" ui-options="options">&lt;/div></code>
+              <br>
+              the ui-jp plugin will call the "easyPieChart" function with the options, same as
+              <code>$.easyPieChart(options)</code>
+              <br>
+              you can config the plugins in the "html/scripts/config.lazyload.js".
+            </p>
+          </li>
+
+          <li>
+            <h6>ui-include</h6>
+            <p>
+              Include the html partials into the page
+              <br>
+              <code>&lt;div ui-include="'../views/blocks/navbar.brand.html'">&lt;/div></code>
+              <br>
+              the ui-include will be replaced with the real partial. <br>
+              if you do not want to include the partials, you can just copy the real blocks and replace it. 
+            </p>
+          </li>
+        </ul>
+        <h5>Ajax</h5>
+        <p>The html version using the Pjax for ajax load the page. you can disable it by remove the relative codes(remove the html/scripts/ajax.js)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ############ PAGE END-->
+
+    </div>
+  </div>
+  <!-- / -->
+
+  <!-- theme switcher -->
+  <div id="switcher">
+    <div class="switcher box-color dark-white text-color" id="sw-theme">
+      <a href ui-toggle-class="active" target="#sw-theme" class="box-color dark-white text-color sw-btn">
+        <i class="fa fa-gear"></i>
+      </a>
+      <div class="box-header">
+        <a href="https://themeforest.net/item/flatkit-app-ui-kit/13231484?ref=flatfull" class="btn btn-xs rounded danger pull-right">BUY</a>
+        <h2>Theme Switcher</h2>
+      </div>
+      <div class="box-divider"></div>
+      <div class="box-body">
+        <p class="hidden-md-down">
+          <label class="md-check m-y-xs"  data-target="folded">
+            <input type="checkbox">
+            <i class="green"></i>
+            <span class="hidden-folded">Folded Aside</span>
+          </label>
+          <label class="md-check m-y-xs" data-target="boxed">
+            <input type="checkbox">
+            <i class="green"></i>
+            <span class="hidden-folded">Boxed Layout</span>
+          </label>
+          <label class="m-y-xs pointer" ui-fullscreen>
+            <span class="fa fa-expand fa-fw m-r-xs"></span>
+            <span>Fullscreen Mode</span>
+          </label>
+        </p>
+        <p>Colors:</p>
+        <p data-target="themeID">
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'primary', accent:'accent', warn:'warn'}">
+            <input type="radio" name="color" value="1">
+            <i class="primary"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'accent', accent:'cyan', warn:'warn'}">
+            <input type="radio" name="color" value="2">
+            <i class="accent"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'warn', accent:'light-blue', warn:'warning'}">
+            <input type="radio" name="color" value="3">
+            <i class="warn"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'success', accent:'teal', warn:'lime'}">
+            <input type="radio" name="color" value="4">
+            <i class="success"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'info', accent:'light-blue', warn:'success'}">
+            <input type="radio" name="color" value="5">
+            <i class="info"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'blue', accent:'indigo', warn:'primary'}">
+            <input type="radio" name="color" value="6">
+            <i class="blue"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'warning', accent:'grey-100', warn:'success'}">
+            <input type="radio" name="color" value="7">
+            <i class="warning"></i>
+          </label>
+          <label class="radio radio-inline m-0 ui-check ui-check-color ui-check-md" data-value="{primary:'danger', accent:'grey-100', warn:'grey-300'}">
+            <input type="radio" name="color" value="8">
+            <i class="danger"></i>
+          </label>
+        </p>
+        <p>Themes:</p>
+        <div data-target="bg" class="row no-gutter text-u-c text-center _600 clearfix">
+          <label class="p-a col-sm-6 light pointer m-0">
+            <input type="radio" name="theme" value="" hidden>
+            Light
+          </label>
+          <label class="p-a col-sm-6 grey pointer m-0">
+            <input type="radio" name="theme" value="grey" hidden>
+            Grey
+          </label>
+          <label class="p-a col-sm-6 dark pointer m-0">
+            <input type="radio" name="theme" value="dark" hidden>
+            Dark
+          </label>
+          <label class="p-a col-sm-6 black pointer m-0">
+            <input type="radio" name="theme" value="black" hidden>
+            Black
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="switcher box-color black lt" id="sw-demo">
+      <a href ui-toggle-class="active" target="#sw-demo" class="box-color black lt text-color sw-btn">
+        <i class="fa fa-list text-white"></i>
+      </a>
+      <div class="box-header">
+        <h2>Demos</h2>
+      </div>
+      <div class="box-divider"></div>
+      <div class="box-body">
+        <div class="row no-gutter text-u-c text-center _600 clearfix">
+          <a href="dashboard.html"
+            class="p-a col-sm-6 primary">
+            <span class="text-white">Default</span>
+          </a>
+          <a href="dashboard.0.html"
+            class="p-a col-sm-6 success">
+            <span class="text-white">Zero</span>
+          </a>
+          <a href="dashboard.1.html"
+            class="p-a col-sm-6 blue">
+            <span class="text-white">One</span>
+          </a>
+          <a href="dashboard.2.html"
+            class="p-a col-sm-6 warn">
+            <span class="text-white">Two</span>
+          </a>
+          <a href="dashboard.3.html"
+            class="p-a col-sm-6 danger">
+            <span class="text-white">Three</span>
+          </a>
+          <a href="dashboard.4.html"
+            class="p-a col-sm-6 green">
+            <span class="text-white">Four</span>
+          </a>
+          <a href="dashboard.5.html"
+            class="p-a col-sm-6 info">
+            <span class="text-white">Five</span>
+          </a>
+          <div 
+            class="p-a col-sm-6 lter">
+            <span class="text">...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / -->
+
+<!-- ############ LAYOUT END-->
+
+  </div>
+<!-- build:js scripts/app.html.js -->
+<!-- jQuery -->
+  <script src="../libs/jquery/jquery/dist/jquery.js"></script>
+<!-- Bootstrap -->
+  <script src="../libs/jquery/tether/dist/js/tether.min.js"></script>
+  <script src="../libs/jquery/bootstrap/dist/js/bootstrap.js"></script>
+<!-- core -->
+  <script src="../libs/jquery/underscore/underscore-min.js"></script>
+  <script src="../libs/jquery/jQuery-Storage-API/jquery.storageapi.min.js"></script>
+  <script src="../libs/jquery/PACE/pace.min.js"></script>
+
+  <script src="scripts/config.lazyload.js"></script>
+
+  <script src="scripts/palette.js"></script>
+  <script src="scripts/ui-load.js"></script>
+  <script src="scripts/ui-jp.js"></script>
+  <script src="scripts/ui-include.js"></script>
+  <script src="scripts/ui-device.js"></script>
+  <script src="scripts/ui-form.js"></script>
+  <script src="scripts/ui-nav.js"></script>
+  <script src="scripts/ui-screenfull.js"></script>
+  <script src="scripts/ui-scroll-to.js"></script>
+  <script src="scripts/ui-toggle-class.js"></script>
+
+  <script src="scripts/app.js"></script>
+
+  <!-- ajax -->
+  <script src="../libs/jquery/jquery-pjax/jquery.pjax.js"></script>
+  <script src="scripts/ajax.js"></script>
+<!-- endbuild -->
+</body>
+</html>

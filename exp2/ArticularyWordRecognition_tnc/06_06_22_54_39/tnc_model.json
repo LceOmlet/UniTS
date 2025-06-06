@@ -1,0 +1,8 @@
+{
+    "hidden_size": 100,
+    "kernel_size": 3,
+    "encoding_size": 10,
+    "feat_dim": 9,
+    "seq_len": 144,
+    "device": "cpu"
+}
