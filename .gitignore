@@ -38,3 +38,5 @@ test_scripts*
 results_*
 default_configexp2/**/*.npz
 exp2/**/*.pth
+exp2/**/*.npz
+exp2/**/*.pth
