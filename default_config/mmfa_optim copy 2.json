@@ -1,0 +1,42 @@
+{
+    "output_dims": 320,
+    "loss":{
+        "cov_loss_w":25,
+        "std_loss_w":25, 
+        "repr_loss_w":1
+    },
+    "transformations": {
+        "weasel":{
+            "model": {
+                "model_name": "TinyLlama",
+                "load_wwm_weights": true,
+                "rank": 8,
+                "lora_alpha": 32,
+                "tokenizer" : "/home/username/vllm/TinyLlama_v1.1_re",
+                "lr": 4e-5
+            },
+            "max_bag": 5,
+            "tokenizer" : "/home/username/vllm/TinyLlama_v1.1_re"
+        }
+    },
+    "main_transformation":[
+        "default", {}
+    ],
+    "key_metric": "accuracy",
+    "mean_mask_length": 3,
+    "masking_ratio": 0.15,
+    "mask_mode": "separate", 
+    "@mask_mode/choice": ["seperate", "concurrent"],
+    "mask_distribution": "geometric",
+    "@mask_distribution/choice": ["geometric", "bernoulli"],
+    "exclude_feats": null,
+    "batch_size": 8,
+    "optimizer": "Adam",
+    "@optimier/choice": ["Adam", "RAdam"],
+    "lr": 1e-3,
+    "l2_reg": 0.02,
+    "@epochs": 300,
+    "epochs": 10000,
+    "print_interval": 10,
+    "evaluator": "svm"
+}

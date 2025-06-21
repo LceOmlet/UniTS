@@ -123,18 +123,20 @@ def train_epoch(model, dataloader, task, device,
 
 @EVALUATOR.register("default")
 class PretrainAgg:
-    def __init__(self, evaluator) -> None:
+    def __init__(self, optim_config) -> None:
         self.per_batch_train = dict()
         self.per_batch_valid = dict()
+        # print(evaluator)
         # exit()
-        self.evaluator = TEST_METHODS.get(evaluator)
+        self.test_module_kwargs = optim_config.get("test_module_kwargs", dict())
+        self.evaluator = TEST_METHODS.get(optim_config.get("evaluator", "default"))  # default is None
     
     def train_module(self, val_loss_module, logger, valid_ratio=0.125, **kwargs):
         # if self.per_batch_train.get("repr") is None:
         #     logger.info("The batches are not collected during training.")
         #     return None
         
-        test_module_kwargs = dict()
+        test_module_kwargs = self.test_module_kwargs.copy()
         for k in self.per_batch_train:
             try:
                 test_module_kwargs[k] = list2array(self.per_batch_train[k])

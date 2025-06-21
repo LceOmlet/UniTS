@@ -1,6 +1,0 @@
-{
-    "output_dims": 320,
-    "feat_dim": 10,
-    "seq_len": 400,
-    "device": "cpu"
-}

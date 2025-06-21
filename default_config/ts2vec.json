@@ -1,0 +1,5 @@
+{
+    "output_dims":  320,
+    "hidden_dims": 64,
+    "depth": 10
+}

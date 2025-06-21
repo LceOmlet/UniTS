@@ -1,0 +1,30 @@
+{
+        "cgau2": {
+            "model":{
+                "model_name": "ResNet12"
+            },
+            "resize_shape": 224
+        },
+        "RP": {
+            "model":{
+                "model_name": "ResNet12"
+            },
+            "resize_shape": 224
+        },
+        "GADF": {
+            "model":{
+                "model_name": "ResNet12"
+            },
+            "max_channel": 20
+        },
+        "fft":{
+            "model":{
+                "model_name": "ResNet1d"
+            }
+        },
+        "weasel":{
+            "model":{
+                "model_name": "LongFormer"
+            }
+        }
+    }

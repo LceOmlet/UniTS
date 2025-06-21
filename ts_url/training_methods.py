@@ -190,7 +190,7 @@ class Trainer:
         self.loss_module = LOSSES.get(task)(**loss_config)
         self.val_loss_module = LOSSES.get(task)(train=False, **loss_config)
         
-        self.evaluator = EVALUATOR.get("default")(optim_config.get("evaluator"))
+        self.evaluator = EVALUATOR.get("default")(optim_config=optim_config,)
         self.POS_METRICS = {'accuracy', 'f1'}  # metrics for which "better" is less
         # print(data_configs)
         # exit()

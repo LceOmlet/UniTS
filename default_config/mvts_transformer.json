@@ -1,0 +1,14 @@
+{
+    "output_dims":320,
+    "n_heads": 8,
+    "num_layers": 3,
+    "dim_feedforward": 256,
+    "dropout": 0.1,
+    "@pos_encoding/choice": ["fixed", "learnable"],
+    "pos_encoding": "fixed",
+    "@activation/choice": ["relu", "gelu"],
+    "activation": "gelu",
+    "@norm/choice": ["BatchNorm", "LayerNorm"],
+    "norm": "BatchNorm",
+    "freeze": false
+}

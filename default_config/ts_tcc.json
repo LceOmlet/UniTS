@@ -1,0 +1,8 @@
+{
+    "kernel_size": 8,
+    "stride": 1,
+    "output_dims": 320,
+    "dropout": 0.35,
+    "num_classes": 2,
+    "timesteps": 10
+}
