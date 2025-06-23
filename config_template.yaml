@@ -55,7 +55,7 @@ optimizer:
   name: "Adam"  # 可选 ["Adam", "RAdam"]
   lr: 1.0e-3
   weight_decay: 0.0
-  batch_size: 64
+  batch_size: 8
   epochs: 100
 
   test_module_kwargs:
@@ -111,7 +111,6 @@ optimizer:
     l2_reg: 0.02
 
   mvts_transformer:
-    batch_size: 64
     optimizer: "Adam"  # choice: ["Adam", "RAdam"]
     lr: 1.0e-3
     l2_reg: 0
@@ -120,7 +119,6 @@ optimizer:
   t_loss:
     l2_reg: 0
     epochs: 2  # default: 30
-    batch_size: 128
     compared_length: null
     nb_steps: 600
     penalty: null
@@ -136,7 +134,6 @@ optimizer:
     beta1: 0.9
     beta2: 0.99
     lr: 3.0e-4
-    batch_size: 128
     temperature: 0.2
     use_cosine_similarity: true
     jitter_scale_ratio: 0.001
@@ -152,7 +149,6 @@ optimizer:
   tnc:
     lr: 1.0e-3
     l2_reg: 5.0e-3
-    batch_size: 128
     epochs: 2
     augmentation: 5
     window_size: 30

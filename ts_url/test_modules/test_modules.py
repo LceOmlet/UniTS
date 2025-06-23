@@ -542,7 +542,10 @@ class SVMModule:
         C_best = None    
         for C in [10 ** i for i in range(-4, 5)]:
             clf = SVC(C=C, random_state=42)
-            acc_i = cross_val_score(clf, repr_sampled, label_sampled, cv=4)
+            try:
+                acc_i = cross_val_score(clf, repr_sampled, label_sampled, cv=4)
+            except Exception as e:
+                acc_i = np.array([0.0, 0.0, 0.0, 0.0])
             if acc_i.mean() > acc_val:
                 acc_val = acc_i.mean()
                 C_best = C
