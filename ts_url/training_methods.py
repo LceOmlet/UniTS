@@ -363,7 +363,12 @@ class Trainer:
 
         kwargs.update(self.init_trainer)
 
-        trainer_fn = TRAIN_FN.get("default")
+        # Use TNC-specific training function if model is TNC
+        if self.model_name == "tnc":
+            trainer_fn = TRAIN_FN.get("tnc")
+        else:
+            trainer_fn = TRAIN_FN.get("default")
+            
         if trainer_fn is not None:
             results = trainer_fn(**kwargs)
         else:

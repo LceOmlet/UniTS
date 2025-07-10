@@ -124,3 +124,73 @@ def get_anomaly_detection_loaders(dls, optim_config, logger, **kwargs):
     valid_dataloader = DataLoader(valid_ds, batch_size=1, collate_fn=collate_superv)
     logger.info("train_ds length: " + str(len(train_ds)) + ", valid_ds length: " + str(len(valid_ds)))
     return dataloader, valid_dataloader
+
+class DynamicTNCDataLoader:
+    """
+    Dynamic TNC DataLoader that recreates dataset for each epoch.
+    """
+    def __init__(self, base_data, optim_config, collate_fn, **kwargs):
+        self.base_data = base_data
+        self.optim_config = optim_config
+        self.collate_fn = collate_fn
+        self.kwargs = kwargs
+        self.current_epoch = 0
+        
+    def get_epoch_loader(self, epoch=None):
+        """Get a new DataLoader for the current epoch."""
+        if epoch is not None:
+            self.current_epoch = epoch
+            
+        # Import here to avoid circular import
+        from ..process_data import TNCDataset as UniTSTNCDataset
+            
+        # Create fresh dataset for this epoch
+        dataset = UniTSTNCDataset(
+            data=self.base_data,
+            optim_config=self.optim_config,
+            **self.kwargs
+        )
+        
+        # Create new DataLoader
+        loader = DataLoader(
+            dataset,
+            batch_size=self.optim_config.get("batch_size"),
+            collate_fn=self.collate_fn,
+            shuffle=True,
+            num_workers=3,
+            drop_last=True
+        )
+        
+        return loader
+    
+    def __len__(self):
+        # Import here to avoid circular import
+        from ..process_data import TNCDataset as UniTSTNCDataset
+        # Approximate length for compatibility
+        temp_dataset = UniTSTNCDataset(
+            data=self.base_data,
+            optim_config=self.optim_config,
+            **self.kwargs
+        )
+        return len(temp_dataset) // self.optim_config.get("batch_size", 1)
+
+@PRETRAIN_LOADERS.register("tnc_dynamic")
+def get_dynamic_tnc_dataloader(train_ds, optim_config, collate_fn, **kwargs):
+    """
+    Create Dynamic TNC DataLoader for pretraining.
+    """
+    
+    # Extract base data from dataset
+    base_data = train_ds.time_series.numpy()
+    
+    # Create dynamic loader
+    dynamic_loader = DynamicTNCDataLoader(
+        base_data=base_data,
+        optim_config=optim_config,
+        collate_fn=collate_fn,
+        epsilon=getattr(train_ds, 'epsilon', 3),
+        label=train_ds.state,
+        adf=getattr(train_ds, 'adf', False)
+    )
+    
+    return dynamic_loader

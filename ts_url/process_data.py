@@ -767,6 +767,9 @@ def get_interfusion_data(dataset, max_train_size=None, max_test_size=None, print
 class TNCDataset(Dataset):
     def __init__(self, data, optim_config, epsilon=3, label=None, adf=False, **kwargs):
         super(TNCDataset, self).__init__()
+        
+        np.random.seed(0)
+        
         self.time_series = torch.Tensor(data)
         self.T = self.time_series.shape[-1]
         self.window_size = optim_config.get("window_size")
@@ -784,59 +787,57 @@ class TNCDataset(Dataset):
         return len(self.time_series) * self.augmentation
 
     def __getitem__(self, ind):
-        ind = ind % len(self.time_series)
-
-        if self.T <= 4 * self.window_size:
-            raise ValueError(f"[DEBUG] T={self.T}, window_size={self.window_size}, required min T={4 * self.window_size}")
-
-        t = np.random.randint(2 * self.window_size, self.T - 2 * self.window_size)
-        x_t = self.time_series[ind][:, t - self.window_size // 2 : t + self.window_size // 2]
-
+        ind = ind%len(self.time_series)
+        t = np.random.randint(self.window_size, self.T-self.window_size)
+        x = self.time_series[ind]
+        x_t = self.time_series[ind][:,t-self.window_size//2:t+self.window_size//2]
+        # plt.savefig('./plots/%s_seasonal.png'%ind)
         X_close = self._find_neighours(self.time_series[ind], t)
         X_distant = self._find_non_neighours(self.time_series[ind], t)
 
         if self.state is None:
-            y_t = torch.tensor(-1.0)
+            y_t = -1
         else:
-            y_t = torch.tensor(self.state[ind])
+            y_t = torch.tensor(self.state[ind]) 
 
-        return x_t, X_close, X_distant, y_t
-
+        return x_t, X_close, X_distant, y_t, x
+    
     def _find_neighours(self, x, t):
         T = self.time_series.shape[-1]
         if self.adf:
             gap = self.window_size
             corr = []
-            for w_t in range(self.window_size, 4 * self.window_size, gap):
+            for w_t in range(self.window_size,4*self.window_size, gap):
                 try:
                     p_val = 0
                     for f in range(x.shape[-2]):
-                        p = adfuller(np.array(x[f, max(0, t - w_t) : min(x.shape[-1], t + w_t)].reshape(-1,)))[1]
+                        p = adfuller(np.array(x[f, max(0,t - w_t):min(x.shape[-1], t + w_t)].reshape(-1, )))[1]
                         p_val += 0.01 if math.isnan(p) else p
-                    corr.append(p_val / x.shape[-2])
+                    corr.append(p_val/x.shape[-2])
                 except:
                     corr.append(0.6)
-            self.epsilon = len(corr) if len(np.where(np.array(corr) >= 0.01)[0]) == 0 else (np.where(np.array(corr) >= 0.01)[0][0] + 1)
-            self.delta = 5 * self.epsilon * self.window_size
+            self.epsilon = len(corr) if len(np.where(np.array(corr) >= 0.01)[0])==0 else (np.where(np.array(corr) >= 0.01)[0][0] + 1)
+            self.delta = 5*self.epsilon*self.window_size
 
-        t_p = [int(t + np.random.randn() * self.epsilon * self.window_size) for _ in range(self.mc_sample_size)]
-        t_p = [max(self.window_size // 2 + 1, min(t_pp, T - self.window_size // 2)) for t_pp in t_p]
-        x_p = torch.stack([x[:, t_ind - self.window_size // 2 : t_ind + self.window_size // 2] for t_ind in t_p])
+        ## Random from a Gaussian
+        t_p = [int(t+np.random.randn()*self.epsilon*self.window_size) for _ in range(self.mc_sample_size)]
+        t_p = [max(self.window_size//2+1,min(t_pp,T-self.window_size//2)) for t_pp in t_p]
+        x_p = torch.stack([x[:, t_ind-self.window_size//2:t_ind+self.window_size//2] for t_ind in t_p])
         return x_p
 
     def _find_non_neighours(self, x, t):
         T = self.time_series.shape[-1]
-        if t > T / 2:
-            t_n = np.random.randint(self.window_size // 2, max((t - self.delta + 1), self.window_size // 2 + 1), self.mc_sample_size)
+        if t>T/2:
+            t_n = np.random.randint(self.window_size//2, max((t - self.delta + 1), self.window_size//2+1), self.mc_sample_size)
         else:
-            t_n = np.random.randint(min((t + self.delta), (T - self.window_size - 1)), (T - self.window_size // 2), self.mc_sample_size)
-        x_n = torch.stack([x[:, t_ind - self.window_size // 2 : t_ind + self.window_size // 2] for t_ind in t_n])
+            t_n = np.random.randint(min((t + self.delta), (T - self.window_size-1)), (T - self.window_size//2), self.mc_sample_size)
+        x_n = torch.stack([x[:, t_ind-self.window_size//2:t_ind+self.window_size//2] for t_ind in t_n])
 
-        if len(x_n) == 0:
-            rand_t = np.random.randint(0, self.window_size // 5)
+        if len(x_n)==0:
+            rand_t = np.random.randint(0,self.window_size//5)
             if t > T / 2:
-                x_n = x[:, rand_t : rand_t + self.window_size].unsqueeze(0)
+                x_n = x[:,rand_t:rand_t+self.window_size].unsqueeze(0)
             else:
-                x_n = x[:, T - rand_t - self.window_size : T - rand_t].unsqueeze(0)
+                x_n = x[:, T - rand_t - self.window_size:T - rand_t].unsqueeze(0)
         return x_n
 

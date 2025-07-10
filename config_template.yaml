@@ -59,7 +59,7 @@ optimizer:
   epochs: 100
 
   test_module_kwargs:
-    sample_rate: 0.15
+    sample_rate: 1
 
   csl:
     T: 0.1
@@ -148,11 +148,12 @@ optimizer:
 
   tnc:
     lr: 1.0e-3
-    l2_reg: 5.0e-3
+    batch_size: 10
+    l2_reg: 1.0e-5
     epochs: 2
     augmentation: 5
-    window_size: 30
-    mc_sample_size: 40
+    window_size: 44
+    mc_sample_size: 20
     w: 0.05
 
 # 训练配置

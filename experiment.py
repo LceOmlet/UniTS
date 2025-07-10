@@ -98,13 +98,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, default="config_template.yaml",
                       help="Path to config file")
-    parser.add_argument("--model_name", type=str, default="ts_tcc",)
+    parser.add_argument("--model_name", type=str, default="tnc",)
     parser.add_argument("--gpu", type=int, default=0)
     parser.add_argument("--dataset_name", type=str, default="UWaveGestureLibrary",)
     parser.add_argument("--experiment_type", type=str, default="test")
-    parser.add_argument("--lr", type=float, default=None)
+    parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--batch_size", type=int, default=None)
-    parser.add_argument("--epochs", type=int, default=None)
+    parser.add_argument("--epochs", type=int, default=1000)
     return parser.parse_args()
 
 def get_config(filepath="/home/liangchen/liangchen/aeon/aeon/datasets/data/test/Multivariate_ts", 

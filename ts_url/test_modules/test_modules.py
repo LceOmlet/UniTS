@@ -569,8 +569,9 @@ class SVMModule:
     @staticmethod
     def collate(model, X, **kwargs):
         kwargs.pop("mask", None)
+        reprs = model.encode(X, **kwargs)
         rst = {
-            "repr": model.encode(X, **kwargs)
+            "repr": reprs
         }
         return rst
         

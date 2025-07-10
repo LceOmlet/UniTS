@@ -280,6 +280,9 @@ def get_model(model_name, dls_setting, model_config, task="self-supervised", dev
         print(model_config)
         print(type(model_class))
         raise RuntimeError()
+    
+    
+# from .models.tnc.models import Discriminator
 @MODELS.register("tnc")
 class TNC(nn.Module):
     def __init__(self, feat_dim, device, hidden_size=100, encoding_size=10, encoder_type="rnn", **kwargs):
@@ -288,7 +291,7 @@ class TNC(nn.Module):
         
         if self.encoder_type == "rnn":
             self.encoder = RnnEncoder(
-                hidden_size=100,
+                hidden_size=hidden_size,
                 in_channel=feat_dim,
                 encoding_size=encoding_size
             )

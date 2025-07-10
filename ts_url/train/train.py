@@ -424,15 +424,14 @@ def step_csl(batch, model, device, loss_module, optimizer, optim_config, evaluat
     return loss
 
 @PRETRAIN_STEP.register("tnc")
-def epoch_run(model, batch, loss_module, optimizer, optim_config, device, **kwargs):
+def step_tnc(model, batch, loss_module, optimizer, optim_config, device, **kwargs):
     """
     TNC-style self-supervised training step for UniTS integration.
     """
+    
+    
     w = optim_config['w']
     encoder = model.encoder.to(device)
-    if not hasattr(model, "disc_model"):
-        from ts_url.models.tnc.discriminator import Discriminator
-        model.disc_model = Discriminator(input_size=encoder.encoding_size, device=device).to(device)
     disc_model = model.disc_model.to(device)
 
 
@@ -453,6 +452,7 @@ def epoch_run(model, batch, loss_module, optimizer, optim_config, device, **kwar
     neighbors = torch.ones((len(x_p))).to(device)
     non_neighbors = torch.zeros((len(x_n))).to(device)
     x_t, x_p, x_n = x_t.to(device), x_p.to(device), x_n.to(device)
+    
 
     z_t = encoder(x_t)
     z_p = encoder(x_p)
@@ -477,6 +477,7 @@ def epoch_run(model, batch, loss_module, optimizer, optim_config, device, **kwar
         p_acc = (sigmoid(d_p) > 0.5).float().mean().item()
         n_acc = (sigmoid(d_n) < 0.5).float().mean().item()
         acc = (p_acc + n_acc) / 2
+        
     return loss
 
 @PRETRAIN_STEP.register("ts_tcc")
@@ -625,4 +626,121 @@ def train_init_ts_tcc(optimizer, optim_config, device, **kwargs):
             
     return {
         "models": models
-    } 
+    }
+
+@TRAIN_FN.register("tnc")
+def train_epoch_tnc(model, dataloader, task, device, 
+                model_name, print_interval, print_callback, val_loss_module,
+                logger, optim_config, optimizer,
+                epoch_num=None, **kwargs):
+    """
+    Custom TNC training function that recreates dataset and dataloader each epoch.
+    This is necessary for TNC's random sampling strategy.
+    """
+    epoch_metrics = OrderedDict()
+    model.train()
+    epoch_loss = 0
+    total_active_elements = 0
+    
+    # Extract original dataset data for TNC
+    original_dataset = dataloader.dataset
+    
+    # Recreate TNC dataset for this epoch with fresh randomization
+    from ..process_data import TNCDataset as UniTSTNCDataset
+    
+    # print(original_dataset.time_series.shape)
+    # raise RuntimeError("This is a test for TNC training step.")
+    
+    # Create new dataset with same parameters but fresh random state
+    tnc_dataset = UniTSTNCDataset(
+        data=original_dataset.time_series.numpy(),
+        optim_config=optim_config,
+        epsilon=getattr(original_dataset, 'epsilon', 3),
+        label=original_dataset.state,
+        adf=getattr(original_dataset, 'adf', False)
+    )
+    
+    # Create new dataloader for this epoch
+    from torch.utils.data import DataLoader
+    from ..registry.registry import COLLATE_FN
+    
+    epoch_dataloader = DataLoader(
+        tnc_dataset,
+        batch_size=optim_config.get("batch_size"),
+        collate_fn=COLLATE_FN.get("tnc"),
+        shuffle=True,
+        num_workers=3,
+        drop_last=True
+    )
+    
+    logger.info(f"Epoch {epoch_num}: Created new TNC dataset with {len(tnc_dataset)} samples")
+    
+    # Use the TNC-specific training step
+    train_step = PRETRAIN_STEP.get("tnc")
+    
+    for i, batch in enumerate(epoch_dataloader):
+        train_step_kwargs = dict(
+            batch=batch, 
+            model=model, 
+            device=device, 
+            model_name=model_name,
+            loss_module=val_loss_module,
+            optimizer=optimizer,
+            optim_config=optim_config
+        )
+        train_step_kwargs.update(kwargs)
+        
+        model.train()
+        loss = train_step(**train_step_kwargs)
+        
+        if isinstance(loss, dict):
+            metrics = dict()
+            for ll in loss:
+                metrics[ll] = loss[ll].item()
+            batch_loss = loss["loss"]
+            loss = loss["loss"]
+        elif isinstance(loss, torch.Tensor):
+            if len(loss.shape):
+                loss = loss.reshape(loss.shape[0], -1)
+                loss = torch.mean(loss, dim=-1)
+            if not loss.shape:
+                loss = loss.unsqueeze(0)
+            
+            batch_loss = torch.sum(loss)
+            mean_loss = batch_loss / len(loss)
+            metrics = {"loss": mean_loss.item()}
+
+        if i % print_interval == 0:
+            ending = "" if epoch_num is None else f'Epoch {epoch_num} '
+            print_callback(i, metrics, prefix='Training TNC ' + ending, total_batches=len(epoch_dataloader))
+
+        with torch.no_grad():
+            if loss.dim() == 0:
+                total_active_elements += 1
+            else:
+                total_active_elements += len(loss)
+            epoch_loss += batch_loss.item()
+
+    epoch_loss = epoch_loss / max(total_active_elements, 1)
+    epoch_metrics['epoch'] = epoch_num
+    epoch_metrics['loss'] = float(epoch_loss)
+    
+    return epoch_metrics
+
+@TRAINER_INIT.register("tnc")
+def train_init_tnc(optim_config, **kwargs):
+    """
+    Initialize TNC-specific training parameters.
+    """
+    # Store original dataset parameters for epoch-level recreation
+    tnc_params = {
+        'window_size': optim_config.get('window_size', 50),
+        'mc_sample_size': optim_config.get('mc_sample_size', 20),
+        'augmentation': optim_config.get('augmentation', 5),
+        'w': optim_config.get('w', 0.05),
+        'adf': optim_config.get('adf', True)
+    }
+    
+    return {
+        "tnc_params": tnc_params
+    }

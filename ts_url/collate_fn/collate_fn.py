@@ -97,15 +97,16 @@ def collate_tnc(batch):
     Each item in batch: (x_t, x_p, x_n, label)
 
     """
-	x_t, x_p, x_n, label = zip(*batch)
+	x_t, x_p, x_n, label, x = zip(*batch)
 
+	x = torch.stack(x)
 	x_t = torch.stack(x_t)  # (B, F, L)
 	x_p = torch.stack(x_p)
 	x_n = torch.stack(x_n)
 	label = torch.stack(label)  # (B, mc)
 
 	return {
-		"X": x_t,
+		"X": x,
 		"x_t": x_t,  # (B, F, L)
 		"x_p": x_p,  
 		"x_n": x_n,  
